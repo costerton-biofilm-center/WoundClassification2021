@@ -1,0 +1,1 @@
+DESeq2 results from the analysis are exported to this directory

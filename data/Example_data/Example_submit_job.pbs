@@ -1,0 +1,91 @@
+#!/bin/sh
+
+### Define PBS Parameters
+
+#PBS -W group_list=<YOUR_GROUP_ID>
+#PBS -A <YOUR_GROUP_ID>
+#PBS -N 20201209_ClusterPaper_generate_AllData
+#PBS -l nodes=1:ppn=24,mem=60g,walltime=48:00:00
+#PBS -t 2-62%20
+#PBS -j eo
+#PBS -e /your/path/here/scratch/20201209_ClusterPaper_generate_AllData/PBS_output    
+#PBS -o /your/path/here/scratch/20201209_ClusterPaper_generate_AllData/PBS_output
+
+### Define Important Variables 
+run_name='20201209_ClusterPaper_generate_AllData'
+threads=24
+project_dir=/your/path/here/scratch/20201209_ClusterPaper_generate_AllData
+metadata_file=/your/path/here/scratch/20201209_ClusterPaper_generate_AllData/metadata_allsamples.tsv
+ref_fna=/your/path/here/data/databases/human_reference/GCA_000001405.15_GRCh38_full_analysis_set.fna
+annotation_gtf=/your/path/here/data/databases/human_reference/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff
+
+
+#Define rRNA reference databases for in-silico-rrna depletion
+rRNA_refs='/your/path/here/apps/sortmerna-2.1/rRNA_databases/silva-bac-16s-id90.fasta,/your/path/here/apps/sortmerna-2.1/index/silva-bac-16s-db:'
+rRNA_refs+='/your/path/here/apps/sortmerna-2.1/rRNA_databases/silva-bac-23s-id98.fasta,/your/path/here/apps/sortmerna-2.1/index/silva-bac-23s-db:'
+rRNA_refs+='/your/path/here/apps/sortmerna-2.1/rRNA_databases/silva-arc-16s-id95.fasta,/your/path/here/apps/sortmerna-2.1/index/silva-arc-16s-db:'
+rRNA_refs+='/your/path/here/apps/sortmerna-2.1/rRNA_databases/silva-arc-23s-id98.fasta,/your/path/here/apps/sortmerna-2.1/index/silva-arc-23s-db:'
+rRNA_refs+='/your/path/here/apps/sortmerna-2.1/rRNA_databases/silva-euk-18s-id95.fasta,/your/path/here/apps/sortmerna-2.1/index/silva-euk-18s-db:'
+rRNA_refs+='/your/path/here/apps/sortmerna-2.1/rRNA_databases/silva-euk-28s-id98.fasta,/your/path/here/apps/sortmerna-2.1/index/silva-euk-28s-db:'
+rRNA_refs+='/your/path/here/apps/sortmerna-2.1/rRNA_databases/rfam-5s-database-id98.fasta,/your/path/here/apps/sortmerna-2.1/index/rfam-5s-db:'
+rRNA_refs+='/your/path/here/apps/sortmerna-2.1/rRNA_databases/rfam-5.8s-database-id98.fasta,/your/path/here/apps/sortmerna-2.1/index/rfam-5.8s-db'
+
+##################################################
+## Shouldn't have to modify anything below here ##
+##################################################
+
+###Load required modules
+
+module load tools 
+module load anaconda3/4.4.0
+module load perl
+module load ncbi-blast/2.10.0+
+module load kraken/2.0.8-beta
+module load sortmerna/2.1
+module load seqtk/1.3
+module load bwa/0.7.16a
+module load samtools/1.10
+module load subread/1.6.2
+module load pigz/2.3.4
+
+### Move to the project directory 
+
+cd $project_dir
+
+#Create the output directory
+
+output_dir=$project_dir/generated/
+
+mkdir $output_dir 
+
+### Read Files Paths from metadata 
+
+parameters=`sed -n "${PBS_ARRAYID} p" $metadata_file`
+#parameters=`sed -n "4 p" $metadata_file`
+parameterArray=($parameters)
+
+### Test the output
+
+sample_name=${parameterArray[0]}
+R1_name=${parameterArray[1]}
+R2_name=${parameterArray[2]}
+raw_data_dir=${parameterArray[3]}
+endedness=${parameterArray[4]} # SE or PE
+
+echo "Sample name: ${sample_name}"
+echo "Forward read: ${R1_name}"
+echo "Reverse read: ${R2_name}"
+echo "Raw data directory: ${raw_data_dir}"
+echo "The data is: ${endedness}"
+
+python $project_dir/scripts/human_alignment.py  -p $project_dir \
+                                                -d $raw_data_dir \
+                                                -o $output_dir \
+                                                -s $sample_name \
+                                                -e $endedness \
+                                                -r1 $R1_name \
+                                                -r2 $R2_name \
+                                                -ref $ref_fna \
+                                                -a $annotation_gtf \
+                                                --rRNA_refs $rRNA_refs \
+                                                -t $threads 

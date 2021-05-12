@@ -1,0 +1,4 @@
+The decompressed reference GFF file should be placed in this folder. 
+
+GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff
+
