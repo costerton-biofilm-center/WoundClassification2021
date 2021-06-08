@@ -27,10 +27,11 @@ set.seed(seed)
 source("./scripts/analysis_utils.R")
 
 # Import counts, metadata and define relative path to annotation file
-#counts <- get_counts("./data/20201209_ClusterPaper_generate_AllData/counts/")
+#counts <- get_counts("./data/counts/")
 counts <- read.csv("./data/Example_data/Example_counts.csv", row.names = 1)
 metadata <- get_metadata("./data/Example_data/Example_metadata_Ranalysis.tsv")
 annotation_path <- c("./data/annotation_gff/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff")
+kraken_dir = "./data/kraken_newdata"
 
 # Define data Output_directory 
 # out_dir needs to contain empty folder called: 
@@ -60,7 +61,7 @@ metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
 # =============================================================================
 # Differential Gene Expression (DESeq2) of metadata factors
-# for "CBC" data (Note: this data is referred to as "LHS" in manuscript.) 
+# for "CBC" data (Note: this data is referred to as "LHS" in manuscript.)
 # =============================================================================
 
 
@@ -68,7 +69,7 @@ metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 counts_cbconly <- counts[, colnames(counts) %in% metadata$Sample_ID[metadata$Source=="CBC"]]
 
 # Only count mRNA coding regions on exons
-counts_cbconly <- filterCountsbyGeneType(counts_cbconly, annotation_path, "exon", "mRNA") 
+counts_cbconly <- filterCountsbyGeneType(counts_cbconly, annotation_path, "exon", "mRNA")
 
 # Generate the DESeq2 Data set for the CBC data
 
@@ -78,7 +79,7 @@ CBC_DEseq2 <- run_DESeq2(metadata = subset(metadata, Source == "CBC"),
                          metadata_vars = c("Ulcer_duration_cat","IDSA_SCORE_1to4","Acute0_Chronic1"),
                          formula = ~ Ulcer_duration_cat + IDSA_SCORE_1to4 + Acute0_Chronic1)
 
-# Test for differential expression 
+# Test for differential expression
 CBC_DEgenes_UlcerDuration<-DESeq2::results(CBC_DEseq2, contrast = c("Ulcer_duration_cat", "2", "0"))
 CBC_DEgenes_IDSAScore<-DESeq2::results(CBC_DEseq2, contrast = c("IDSA_SCORE_1to4", "4","2"))
 CBC_DEgenes_Acute0_Chronic1<-DESeq2::results(CBC_DEseq2, contrast = c("Acute0_Chronic1", "1", "0"))
@@ -105,6 +106,7 @@ metadata_filtered<-subset(metadata, metadata$Sample_ID %in% colnames(counts_filt
 # In the metadata, Endedness is either "PE" or "SE" and only the NEB Small RNA kit is "SE"
 
 counts_batchnorm <- remove_batch_effect(counts_filtered, metadata_filtered, ~Endedness, 1)
+
 
 ## DESeq2 ======================================================================
 
@@ -149,7 +151,7 @@ counts_cbconly_vst <- counts_cbconly_vst[!novar_filter, ]
 # Perform the kmeans clustering
 set.seed(seed) # Set Seed for reproducibility
 kmeans_cbc <- kmeans(t(counts_cbconly_vst), centers = 3, nstart = 25)
-
+print(kmeans_cbc$cluster)
 # Get the results 
 
 kmeans_groups_cbc <- data.frame(Sample_ID = names(kmeans_cbc$cluster), cluster_res_cbc = as.character(kmeans_cbc$cluster))
@@ -171,8 +173,23 @@ kmeans_all <- kmeans(t(counts_batchnorm_vst), centers = 3, nstart = 25)
 kmeans_groups_all <- data.frame(Sample_ID = names(kmeans_all$cluster), cluster_res_all = as.character(kmeans_all$cluster))
 
 ####  Fix kmeans cluster names #####################################
-# This is a ugly way to switch the cluster names in the Combined data so they are consistent among the CBC samples and 
-# the Combined samples. Make sure t
+kmeans_groups_cbc$cluster_res_cbc<-
+  lapply(kmeans_groups_cbc$cluster_res_cbc, function(cluster){
+    if(cluster=="1"){
+      cluster <- "3"
+    }
+    else if(cluster=="2"){
+      cluster <- "1"
+    }
+    else if(cluster=="3"){
+      cluster<-"2"
+    }
+    else{
+      stop("ERROR CONVERTING KMEANS GROUPS!!")
+    }
+  })
+
+kmeans_groups_cbc$cluster_res_cbc <- unlist(kmeans_groups_cbc$cluster_res_cbc)
 
 kmeans_groups_all$cluster_res_all<-
   lapply(kmeans_groups_all$cluster_res_all, function(cluster){
@@ -249,7 +266,7 @@ DESeq_summary<-
 library(tidyverse)
 
 kraken_data <-
-  list.files("./data/kraken/", full.names = T) %>%
+  list.files(kraken_dir, full.names = T) %>%
   set_names(., nm = map(.x = ., ~gsub(".kraken.report", "", basename(.x)))) %>%
   map(function(x) {
     x <- read.delim(x, header = F)
