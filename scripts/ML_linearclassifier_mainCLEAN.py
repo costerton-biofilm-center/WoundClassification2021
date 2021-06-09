@@ -20,18 +20,28 @@ def main():
     kmeans_CBC_path = "./analysis/kmeans/kmeans_groups_cbc.csv" 
     kmeans_all_path = "./analysis/kmeans/kmeans_groups_all.csv" 
 
+    validation_counts_path = "./data/validation_data/ALL_counts_batchnorm_vst.csv"
+    validation_metadata_path = "./data/validation_data/ALL_metadata.csv"
+
     #read in the data 
     count_data = pd.read_csv(counts_path, index_col=0, sep = ",")
     metadata = pd.read_csv(metadata_path, sep = "\t")
     kmeans_data_cbc = pd.read_csv(kmeans_CBC_path)
     kmeans_data_all = pd.read_csv(kmeans_all_path)
 
+    validation_counts = pd.read_csv(validation_counts_path, index_col=0, sep = ",")
+    validation_metadata = pd.read_csv(validation_metadata_path, sep = ",")
+
+    #Feels bad to write this...need to fix #'s in SAW names later
+    validation_counts.columns=validation_counts.columns.str.replace('.','#') 
+
     #Merge kmeans with metdata
     metadata = metadata.merge(kmeans_data_cbc, on = "Sample_ID", how = "left")
     metadata = metadata.merge(kmeans_data_all, on = "Sample_ID", how = "left")
 
     #Train on CBC data and test on samples from other groups 
-    categories = ["IDSA_SCORE_1to4", "Ulcer_duration_cat", "cluster_res_cbc"]
+    #categories = ["IDSA_SCORE_1to4", "Ulcer_duration_cat", "cluster_res_cbc"]
+    categories = ["cluster_res_cbc"]
 
     for cat in categories:
 
@@ -39,8 +49,8 @@ def main():
         print(cleaned_data[0].shape)
         print(cleaned_data[1].shape)
 
-        plot_nFeatVsAcc(cleaned_data, total_features= 100, cat = cat, count_data = count_data, \
-                        metadata = metadata, save=True)
+        # plot_nFeatVsAcc(cleaned_data, total_features= 100, cat = cat, count_data = count_data, \
+        #                 metadata = metadata, save=True)
 
         model_featureselect = Linear_classifier(cleaned_data[0], cleaned_data[1], classifier_term = cat, \
                                                 subset = "Source == 'CBC'", max_features = 20)
@@ -73,14 +83,29 @@ def main():
         print(f"The test accuracy for {cat} was: {accuracy}")
         print(f"The train accuracy for {cat} was: {train_accuracy}")
 
-        # Might be a good idea to cluster the external samples (no CBC)
-        # If they cluster similarly, try to see if the clusters correspond to the CBC data.
-        # Then train on the CBC data and then classify aginst the k-means results for the 
-        # corresponding non-cbc clusters 
+
+        #Test classification for validation data: 
+        validation_counts = validation_counts.loc[good_genes]
+
+        validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
+            subset = "Source != 'CBC'")
+        
+        print([data.shape for data in validation_data])
+
+        print(model_testtrain.predict(validation_data[0].T))
+
+        prediction = model_testtrain.predict(validation_data[0].T)
+
+        results = pd.DataFrame({'samples':validation_data[1]["Sample_ID"], 'prediction':prediction.tolist()})
+
+        results.to_csv("./data/validation_data/predictions.csv")
+        
+
+
 
         #Export Results
         for i in range(0, len(model_featureselect.lr.classes_)):
-            cat_name = model_testtrain.classes_[i] #So that the names are correct
+            cat_name = model_testtrain.classes_[i] #So that the names are correct           
             out_goodgenes = pd.DataFrame(good_genes, columns = ["Predictor Genes"])
             out_goodgenes_filename = f"{output_dir}/GoodGenes_{cat}.csv"
             out_goodgenes.to_csv(out_goodgenes_filename, index = False)

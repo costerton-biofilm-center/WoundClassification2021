@@ -101,3 +101,16 @@ SAW_DFU_UM#31W4	SRR9699326.fastq.gz	NA	SAW_DFU_UM#31W4	SAW	SE	IlluminaTruSeq				
 SAW_DFU_P2#01	SRR9699327.fastq.gz	NA	SAW_DFU_P2#01	SAW	SE	IlluminaTruSeq													DFU	0
 SAW_DFU_P2#03	SRR9699328.fastq.gz	NA	SAW_DFU_P2#03	SAW	SE	IlluminaTruSeq													DFU	0
 SAW_DFU_P2#21	SRR9699329.fastq.gz	NA	SAW_DFU_P2#21	SAW	SE	IlluminaTruSeq													DFU	0
+THE_X201_s	SRR10899700_1.fastq.gz	SRR10899700_2.fastq.gz	X201_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X202_s	SRR10899701_1.fastq.gz	SRR10899701_2.fastq.gz	X202_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X203_s	SRR10899702_1.fastq.gz	SRR10899702_2.fastq.gz	X203_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X204_s	SRR10899703_1.fastq.gz	SRR10899703_2.fastq.gz	X204_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X206_s	SRR10899704_1.fastq.gz	SRR10899704_2.fastq.gz	X206_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X207_s	SRR10899705_1.fastq.gz	SRR10899705_2.fastq.gz	X207_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X208_s	SRR10899706_1.fastq.gz	SRR10899706_2.fastq.gz	X208_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X209_s	SRR10899707_1.fastq.gz	SRR10899707_2.fastq.gz	X209_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X210_s	SRR10899708_1.fastq.gz	SRR10899708_2.fastq.gz	X210_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X211_s	SRR10899709_1.fastq.gz	SRR10899709_2.fastq.gz	X211_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X212_s	SRR10899710_1.fastq.gz	SRR10899710_2.fastq.gz	X212_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X213_s	SRR10899711_1.fastq.gz	SRR10899711_2.fastq.gz	X213_s	THE	PE	NEBUltraII													HealthySkin	0
+THE_X215_s	SRR10899712_1.fastq.gz	SRR10899712_2.fastq.gz	X215_s	THE	PE	NEBUltraII													HealthySkin	0
