@@ -1,103 +1,103 @@
-Sample_ID       	R1_name                                           	R2_name                                           	Specific_ID                                  	Source 	Endedness 	Lib_prep       	Age 	Gender 	Ulcer_duration_weeks 	Ulcer_duration_cat 	IDSA_SCORE_1to4 	not_healed0_healed1 	Diabetes_type 	Diabetes_duration_yr 	PAD 	CRP_mgL 	Acute0_Chronic1	Time
-P500            	PRI-TJKHO-P500_S1_R1.concat.fastq.gz              	PRI-TJKHO-P500_S1_R2.concat.fastq.gz              	P500                                         	CBC    	PE        	NEBUltraII     	39  	M      	2                    	1                  	4               	1                   	1             	20                   	1   	95.7    	1
-P501            	PRI-TJKHO-P501_S2_R1.concat.fastq.gz              	PRI-TJKHO-P501_S2_R2.concat.fastq.gz              	P501                                         	CBC    	PE        	NEBUltraII     	64  	M      	20                   	2                  	3               	1                   	2             	12                   	1   	146     	1
-P502            	PRI-TJKHO-P502_S3_R1.concat.fastq.gz              	PRI-TJKHO-P502_S3_R2.concat.fastq.gz              	P502                                         	CBC    	PE        	NEBUltraII     	45  	M      	1                    	0                  	3               	0                   	2             	5                    	0   	11.6    	1
-P504            	PRI-TJKHO-P504_S4_R1.concat.fastq.gz              	PRI-TJKHO-P504_S4_R2.concat.fastq.gz              	P504                                         	CBC    	PE        	NEBUltraII     	70  	M      	4                    	1                  	3               	0                   	2             	16                   	1   	109     	0
-P505            	PRI-TJKHO-P505_S5_R1.concat.fastq.gz              	PRI-TJKHO-P505_S5_R2.concat.fastq.gz              	P505                                         	CBC    	PE        	NEBUltraII     	46  	M      	52                   	2                  	2               	1                   	2             	11                   	0   	18.2    	0
-P506            	PRI-TJKHO-P506_S6_R1.concat.fastq.gz              	PRI-TJKHO-P506_S6_R2.concat.fastq.gz              	P506                                         	CBC    	PE        	NEBUltraII     	49  	M      	1                    	0                  	2               	0                   	2             	14                   	0   	13.6    	1
-P507            	PRI-TJKHO-P507_S7_R1.concat.fastq.gz              	PRI-TJKHO-P507_S7_R2.concat.fastq.gz              	P507                                         	CBC    	PE        	NEBUltraII     	56  	M      	4                    	1                  	3               	1                   	2             	12                   	0   	65.5    	1
-P508            	PRI-TJKHO-P508_S8_R1.concat.fastq.gz              	PRI-TJKHO-P508_S8_R2.concat.fastq.gz              	P508                                         	CBC    	PE        	NEBUltraII     	57  	M      	6                    	1                  	2               	0                   	2             	10                   	0   	16.1    	1
-P509            	PRI-TJKHO-P509_S9_R1.concat.fastq.gz              	PRI-TJKHO-P509_S9_R2.concat.fastq.gz              	P509                                         	CBC    	PE        	NEBUltraII     	68  	M      	30                   	2                  	3               	1                   	2             	2                    	1   	124     	0
-P510            	PRI-TJKHO-P510_S10_R1.concat.fastq.gz             	PRI-TJKHO-P510_S10_R2.concat.fastq.gz             	P510                                         	CBC    	PE        	NEBUltraII     	62  	M      	8                    	2                  	4               	0                   	2             	20                   	1   	85.4    	0
-P511C           	PRI-TJKHO-P511C_S11_R1.concat.fastq.gz            	PRI-TJKHO-P511C_S11_R2.concat.fastq.gz            	P511                                         	CBC    	PE        	NEBUltraII     	67  	M      	8                    	2                  	4               	0                   	2             	                     	1   	102.7   	0
-P511D           	PRI-TJKHO-P511D_S12_R1.concat.fastq.gz            	PRI-TJKHO-P511D_S12_R2.concat.fastq.gz            	P511                                         	CBC    	PE        	NEBUltraII     	67  	M      	8                    	2                  	4               	0                   	2             	                     	1   	102.7   	0
-P512            	PRI-TJKHO-P512_S13_R1.concat.fastq.gz             	PRI-TJKHO-P512_S13_R2.concat.fastq.gz             	P512                                         	CBC    	PE        	NEBUltraII     	55  	M      	0                    	0                  	4               	1                   	2             	0.5                  	0   	157     	1
-P513C           	PRI-TJKHO-P513C_S15_R1.concat.fastq.gz            	PRI-TJKHO-P513C_S15_R2.concat.fastq.gz            	P513                                         	CBC    	PE        	NEBUltraII     	71  	M      	7                    	2                  	4               	0                   	2             	25                   	0   	169.5   	0
-P513D           	PRI-TJKHO-P513D_S14_R1.concat.fastq.gz            	PRI-TJKHO-P513D_S14_R2.concat.fastq.gz            	P513                                         	CBC    	PE        	NEBUltraII     	71  	M      	7                    	2                  	4               	0                   	2             	25                   	0   	169.5   	1
-P514D           	PRI-TJKHO-P514D_S16_R1.concat.fastq.gz            	PRI-TJKHO-P514D_S16_R2.concat.fastq.gz            	P514                                         	CBC    	PE        	NEBUltraII     	56  	M      	                     	                   	                	                    	2             	12                   	0   	22.7    	0
-P515            	PRI-TJKHO-P515_S17_R1.concat.fastq.gz             	PRI-TJKHO-P515_S17_R2.concat.fastq.gz             	P515                                         	CBC    	PE        	NEBUltraII     	59  	M      	0                    	0                  	3               	0                   	2             	14                   	0   	57.9    	1
-P516D           	PRI-TJKHO-P516D_S18_R1.concat.fastq.gz            	PRI-TJKHO-P516D_S18_R2.concat.fastq.gz            	P516                                         	CBC    	PE        	NEBUltraII     	51  	M      	5                    	1                  	4               	0                   	2             	10                   	0   	307.3   	1
-P517            	PRI-TJKHO-P517_S19_R1.concat.fastq.gz             	PRI-TJKHO-P517_S19_R2.concat.fastq.gz             	P517                                         	CBC    	PE        	NEBUltraII     	68  	M      	11                   	2                  	2               	1                   	2             	20                   	1   	15.1    	0
-P518            	PRI-TJKHO-P518_S20_R1.concat.fastq.gz             	PRI-TJKHO-P518_S20_R2.concat.fastq.gz             	P518                                         	CBC    	PE        	NEBUltraII     	64  	M      	3                    	1                  	3               	1                   	2             	5                    	0   	59.3    	1
-P519            	PRI-TJKHO-P519_S21_R1.concat.fastq.gz             	PRI-TJKHO-P519_S21_R2.concat.fastq.gz             	P519                                         	CBC    	PE        	NEBUltraII     	46  	F      	1                    	0                  	4               	0                   	2             	2                    	0   	130     	0
-P520            	PRI-TJKHO-P520_S22_R1.concat.fastq.gz             	PRI-TJKHO-P520_S22_R2.concat.fastq.gz             	P520                                         	CBC    	PE        	NEBUltraII     	64  	M      	8                    	2                  	3               	1                   	2             	                     	0   	82.3    	0
-P521            	PRI-TJKHO-P521_S23_R1.concat.fastq.gz             	PRI-TJKHO-P521_S23_R2.concat.fastq.gz             	P521                                         	CBC    	PE        	NEBUltraII     	69  	M      	52                   	2                  	3               	0                   	2             	12                   	0   	51.7    	0
-P522            	PRI-TJKHO-P522_S24_R1.concat.fastq.gz             	PRI-TJKHO-P522_S24_R2.concat.fastq.gz             	P522                                         	CBC    	PE        	NEBUltraII     	60  	M      	8                    	2                  	3               	1                   	2             	0.5                  	0   	23.9    	0
-P523C           	PRI-TJKHO-P523C_S26_R1.concat.fastq.gz            	PRI-TJKHO-P523C_S26_R2.concat.fastq.gz            	P523                                         	CBC    	PE        	NEBUltraII     	34  	F      	4                    	1                  	4               	1                   	1             	3                    	0   	230.8   	1
-P523D           	PRI-TJKHO-P523D_S25_R1.concat.fastq.gz            	PRI-TJKHO-P523D_S25_R2.concat.fastq.gz            	P523                                         	CBC    	PE        	NEBUltraII     	34  	F      	4                    	1                  	4               	1                   	1             	3                    	0   	230.8   	0
-P524            	PRI-TJKHO-P524_S27_R1.concat.fastq.gz             	PRI-TJKHO-P524_S27_R2.concat.fastq.gz             	P524                                         	CBC    	PE        	NEBUltraII     	36  	F      	70                   	2                  	4               	0                   	0             	0                    	0   	78      	0
-P525            	PRI-TJKHO-P525_S28_R1.concat.fastq.gz             	PRI-TJKHO-P525_S28_R2.concat.fastq.gz             	P525                                         	CBC    	PE        	NEBUltraII     	34  	F      	8                    	1                  	3               	0                   	1             	15                   	0   	23.2    	1
-P526            	PRI-TJKHO-P526_S29_R1.concat.fastq.gz             	PRI-TJKHO-P526_S29_R2.concat.fastq.gz             	P526                                         	CBC    	PE        	NEBUltraII     	37  	M      	                     	                   	4               	1                   	2             	10                   	0   	250.3   	1
-P527            	PRI-TJKHO-P527_S30_R1.concat.fastq.gz             	PRI-TJKHO-P527_S30_R2.concat.fastq.gz             	P527                                         	CBC    	PE        	NEBUltraII     	42  	M      	30                   	2                  	4               	1                   	2             	2                    	0   	73.8    	0
-HH12            	HH12_HGWYYDSXX_CTACGACA-GAGTCCAA_L004_R1.fastq.gz 	HH12_HGWYYDSXX_CTACGACA-GAGTCCAA_L004_R2.fastq.gz 	DFI109                                       	HH     	PE        	IlluminaTruSeq 	51  	F      	                     	2                  	2               	                    	1             	30                   	    	        	
-HH18            	HH18_HGWYYDSXX_CGGACAAC-TCCGGATT_L004_R1.fastq.gz 	HH18_HGWYYDSXX_CGGACAAC-TCCGGATT_L004_R2.fastq.gz 	DFI111                                       	HH     	PE        	IlluminaTruSeq 	51  	F      	                     	2                  	3               	                    	1             	30                   	    	        	
-HH15            	HH15_HGWYYDSXX_TAAGTGGT-CTTAAGCC_L004_R1.fastq.gz 	HH15_HGWYYDSXX_TAAGTGGT-CTTAAGCC_L004_R2.fastq.gz 	DFI112                                       	HH     	PE        	IlluminaTruSeq 	68  	M      	                     	2                  	2               	                    	2             	12                   	    	        	
-HH20            	HH20_HGWYYDSXX_ATATGGAT-CTGTATTA_L004_R1.fastq.gz 	HH20_HGWYYDSXX_ATATGGAT-CTGTATTA_L004_R2.fastq.gz 	DFI113                                       	HH     	PE        	IlluminaTruSeq 	54  	M      	                     	2                  	3               	                    	1             	23                   	    	        	
-HH21            	HH21_HGWYYDSXX_GCGCAAGC-TCACGCCG_L004_R1.fastq.gz 	HH21_HGWYYDSXX_GCGCAAGC-TCACGCCG_L004_R2.fastq.gz 	DFI114                                       	HH     	PE        	IlluminaTruSeq 	72  	M      	                     	1                  	2               	                    	2             	20                   	    	        	
-HH24            	HH24_HGWYYDSXX_AAGATACT-ACTTACAT_L004_R1.fastq.gz 	HH24_HGWYYDSXX_AAGATACT-ACTTACAT_L004_R2.fastq.gz 	DFI117                                       	HH     	PE        	IlluminaTruSeq 	34  	M      	                     	2                  	3               	                    	2             	14                   	    	        	
-HH11            	HH11_HGWYYDSXX_TCGTAGTG-AGACTTGG_L004_R1.fastq.gz 	HH11_HGWYYDSXX_TCGTAGTG-AGACTTGG_L004_R2.fastq.gz 	DFI119                                       	HH     	PE        	IlluminaTruSeq 	61  	M      	                     	1                  	2               	                    	2             	13                   	    	        	
-HH4             	HH4_HGWYYDSXX_AGCCTCAT-AGTAGAGA_L004_R1.fastq.gz  	HH4_HGWYYDSXX_AGCCTCAT-AGTAGAGA_L004_R2.fastq.gz  	DFI121                                       	HH     	PE        	IlluminaTruSeq 	61  	F      	                     	2                  	3               	                    	2             	12                   	    	        	
-HH5             	HH5_HGWYYDSXX_GATTCTGC-GACGAGAG_L004_R1.fastq.gz  	HH5_HGWYYDSXX_GATTCTGC-GACGAGAG_L004_R2.fastq.gz  	DFI126                                       	HH     	PE        	IlluminaTruSeq 	54  	M      	                     	2                  	3               	                    	2             	11                   	    	        	
-HH2             	HH2_HGWYYDSXX_CGTTAGAA-TTCAGGTC_L004_R1.fastq.gz  	HH2_HGWYYDSXX_CGTTAGAA-TTCAGGTC_L004_R2.fastq.gz  	DFI153                                       	HH     	PE        	IlluminaTruSeq 	65  	M      	                     	2                  	4               	                    	2             	20                   	    	        	
-HH33            	HH33_HGWYYDSXX_GCAATGCA-GGAACGTT_L004_R1.fastq.gz 	HH33_HGWYYDSXX_GCAATGCA-GGAACGTT_L004_R2.fastq.gz 	DFI155                                       	HH     	PE        	IlluminaTruSeq 	62  	M      	                     	1                  	4               	                    	2             	21                   	    	        	
-HH34            	HH34_HGWYYDSXX_GTTCCAAT-AATTCTGC_L004_R1.fastq.gz 	HH34_HGWYYDSXX_GTTCCAAT-AATTCTGC_L004_R2.fastq.gz 	DFI160                                       	HH     	PE        	IlluminaTruSeq 	59  	M      	                     	1                  	4               	                    	2             	2                    	    	        	
-HH35            	HH35_HGWYYDSXX_ACCTTGGC-GGCCTCAT_L004_R1.fastq.gz 	HH35_HGWYYDSXX_ACCTTGGC-GGCCTCAT_L004_R2.fastq.gz 	DFI161                                       	HH     	PE        	IlluminaTruSeq 	68  	M      	                     	0                  	4               	                    	2             	19                   	    	        	
-HH28            	HH28_HGWYYDSXX_GGAGCGTC-GTCCGTGC_L004_R1.fastq.gz 	HH28_HGWYYDSXX_GGAGCGTC-GTCCGTGC_L004_R2.fastq.gz 	DFI166                                       	HH     	PE        	IlluminaTruSeq 	71  	M      	                     	2                  	4               	                    	2             	22                   	    	        	
-HH31            	HH31_HGWYYDSXX_ATGGCATG-AAGGTACC_L004_R1.fastq.gz 	HH31_HGWYYDSXX_ATGGCATG-AAGGTACC_L004_R2.fastq.gz 	DFI167                                       	HH     	PE        	IlluminaTruSeq 	77  	M      	                     	2                  	4               	                    	2             	35                   	    	        	
-HH1             	HH1_HGWYYDSXX_TACCGAGG-CCTGAACT_L004_R1.fastq.gz  	HH1_HGWYYDSXX_TACCGAGG-CCTGAACT_L004_R2.fastq.gz  	DFI171                                       	HH     	PE        	IlluminaTruSeq 	64  	M      	                     	1                  	4               	                    	2             	17                   	    	        	
-MW_CW1          	SRR6833323.fastq.gz                               	NA                                                	Lubbock_CW_18                                	MW     	SE        	NEBSmallRNA    	36  	M      	                     	                   	                	                    	              	                     	    	        	
-MW_CW2          	SRR6833324.fastq.gz                               	NA                                                	Lubbock_CW_16                                	MW     	SE        	NEBSmallRNA    	88  	M      	                     	                   	                	                    	              	                     	    	        	
-MW_CW3          	SRR6833325.fastq.gz                               	NA                                                	Lubbock_CW_21                                	MW     	SE        	NEBSmallRNA    	31  	M      	                     	                   	                	                    	              	                     	    	        	
-MW_CW4          	SRR6833340.fastq.gz                               	NA                                                	Lubbock_CW_15                                	MW     	SE        	NEBSmallRNA    	59  	F      	                     	                   	                	                    	              	                     	    	        	
-MW_CW5          	SRR6833341.fastq.gz                               	NA                                                	Lubbock_ Burn_2_4                            	MW     	SE        	NEBSmallRNA    	24  	M      	                     	                   	                	                    	              	                     	    	        	
-MW_CW6          	SRR6833342.fastq.gz                               	NA                                                	Lubbock _Burn_2_3                            	MW     	SE        	NEBSmallRNA    	24  	M      	                     	                   	                	                    	              	                     	    	        	
-MW_CW7          	SRR6833343.fastq.gz                               	NA                                                	Danish_Chronic_Wound_2                       	MW     	SE        	NEBSmallRNA    	69  	M      	                     	                   	                	                    	              	                     	    	        	
-MW_CW8          	SRR6833348.fastq.gz                               	NA                                                	Danish_Chronic_Wound_1                       	MW     	SE        	NEBSmallRNA    	53  	F      	                     	                   	                	                    	              	                     	    	        	
-KK_CW1          	PRI_CXEF_13A1.concat.fastq.gz                     	NA                                                	13A1                                         	KK     	SE        	NEBSmallRNA    	76  	F      	                     	2                  	                	1                   	0             	                     	    	        	
-KK_CW2          	PRI_CXEF_14A2.concat.fastq.gz                     	NA                                                	14A2                                         	KK     	SE        	NEBSmallRNA    	81  	M      	                     	2                  	                	0                   	0             	                     	    	        	
-KK_CW3          	PRI_CXEF_19A1.concat.fastq.gz                     	NA                                                	19A1                                         	KK     	SE        	NEBSmallRNA    	70  	F      	                     	2                  	                	0                   	0             	                     	    	        	
-KK_CW4          	PRI_CXEF_1A1.concat.fastq.gz                      	NA                                                	1A1                                          	KK     	SE        	NEBSmallRNA    	39  	M      	                     	2                  	                	1                   	0             	                     	    	        	
-KK_CW5          	PRI_VVK3_17A2.concat.fastq.gz                     	NA                                                	17A2                                         	KK     	SE        	NEBSmallRNA    	77  	F      	                     	2                  	                	1                   	0             	                     	    	        	
-KK_CW6          	PRI_VVK3_6A2.concat.fastq.gz                      	NA                                                	6A2                                          	KK     	SE        	NEBSmallRNA    	90  	F      	                     	2                  	                	0                   	0             	                     	    	        	
-KK_CW7          	PRI_VVK3_9A1.concat.fastq.gz                      	NA                                                	9A1                                          	KK     	SE        	NEBSmallRNA    	94  	F      	                     	2                  	                	1                   	0             	                     	    	        	
-RAD_P08_B       	SRR14174610_1.fastq.gz                            	SRR14174610_2.fastq.gz                            	RAD_P08_B       	RAD	PE	ZymoTotalRNA												B 
-RAD_P05_E       	SRR14174611_1.fastq.gz                            	SRR14174611_2.fastq.gz                            	RAD_P05_E       	RAD	PE	ZymoTotalRNA												E 
-RAD_P05_M       	SRR14174612_1.fastq.gz                            	SRR14174612_2.fastq.gz                            	RAD_P05_M       	RAD	PE	ZymoTotalRNA												M 
-RAD_P05_B       	SRR14174613_1.fastq.gz                            	SRR14174613_2.fastq.gz                            	RAD_P05_B       	RAD	PE	ZymoTotalRNA												B 
-RAD_P04_E       	SRR14174614_1.fastq.gz                            	SRR14174614_2.fastq.gz                            	RAD_P04_E       	RAD	PE	ZymoTotalRNA												E 
-RAD_P04_M       	SRR14174615_1.fastq.gz                            	SRR14174615_2.fastq.gz                            	RAD_P04_M       	RAD	PE	ZymoTotalRNA												M 
-RAD_P04_B       	SRR14174616_1.fastq.gz                            	SRR14174616_2.fastq.gz                            	RAD_P04_B       	RAD	PE	ZymoTotalRNA												B 
-RAD_P01_E       	SRR14174617_1.fastq.gz                            	SRR14174617_2.fastq.gz                            	RAD_P01_E       	RAD	PE	ZymoTotalRNA												E 
-RAD_Ctrl_2      	SRR14174618_1.fastq.gz                            	SRR14174618_2.fastq.gz                            	RAD_Ctrl_2      	RAD	PE	ZymoTotalRNA												2 
-RAD_Ctrl_1      	SRR14174619_1.fastq.gz                            	SRR14174619_2.fastq.gz                            	RAD_Ctrl_1      	RAD	PE	ZymoTotalRNA												1 
-RAD_P10_E       	SRR14174620_1.fastq.gz                            	SRR14174620_2.fastq.gz                            	RAD_P10_E       	RAD	PE	ZymoTotalRNA												E 
-RAD_P10_M       	SRR14174621_1.fastq.gz                            	SRR14174621_2.fastq.gz                            	RAD_P10_M       	RAD	PE	ZymoTotalRNA												M 
-RAD_P10_B       	SRR14174622_1.fastq.gz                            	SRR14174622_2.fastq.gz                            	RAD_P10_B       	RAD	PE	ZymoTotalRNA												B 
-RAD_P09_E       	SRR14174623_1.fastq.gz                            	SRR14174623_2.fastq.gz                            	RAD_P09_E       	RAD	PE	ZymoTotalRNA												E 
-RAD_P09_M       	SRR14174624_1.fastq.gz                            	SRR14174624_2.fastq.gz                            	RAD_P09_M       	RAD	PE	ZymoTotalRNA												M 
-RAD_P09_B       	SRR14174625_1.fastq.gz                            	SRR14174625_2.fastq.gz                            	RAD_P09_B       	RAD	PE	ZymoTotalRNA												B 
-RAD_P08_E       	SRR14174626_1.fastq.gz                            	SRR14174626_2.fastq.gz                            	RAD_P08_E       	RAD	PE	ZymoTotalRNA												E 
-RAD_P08_M       	SRR14174627_1.fastq.gz                            	SRR14174627_2.fastq.gz                            	RAD_P08_M       	RAD	PE	ZymoTotalRNA												M 
-RAD_P01_M       	SRR14174628_1.fastq.gz                            	SRR14174628_2.fastq.gz                            	RAD_P01_M       	RAD	PE	ZymoTotalRNA												M 
-RAD_P01_B       	SRR14174629_1.fastq.gz                            	SRR14174629_2.fastq.gz                            	RAD_P01_B       	RAD	PE	ZymoTotalRNA												B 
-SAW_DFS_#11     	SRR9699309.fastq.gz                               	NA                                                	SAW_DFS_#11     	SAW	SE	IlluminaTruSeq												 
-SAW_DFS_#20     	SRR9699310.fastq.gz                               	NA                                                	SAW_DFS_#20     	SAW	SE	IlluminaTruSeq												 
-SAW_DFS_#21     	SRR9699311.fastq.gz                               	NA                                                	SAW_DFS_#21     	SAW	SE	IlluminaTruSeq												 
-SAW_DFS_#31     	SRR9699312.fastq.gz                               	NA                                                	SAW_DFS_#31     	SAW	SE	IlluminaTruSeq												 
-SAW_DFS_#32     	SRR9699313.fastq.gz                               	NA                                                	SAW_DFS_#32     	SAW	SE	IlluminaTruSeq												 
-SAW_DFS_#34     	SRR9699314.fastq.gz                               	NA                                                	SAW_DFS_#34     	SAW	SE	IlluminaTruSeq												 
-SAW_DFS_#37     	SRR9699315.fastq.gz                               	NA                                                	SAW_DFS_#37     	SAW	SE	IlluminaTruSeq												 
-SAW_DFS_#39     	SRR9699316.fastq.gz                               	NA                                                	SAW_DFS_#39     	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#7W4  	SRR9699317.fastq.gz                               	NA                                                	SAW_DFU_UM#7W4  	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#8W4  	SRR9699318.fastq.gz                               	NA                                                	SAW_DFU_UM#8W4  	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#15W0 	SRR9699319.fastq.gz                               	NA                                                	SAW_DFU_UM#15W0 	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#23W0 	SRR9699320.fastq.gz                               	NA                                                	SAW_DFU_UM#23W0 	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#24W0 	SRR9699321.fastq.gz                               	NA                                                	SAW_DFU_UM#24W0 	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#30W4 	SRR9699322.fastq.gz                               	NA                                                	SAW_DFU_UM#30W4 	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_P2#13   	SRR9699323.fastq.gz                               	NA                                                	SAW_DFU_P2#13   	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#27W4 	SRR9699324.fastq.gz                               	NA                                                	SAW_DFU_UM#27W4 	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#28W4 	SRR9699325.fastq.gz                               	NA                                                	SAW_DFU_UM#28W4 	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_UM#31W4 	SRR9699326.fastq.gz                               	NA                                                	SAW_DFU_UM#31W4 	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_P2#01   	SRR9699327.fastq.gz                               	NA                                                	SAW_DFU_P2#01   	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_P2#03   	SRR9699328.fastq.gz                               	NA                                                	SAW_DFU_P2#03   	SAW	SE	IlluminaTruSeq												 
-SAW_DFU_P2#21   	SRR9699329.fastq.gz                               	NA                                                	SAW_DFU_P2#21   	SAW	SE	IlluminaTruSeq												 
+Sample_ID	R1_name	R2_name	Specific_ID	Source	Endedness	Lib_prep	Age	Gender	Ulcer_duration_weeks	Ulcer_duration_cat	IDSA_SCORE_1to4	not_healed0_healed1	Diabetes_type	Diabetes_duration_yr	PAD	CRP_mgL	Acute0_Chronic1	Time	Type	is_NEBSmallRNA
+P500	PRI-TJKHO-P500_S1_R1.concat.fastq.gz	PRI-TJKHO-P500_S1_R2.concat.fastq.gz	P500	CBC	PE	NEBUltraII	39	M	2	1	4	1	1	20	1	95.7	1		DFU	0
+P501	PRI-TJKHO-P501_S2_R1.concat.fastq.gz	PRI-TJKHO-P501_S2_R2.concat.fastq.gz	P501	CBC	PE	NEBUltraII	64	M	20	2	3	1	2	12	1	146	1		DFU	0
+P502	PRI-TJKHO-P502_S3_R1.concat.fastq.gz	PRI-TJKHO-P502_S3_R2.concat.fastq.gz	P502	CBC	PE	NEBUltraII	45	M	1	0	3	0	2	5	0	11.6	1		DFU	0
+P504	PRI-TJKHO-P504_S4_R1.concat.fastq.gz	PRI-TJKHO-P504_S4_R2.concat.fastq.gz	P504	CBC	PE	NEBUltraII	70	M	4	1	3	0	2	16	1	109	0		DFU	0
+P505	PRI-TJKHO-P505_S5_R1.concat.fastq.gz	PRI-TJKHO-P505_S5_R2.concat.fastq.gz	P505	CBC	PE	NEBUltraII	46	M	52	2	2	1	2	11	0	18.2	0		DFU	0
+P506	PRI-TJKHO-P506_S6_R1.concat.fastq.gz	PRI-TJKHO-P506_S6_R2.concat.fastq.gz	P506	CBC	PE	NEBUltraII	49	M	1	0	2	0	2	14	0	13.6	1		DFU	0
+P507	PRI-TJKHO-P507_S7_R1.concat.fastq.gz	PRI-TJKHO-P507_S7_R2.concat.fastq.gz	P507	CBC	PE	NEBUltraII	56	M	4	1	3	1	2	12	0	65.5	1		DFU	0
+P508	PRI-TJKHO-P508_S8_R1.concat.fastq.gz	PRI-TJKHO-P508_S8_R2.concat.fastq.gz	P508	CBC	PE	NEBUltraII	57	M	6	1	2	0	2	10	0	16.1	1		DFU	0
+P509	PRI-TJKHO-P509_S9_R1.concat.fastq.gz	PRI-TJKHO-P509_S9_R2.concat.fastq.gz	P509	CBC	PE	NEBUltraII	68	M	30	2	3	1	2	2	1	124	0		DFU	0
+P510	PRI-TJKHO-P510_S10_R1.concat.fastq.gz	PRI-TJKHO-P510_S10_R2.concat.fastq.gz	P510	CBC	PE	NEBUltraII	62	M	8	2	4	0	2	20	1	85.4	0		DFU	0
+P511C	PRI-TJKHO-P511C_S11_R1.concat.fastq.gz	PRI-TJKHO-P511C_S11_R2.concat.fastq.gz	P511	CBC	PE	NEBUltraII	67	M	8	2	4	0	2		1	102.7	0		DFU	0
+P511D	PRI-TJKHO-P511D_S12_R1.concat.fastq.gz	PRI-TJKHO-P511D_S12_R2.concat.fastq.gz	P511	CBC	PE	NEBUltraII	67	M	8	2	4	0	2		1	102.7	0		DFU	0
+P512	PRI-TJKHO-P512_S13_R1.concat.fastq.gz	PRI-TJKHO-P512_S13_R2.concat.fastq.gz	P512	CBC	PE	NEBUltraII	55	M	0	0	4	1	2	0.5	0	157	1		DFU	0
+P513C	PRI-TJKHO-P513C_S15_R1.concat.fastq.gz	PRI-TJKHO-P513C_S15_R2.concat.fastq.gz	P513	CBC	PE	NEBUltraII	71	M	7	2	4	0	2	25	0	169.5	0		DFU	0
+P513D	PRI-TJKHO-P513D_S14_R1.concat.fastq.gz	PRI-TJKHO-P513D_S14_R2.concat.fastq.gz	P513	CBC	PE	NEBUltraII	71	M	7	2	4	0	2	25	0	169.5	1		DFU	0
+P514D	PRI-TJKHO-P514D_S16_R1.concat.fastq.gz	PRI-TJKHO-P514D_S16_R2.concat.fastq.gz	P514	CBC	PE	NEBUltraII	56	M					2	12	0	22.7	0		DFU	0
+P515	PRI-TJKHO-P515_S17_R1.concat.fastq.gz	PRI-TJKHO-P515_S17_R2.concat.fastq.gz	P515	CBC	PE	NEBUltraII	59	M	0	0	3	0	2	14	0	57.9	1		DFU	0
+P516D	PRI-TJKHO-P516D_S18_R1.concat.fastq.gz	PRI-TJKHO-P516D_S18_R2.concat.fastq.gz	P516	CBC	PE	NEBUltraII	51	M	5	1	4	0	2	10	0	307.3	1		DFU	0
+P517	PRI-TJKHO-P517_S19_R1.concat.fastq.gz	PRI-TJKHO-P517_S19_R2.concat.fastq.gz	P517	CBC	PE	NEBUltraII	68	M	11	2	2	1	2	20	1	15.1	0		DFU	0
+P518	PRI-TJKHO-P518_S20_R1.concat.fastq.gz	PRI-TJKHO-P518_S20_R2.concat.fastq.gz	P518	CBC	PE	NEBUltraII	64	M	3	1	3	1	2	5	0	59.3	1		DFU	0
+P519	PRI-TJKHO-P519_S21_R1.concat.fastq.gz	PRI-TJKHO-P519_S21_R2.concat.fastq.gz	P519	CBC	PE	NEBUltraII	46	F	1	0	4	0	2	2	0	130	0		DFU	0
+P520	PRI-TJKHO-P520_S22_R1.concat.fastq.gz	PRI-TJKHO-P520_S22_R2.concat.fastq.gz	P520	CBC	PE	NEBUltraII	64	M	8	2	3	1	2		0	82.3	0		DFU	0
+P521	PRI-TJKHO-P521_S23_R1.concat.fastq.gz	PRI-TJKHO-P521_S23_R2.concat.fastq.gz	P521	CBC	PE	NEBUltraII	69	M	52	2	3	0	2	12	0	51.7	0		DFU	0
+P522	PRI-TJKHO-P522_S24_R1.concat.fastq.gz	PRI-TJKHO-P522_S24_R2.concat.fastq.gz	P522	CBC	PE	NEBUltraII	60	M	8	2	3	1	2	0.5	0	23.9	0		DFU	0
+P523C	PRI-TJKHO-P523C_S26_R1.concat.fastq.gz	PRI-TJKHO-P523C_S26_R2.concat.fastq.gz	P523	CBC	PE	NEBUltraII	34	F	4	1	4	1	1	3	0	230.8	1		DFU	0
+P523D	PRI-TJKHO-P523D_S25_R1.concat.fastq.gz	PRI-TJKHO-P523D_S25_R2.concat.fastq.gz	P523	CBC	PE	NEBUltraII	34	F	4	1	4	1	1	3	0	230.8	0		DFU	0
+P524	PRI-TJKHO-P524_S27_R1.concat.fastq.gz	PRI-TJKHO-P524_S27_R2.concat.fastq.gz	P524	CBC	PE	NEBUltraII	36	F	70	2	4	0	0	0	0	78	0		DFU	0
+P525	PRI-TJKHO-P525_S28_R1.concat.fastq.gz	PRI-TJKHO-P525_S28_R2.concat.fastq.gz	P525	CBC	PE	NEBUltraII	34	F	8	1	3	0	1	15	0	23.2	1		DFU	0
+P526	PRI-TJKHO-P526_S29_R1.concat.fastq.gz	PRI-TJKHO-P526_S29_R2.concat.fastq.gz	P526	CBC	PE	NEBUltraII	37	M			4	1	2	10	0	250.3	1		DFU	0
+P527	PRI-TJKHO-P527_S30_R1.concat.fastq.gz	PRI-TJKHO-P527_S30_R2.concat.fastq.gz	P527	CBC	PE	NEBUltraII	42	M	30	2	4	1	2	2	0	73.8	0		DFU	0
+HH12	HH12_HGWYYDSXX_CTACGACA-GAGTCCAA_L004_R1.fastq.gz	HH12_HGWYYDSXX_CTACGACA-GAGTCCAA_L004_R2.fastq.gz	DFI109	HH	PE	IlluminaTruSeq	51	F		2	2		1	30					DFU	0
+HH18	HH18_HGWYYDSXX_CGGACAAC-TCCGGATT_L004_R1.fastq.gz	HH18_HGWYYDSXX_CGGACAAC-TCCGGATT_L004_R2.fastq.gz	DFI111	HH	PE	IlluminaTruSeq	51	F		2	3		1	30					DFU	0
+HH15	HH15_HGWYYDSXX_TAAGTGGT-CTTAAGCC_L004_R1.fastq.gz	HH15_HGWYYDSXX_TAAGTGGT-CTTAAGCC_L004_R2.fastq.gz	DFI112	HH	PE	IlluminaTruSeq	68	M		2	2		2	12					DFU	0
+HH20	HH20_HGWYYDSXX_ATATGGAT-CTGTATTA_L004_R1.fastq.gz	HH20_HGWYYDSXX_ATATGGAT-CTGTATTA_L004_R2.fastq.gz	DFI113	HH	PE	IlluminaTruSeq	54	M		2	3		1	23					DFU	0
+HH21	HH21_HGWYYDSXX_GCGCAAGC-TCACGCCG_L004_R1.fastq.gz	HH21_HGWYYDSXX_GCGCAAGC-TCACGCCG_L004_R2.fastq.gz	DFI114	HH	PE	IlluminaTruSeq	72	M		1	2		2	20					DFU	0
+HH24	HH24_HGWYYDSXX_AAGATACT-ACTTACAT_L004_R1.fastq.gz	HH24_HGWYYDSXX_AAGATACT-ACTTACAT_L004_R2.fastq.gz	DFI117	HH	PE	IlluminaTruSeq	34	M		2	3		2	14					DFU	0
+HH11	HH11_HGWYYDSXX_TCGTAGTG-AGACTTGG_L004_R1.fastq.gz	HH11_HGWYYDSXX_TCGTAGTG-AGACTTGG_L004_R2.fastq.gz	DFI119	HH	PE	IlluminaTruSeq	61	M		1	2		2	13					DFU	0
+HH4	HH4_HGWYYDSXX_AGCCTCAT-AGTAGAGA_L004_R1.fastq.gz	HH4_HGWYYDSXX_AGCCTCAT-AGTAGAGA_L004_R2.fastq.gz	DFI121	HH	PE	IlluminaTruSeq	61	F		2	3		2	12					DFU	0
+HH5	HH5_HGWYYDSXX_GATTCTGC-GACGAGAG_L004_R1.fastq.gz	HH5_HGWYYDSXX_GATTCTGC-GACGAGAG_L004_R2.fastq.gz	DFI126	HH	PE	IlluminaTruSeq	54	M		2	3		2	11					DFU	0
+HH2	HH2_HGWYYDSXX_CGTTAGAA-TTCAGGTC_L004_R1.fastq.gz	HH2_HGWYYDSXX_CGTTAGAA-TTCAGGTC_L004_R2.fastq.gz	DFI153	HH	PE	IlluminaTruSeq	65	M		2	4		2	20					DFU	0
+HH33	HH33_HGWYYDSXX_GCAATGCA-GGAACGTT_L004_R1.fastq.gz	HH33_HGWYYDSXX_GCAATGCA-GGAACGTT_L004_R2.fastq.gz	DFI155	HH	PE	IlluminaTruSeq	62	M		1	4		2	21					DFU	0
+HH34	HH34_HGWYYDSXX_GTTCCAAT-AATTCTGC_L004_R1.fastq.gz	HH34_HGWYYDSXX_GTTCCAAT-AATTCTGC_L004_R2.fastq.gz	DFI160	HH	PE	IlluminaTruSeq	59	M		1	4		2	2					DFU	0
+HH35	HH35_HGWYYDSXX_ACCTTGGC-GGCCTCAT_L004_R1.fastq.gz	HH35_HGWYYDSXX_ACCTTGGC-GGCCTCAT_L004_R2.fastq.gz	DFI161	HH	PE	IlluminaTruSeq	68	M		0	4		2	19					DFU	0
+HH28	HH28_HGWYYDSXX_GGAGCGTC-GTCCGTGC_L004_R1.fastq.gz	HH28_HGWYYDSXX_GGAGCGTC-GTCCGTGC_L004_R2.fastq.gz	DFI166	HH	PE	IlluminaTruSeq	71	M		2	4		2	22					DFU	0
+HH31	HH31_HGWYYDSXX_ATGGCATG-AAGGTACC_L004_R1.fastq.gz	HH31_HGWYYDSXX_ATGGCATG-AAGGTACC_L004_R2.fastq.gz	DFI167	HH	PE	IlluminaTruSeq	77	M		2	4		2	35					DFU	0
+HH1	HH1_HGWYYDSXX_TACCGAGG-CCTGAACT_L004_R1.fastq.gz	HH1_HGWYYDSXX_TACCGAGG-CCTGAACT_L004_R2.fastq.gz	DFI171	HH	PE	IlluminaTruSeq	64	M		1	4		2	17					DFU	0
+MW_CW1	SRR6833323.fastq.gz	NA	Lubbock_CW_18	MW	SE	NEBSmallRNA	36	M											DFU	1
+MW_CW2	SRR6833324.fastq.gz	NA	Lubbock_CW_16	MW	SE	NEBSmallRNA	88	M											DFU	1
+MW_CW3	SRR6833325.fastq.gz	NA	Lubbock_CW_21	MW	SE	NEBSmallRNA	31	M											DFU	1
+MW_CW4	SRR6833340.fastq.gz	NA	Lubbock_CW_15	MW	SE	NEBSmallRNA	59	F											DFU	1
+MW_CW5	SRR6833341.fastq.gz	NA	Lubbock_ Burn_2_4	MW	SE	NEBSmallRNA	24	M											DFU	1
+MW_CW6	SRR6833342.fastq.gz	NA	Lubbock _Burn_2_3	MW	SE	NEBSmallRNA	24	M											DFU	1
+MW_CW7	SRR6833343.fastq.gz	NA	Danish_Chronic_Wound_2	MW	SE	NEBSmallRNA	69	M											DFU	1
+MW_CW8	SRR6833348.fastq.gz	NA	Danish_Chronic_Wound_1	MW	SE	NEBSmallRNA	53	F											DFU	1
+KK_CW1	PRI_CXEF_13A1.concat.fastq.gz	NA	13A1	KK	SE	NEBSmallRNA	76	F		2		1	0						DFU	1
+KK_CW2	PRI_CXEF_14A2.concat.fastq.gz	NA	14A2	KK	SE	NEBSmallRNA	81	M		2		0	0						DFU	1
+KK_CW3	PRI_CXEF_19A1.concat.fastq.gz	NA	19A1	KK	SE	NEBSmallRNA	70	F		2		0	0						DFU	1
+KK_CW4	PRI_CXEF_1A1.concat.fastq.gz	NA	1A1	KK	SE	NEBSmallRNA	39	M		2		1	0						DFU	1
+KK_CW5	PRI_VVK3_17A2.concat.fastq.gz	NA	17A2	KK	SE	NEBSmallRNA	77	F		2		1	0						DFU	1
+KK_CW6	PRI_VVK3_6A2.concat.fastq.gz	NA	6A2	KK	SE	NEBSmallRNA	90	F		2		0	0						DFU	1
+KK_CW7	PRI_VVK3_9A1.concat.fastq.gz	NA	9A1	KK	SE	NEBSmallRNA	94	F		2		1	0						DFU	1
+RAD_P08_B	SRR14174610_1.fastq.gz	SRR14174610_2.fastq.gz	RAD_P08_B	RAD	PE	ZymoTotalRNA												B	DFU	0
+RAD_P05_E	SRR14174611_1.fastq.gz	SRR14174611_2.fastq.gz	RAD_P05_E	RAD	PE	ZymoTotalRNA												E	DFU	0
+RAD_P05_M	SRR14174612_1.fastq.gz	SRR14174612_2.fastq.gz	RAD_P05_M	RAD	PE	ZymoTotalRNA												M	DFU	0
+RAD_P05_B	SRR14174613_1.fastq.gz	SRR14174613_2.fastq.gz	RAD_P05_B	RAD	PE	ZymoTotalRNA												B	DFU	0
+RAD_P04_E	SRR14174614_1.fastq.gz	SRR14174614_2.fastq.gz	RAD_P04_E	RAD	PE	ZymoTotalRNA												E	DFU	0
+RAD_P04_M	SRR14174615_1.fastq.gz	SRR14174615_2.fastq.gz	RAD_P04_M	RAD	PE	ZymoTotalRNA												M	DFU	0
+RAD_P04_B	SRR14174616_1.fastq.gz	SRR14174616_2.fastq.gz	RAD_P04_B	RAD	PE	ZymoTotalRNA												B	DFU	0
+RAD_P01_E	SRR14174617_1.fastq.gz	SRR14174617_2.fastq.gz	RAD_P01_E	RAD	PE	ZymoTotalRNA												E	DFU	0
+RAD_Ctrl_2	SRR14174618_1.fastq.gz	SRR14174618_2.fastq.gz	RAD_Ctrl_2	RAD	PE	ZymoTotalRNA												2	HealthySkin	0
+RAD_Ctrl_1	SRR14174619_1.fastq.gz	SRR14174619_2.fastq.gz	RAD_Ctrl_1	RAD	PE	ZymoTotalRNA												1	HealthySkin	0
+RAD_P10_E	SRR14174620_1.fastq.gz	SRR14174620_2.fastq.gz	RAD_P10_E	RAD	PE	ZymoTotalRNA												E	DFU	0
+RAD_P10_M	SRR14174621_1.fastq.gz	SRR14174621_2.fastq.gz	RAD_P10_M	RAD	PE	ZymoTotalRNA												M	DFU	0
+RAD_P10_B	SRR14174622_1.fastq.gz	SRR14174622_2.fastq.gz	RAD_P10_B	RAD	PE	ZymoTotalRNA												B	DFU	0
+RAD_P09_E	SRR14174623_1.fastq.gz	SRR14174623_2.fastq.gz	RAD_P09_E	RAD	PE	ZymoTotalRNA												E	DFU	0
+RAD_P09_M	SRR14174624_1.fastq.gz	SRR14174624_2.fastq.gz	RAD_P09_M	RAD	PE	ZymoTotalRNA												M	DFU	0
+RAD_P09_B	SRR14174625_1.fastq.gz	SRR14174625_2.fastq.gz	RAD_P09_B	RAD	PE	ZymoTotalRNA												B	DFU	0
+RAD_P08_E	SRR14174626_1.fastq.gz	SRR14174626_2.fastq.gz	RAD_P08_E	RAD	PE	ZymoTotalRNA												E	DFU	0
+RAD_P08_M	SRR14174627_1.fastq.gz	SRR14174627_2.fastq.gz	RAD_P08_M	RAD	PE	ZymoTotalRNA												M	DFU	0
+RAD_P01_M	SRR14174628_1.fastq.gz	SRR14174628_2.fastq.gz	RAD_P01_M	RAD	PE	ZymoTotalRNA												M	DFU	0
+RAD_P01_B	SRR14174629_1.fastq.gz	SRR14174629_2.fastq.gz	RAD_P01_B	RAD	PE	ZymoTotalRNA												B	DFU	0
+SAW_DFS_#11	SRR9699309.fastq.gz	NA	SAW_DFS_#11	SAW	SE	IlluminaTruSeq													HealthySkin	0
+SAW_DFS_#20	SRR9699310.fastq.gz	NA	SAW_DFS_#20	SAW	SE	IlluminaTruSeq													HealthySkin	0
+SAW_DFS_#21	SRR9699311.fastq.gz	NA	SAW_DFS_#21	SAW	SE	IlluminaTruSeq													HealthySkin	0
+SAW_DFS_#31	SRR9699312.fastq.gz	NA	SAW_DFS_#31	SAW	SE	IlluminaTruSeq													HealthySkin	0
+SAW_DFS_#32	SRR9699313.fastq.gz	NA	SAW_DFS_#32	SAW	SE	IlluminaTruSeq													HealthySkin	0
+SAW_DFS_#34	SRR9699314.fastq.gz	NA	SAW_DFS_#34	SAW	SE	IlluminaTruSeq													HealthySkin	0
+SAW_DFS_#37	SRR9699315.fastq.gz	NA	SAW_DFS_#37	SAW	SE	IlluminaTruSeq													HealthySkin	0
+SAW_DFS_#39	SRR9699316.fastq.gz	NA	SAW_DFS_#39	SAW	SE	IlluminaTruSeq													HealthySkin	0
+SAW_DFU_UM#7W4	SRR9699317.fastq.gz	NA	SAW_DFU_UM#7W4	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_UM#8W4	SRR9699318.fastq.gz	NA	SAW_DFU_UM#8W4	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_UM#15W0	SRR9699319.fastq.gz	NA	SAW_DFU_UM#15W0	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_UM#23W0	SRR9699320.fastq.gz	NA	SAW_DFU_UM#23W0	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_UM#24W0	SRR9699321.fastq.gz	NA	SAW_DFU_UM#24W0	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_UM#30W4	SRR9699322.fastq.gz	NA	SAW_DFU_UM#30W4	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_P2#13	SRR9699323.fastq.gz	NA	SAW_DFU_P2#13	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_UM#27W4	SRR9699324.fastq.gz	NA	SAW_DFU_UM#27W4	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_UM#28W4	SRR9699325.fastq.gz	NA	SAW_DFU_UM#28W4	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_UM#31W4	SRR9699326.fastq.gz	NA	SAW_DFU_UM#31W4	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_P2#01	SRR9699327.fastq.gz	NA	SAW_DFU_P2#01	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_P2#03	SRR9699328.fastq.gz	NA	SAW_DFU_P2#03	SAW	SE	IlluminaTruSeq													DFU	0
+SAW_DFU_P2#21	SRR9699329.fastq.gz	NA	SAW_DFU_P2#21	SAW	SE	IlluminaTruSeq													DFU	0
