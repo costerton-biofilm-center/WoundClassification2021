@@ -15,13 +15,13 @@ def main():
     output_dir = "./analysis/linearSVM_out"
 
     #data paths
-    counts_path = "./analysis/normalized_counts/Allcounts_batchnorm_vst.csv"
-    metadata_path = "./data/Example_data/Example_metadata_Ranalysis.tsv"
+    counts_path = "./analysis/validation/ALL_counts_batchnorm_vst.csv"
+    metadata_path = "./data/Example_data/ALL_metadata_Ranalysis.tsv"
     kmeans_CBC_path = "./analysis/kmeans/kmeans_groups_cbc.csv" 
     kmeans_all_path = "./analysis/kmeans/kmeans_groups_all.csv" 
 
-    validation_counts_path = "./data/validation_data/ALL_counts_batchnorm_vst.csv"
-    validation_metadata_path = "./data/validation_data/ALL_metadata.csv"
+    validation_counts_path = "./analysis/validation/ALL_counts_batchnorm_vst.csv"
+    validation_metadata_path = "./analysis/validation/ALL_metadata.csv"
 
     #read in the data 
     count_data = pd.read_csv(counts_path, index_col=0, sep = ",")
@@ -49,8 +49,8 @@ def main():
         print(cleaned_data[0].shape)
         print(cleaned_data[1].shape)
 
-        # plot_nFeatVsAcc(cleaned_data, total_features= 100, cat = cat, count_data = count_data, \
-        #                 metadata = metadata, save=True)
+        plot_nFeatVsAcc(cleaned_data, total_features= 100, cat = cat, count_data = count_data, \
+                        metadata = metadata, save=True)
 
         model_featureselect = Linear_classifier(cleaned_data[0], cleaned_data[1], classifier_term = cat, \
                                                 subset = "Source == 'CBC'", max_features = 20)
@@ -102,7 +102,7 @@ def main():
                                     'prediction': prediction.tolist(),\
                                     'prediction_proba:' : prediction_probability.tolist()})
 
-            results.to_csv("./data/validation_data/predictions.csv", index = False)
+            results.to_csv("./analysis/validation/predictions.csv", index = False)
         
         #Export Results
         for i in range(0, len(model_featureselect.lr.classes_)):

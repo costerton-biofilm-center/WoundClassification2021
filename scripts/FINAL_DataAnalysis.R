@@ -27,15 +27,15 @@ set.seed(seed)
 source("./scripts/analysis_utils.R")
 
 # Import counts, metadata and define relative path to annotation file
-#counts <- get_counts("./data/counts/")
-counts <- read.csv("./data/Example_data/Example_counts.csv", row.names = 1)
-metadata <- get_metadata("./data/Example_data/Example_metadata_Ranalysis.tsv")
+#counts <- get_counts("./data/counts/") #Uncomment if importing counts from a folder with raw count files
+counts <- read.csv("./data/Example_data/ALL_counts.csv", row.names = 1) #If importing from a count matrix tsv 
+metadata <- get_metadata("./data/Example_data/ALL_metadata_Ranalysis.tsv")
 annotation_path <- c("./data/annotation_gff/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff")
 kraken_dir = "./data/kraken_newdata"
 
 # Define data Output_directory 
 # out_dir needs to contain empty folder called: 
-# "normalized_counts", "DESeq2", and "kmeans"
+# "normalized_counts", "DESeq2", "kmeans", and "validation"
 
 out_dir <- "./analysis/"
 
@@ -46,18 +46,22 @@ out_dir <- "./analysis/"
 # continuous/numeric metadata.
 
 factors<-c("Ulcer_duration_cat", "IDSA_SCORE_1to4", "not_healed0_healed1", 
-           "Diabetes_type", "PAD", "Acute0_Chronic1")
+           "Diabetes_type", "PAD", "Acute0_Chronic1", "is_NEBSmallRNA")
 
 # Convert any numeric to factors
 metadata[,factors]<- apply(metadata[,factors], 2, as.factor)
 
+#Select only validation data 
+
+counts_main <- counts[, colnames(counts) %in% metadata$Sample_ID[metadata$Data_set == "Main"]]
+
 # Filtering ===================================================================
 
 # Filter out samples with less than 1M reads
-counts <- counts[,colSums(counts) > 1000000]
+counts_main <- counts_main[,colSums(counts_main) > 1000000]
 
 # Remove the filtered samples from the metadata set
-metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
+metadata_main<-subset(metadata, metadata$Sample_ID %in% colnames(counts_main))
 
 # =============================================================================
 # Differential Gene Expression (DESeq2) of metadata factors
@@ -66,7 +70,7 @@ metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
 
 # Get counts for only CBC data
-counts_cbconly <- counts[, colnames(counts) %in% metadata$Sample_ID[metadata$Source=="CBC"]]
+counts_cbconly <- counts_main[, colnames(counts_main) %in% metadata_main$Sample_ID[metadata_main$Source=="CBC"]]
 
 # Only count mRNA coding regions on exons
 counts_cbconly <- filterCountsbyGeneType(counts_cbconly, annotation_path, "exon", "mRNA")
@@ -99,13 +103,13 @@ CBC_DEgenes_UlcerDuration_sig <- filter_DESeq(CBC_DEgenes_UlcerDuration, 2, 0.05
 # Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
 # Remove MW_CW5 and MW_CW6 because they're acute burn wounds
 
-counts_filtered<-counts[,colnames(counts)!="HH5" & colnames(counts)!="MW_CW5"& colnames(counts)!="MW_CW6"]
+counts_filtered<-counts_main[,colnames(counts_main)!="HH5" & colnames(counts_main)!="MW_CW5"& colnames(counts_main)!="MW_CW6"]
 metadata_filtered<-subset(metadata, metadata$Sample_ID %in% colnames(counts_filtered))
 
 # Remove genes differentially expressed based on the "Endedness"
 # In the metadata, Endedness is either "PE" or "SE" and only the NEB Small RNA kit is "SE"
 
-counts_batchnorm <- remove_batch_effect(counts_filtered, metadata_filtered, ~Endedness, 1)
+counts_batchnorm <- remove_batch_effect(counts_filtered, metadata_filtered, ~is_NEBSmallRNA, 1)
 
 
 ## DESeq2 ======================================================================
@@ -287,6 +291,43 @@ kraken_data <-
 #Add kraken_results to kmeans metadata 
 metadata_kmeans <- dplyr::left_join(metadata_kmeans, kraken_data, by="Sample_ID")
 
+#=========================
+# Analyze Validation Data 
+#=========================
+
+# Read in the data again
+counts_validation <- read.csv("./data/Example_data/ALL_counts.csv", row.names = 1)
+metadata_validation <- get_metadata("./data/Example_data/ALL_metadata_Ranalysis.tsv")
+annotation_path <- c("./data/annotation_gff/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff")
+
+# Filtering ====================
+
+# Filter out samples with less than 1M reads
+counts_validation <- counts_validation[,colSums(counts_validation) > 1000000]
+# Remove the filtered samples from the metadata set
+metadata_validation<-subset(metadata_validation, metadata$Sample_ID %in% colnames(counts_validation))
+
+# Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
+# Including MW_CW5 and MW_CW6 because they're acute burn wounds - Added back in for evaluation
+
+counts_validation_filtered<-counts_validation[,colnames(counts_validation)!="HH5"]
+metadata_validation_filtered<-subset(metadata_validation, metadata$Sample_ID %in% colnames(counts_validation_filtered))
+
+# Normalization ====================
+
+# Only use genes which were used in main data
+
+unbiased_genes <- read.delim("./analysis/GO_analysis/counts_batchnorm_genelist.txt", header = F)
+counts_validation_batchnorm <- counts_validation_filtered[row.names(counts_validation_filtered) %in% unbiased_genes$V1,]
+
+# Only count mRNA from exonic regions
+counts_validation_batchnorm_mRNA <- filterCountsbyGeneType(counts_validation_batchnorm, annotation_path, "exon", "mRNA")
+
+#Normalize the counts 
+counts_validation_batchnorm_vst <- DESeq2::vst(as.matrix(counts_validation_batchnorm_mRNA))
+
+metadata_validation_filtered <- dplyr::left_join(metadata_validation_filtered, kraken_data, by="Sample_ID")
+
 #=========================================================================
 # Export gene counts data tables and analysis results to output directory
 #
@@ -343,7 +384,14 @@ write.table(row.names(subset(DEseq_kmeans_all_1v2_sig,log2FoldChange < -2)),
 write.table(row.names(counts_batchnorm),
             row.names = F, sep = "", quote = F, col.names  = F,
             paste0(out_dir,"GO_analysis/counts_batchnorm_genelist.txt"))
-          
+
+#Export validation Data analysis
+
+write.csv(counts_batchnorm_vst, "./analysis/validation/Validation_counts_batchnorm_vst.csv")
+write.csv(metadata_validation_filtered, "./analysis/validation/Validation_metadata.csv", row.names = F)
+
+
+
 
 
 
