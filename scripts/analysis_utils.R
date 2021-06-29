@@ -412,6 +412,28 @@ reducePanther<-
     return(out)
   }
 
+#Calculate accuracy
+
+calc_Accuracy<-
+  function(data, guess_col, prediction_col){
+    if(length(data[,guess_col])!=length(data[,prediction_col])){
+      stop("ERROR: Length of guess and prediction not the same")
+    }
+    n_correct <- length(which(data[,guess_col] == data[,prediction_col]))
+    n_incorrect <- length(which(data[,guess_col]!= data[,prediction_col]))
+    if((n_correct+n_incorrect)!= length(data[,guess_col])){
+      stop("ERROR: Length of n_correct and n_incorrect do not \n 
+           sum to input length. Check input data for NAs.")
+    }
+    
+    n_summary <- list("n_correct" = n_correct, "n_incorrect" = n_incorrect, 
+                      "n_total" = n_correct + n_incorrect)
+    print(n_summary)
+    
+    accuracy <- n_correct/(n_correct+n_incorrect)
+    return(accuracy)
+  }
+
 #################################################
 ### Plotting Functions ##########################
 #################################################
