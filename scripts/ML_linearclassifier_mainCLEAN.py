@@ -41,7 +41,7 @@ def main():
 
     #Train on CBC data and test on samples from other groups 
     #categories = ["IDSA_SCORE_1to4", "Ulcer_duration_cat", "cluster_res_cbc"]
-    categories = ["cluster_res_cbc"]
+    categories = ["cluster_res_cbc", "IDSA_SCORE_1to4", "Ulcer_duration_cat"]
 
     for cat in categories:
 
@@ -59,8 +59,8 @@ def main():
 
         print(f"For the predictor {cat}, the good genes are: {good_genes}")
       
-        if cat == "cluster_res_cbc": 
-            cat = "cluster_res_all"
+        # if cat == "cluster_res_cbc": 
+        #     cat = "cluster_res_all"
 
         ######## Model Training ######### 
         train_data = clean_data(count_data, metadata, "Sample_ID", cat, subset = "Source == 'CBC'")
@@ -70,39 +70,40 @@ def main():
         mask = np.array([1 if x in good_genes else 0 for x in genes]) == 1
         train_data[0] = np.array(train_data[0])[mask, :]  
         test_data[0] = np.array(test_data[0])[mask, :] 
-        model_testtrain = SVC(C=0.8, max_iter=10000)
+        model_testtrain = SVC(C=0.8, max_iter=10000, probability = True)
         #model_testtrain = LinearSVC(C=1, penalty='l2', dual=False, max_iter=10000)
         model_testtrain.fit(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
 
-        #test
-        accuracy = model_testtrain.score(test_data[0].T, np.array(test_data[1][cat], dtype = np.int))
-        print(test_data[0].shape)
+        # #test
+        # accuracy = model_testtrain.score(test_data[0].T, np.array(test_data[1][cat], dtype = np.int))
+        # print(test_data[0].shape)
 
-        train_accuracy = model_testtrain.score(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
+        # train_accuracy = model_testtrain.score(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
 
-        print(f"The test accuracy for {cat} was: {accuracy}")
-        print(f"The train accuracy for {cat} was: {train_accuracy}")
+        # print(f"The test accuracy for {cat} was: {accuracy}")
+        # print(f"The train accuracy for {cat} was: {train_accuracy}")
 
+        #Test classification for validation data for cat = cluster_res_cbc:
+        if cat == "cluster_res_cbc":
 
-        #Test classification for validation data: 
-        validation_counts = validation_counts.loc[good_genes]
+            validation_counts = validation_counts.loc[good_genes]
 
-        validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
-            subset = "Source != 'CBC'")
+            validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
+                subset = "Source != 'CBC'")
+
+            print([data.shape for data in validation_data])
+
+            print(model_testtrain.predict(validation_data[0].T))
+
+            prediction = model_testtrain.predict(validation_data[0].T)
+            prediction_probability = model_testtrain.predict_proba(validation_data[0].T) 
+
+            results = pd.DataFrame({'Sample_ID':validation_data[1]["Sample_ID"], \
+                                    'prediction': prediction.tolist(),\
+                                    'prediction_proba:' : prediction_probability.tolist()})
+
+            results.to_csv("./data/validation_data/predictions.csv", index = False)
         
-        print([data.shape for data in validation_data])
-
-        print(model_testtrain.predict(validation_data[0].T))
-
-        prediction = model_testtrain.predict(validation_data[0].T)
-
-        results = pd.DataFrame({'samples':validation_data[1]["Sample_ID"], 'prediction':prediction.tolist()})
-
-        results.to_csv("./data/validation_data/predictions.csv")
-        
-
-
-
         #Export Results
         for i in range(0, len(model_featureselect.lr.classes_)):
             cat_name = model_testtrain.classes_[i] #So that the names are correct           
