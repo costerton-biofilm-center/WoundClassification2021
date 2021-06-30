@@ -15,13 +15,13 @@ def main():
     output_dir = "./analysis/linearSVM_out"
 
     #data paths
-    counts_path = "./analysis/validation/ALL_counts_batchnorm_vst.csv"
-    metadata_path = "./data/Example_data/ALL_metadata_Ranalysis.tsv"
+    counts_path = "./analysis/normalized_counts/Main_counts_batchnorm_vst.csv"
+    metadata_path = "./data/Example_data/Main_metadata_Ranalysis.tsv"
     kmeans_CBC_path = "./analysis/kmeans/kmeans_groups_cbc.csv" 
     kmeans_all_path = "./analysis/kmeans/kmeans_groups_all.csv" 
 
-    validation_counts_path = "./analysis/validation/ALL_counts_batchnorm_vst.csv"
-    validation_metadata_path = "./analysis/validation/ALL_metadata.csv"
+    validation_counts_path = "./data/Example_data/Validation_counts_batchnorm_vst.csv"
+    validation_metadata_path = "./data/Example_data/Validation_metadata.csv"
 
     #read in the data 
     count_data = pd.read_csv(counts_path, index_col=0, sep = ",")
@@ -40,8 +40,7 @@ def main():
     metadata = metadata.merge(kmeans_data_all, on = "Sample_ID", how = "left")
 
     #Train on CBC data and test on samples from other groups 
-    #categories = ["IDSA_SCORE_1to4", "Ulcer_duration_cat", "cluster_res_cbc"]
-    categories = ["cluster_res_cbc", "IDSA_SCORE_1to4", "Ulcer_duration_cat"]
+    categories = ["IDSA_SCORE_1to4", "Ulcer_duration_cat", "cluster_res_cbc"]
 
     for cat in categories:
 
@@ -59,13 +58,13 @@ def main():
 
         print(f"For the predictor {cat}, the good genes are: {good_genes}")
       
-        # if cat == "cluster_res_cbc": 
-        #     cat = "cluster_res_all"
-
+        if cat == "cluster_res_cbc":
+            cat = "cluster_res_all" 
+        
         ######## Model Training ######### 
-        train_data = clean_data(count_data, metadata, "Sample_ID", cat, subset = "Source == 'CBC'")
-        test_data =  clean_data(count_data, metadata, "Sample_ID", cat, subset = "Source != 'CBC'")
-
+        train_data = clean_data(count_data, metadata, "Sample_ID", "cluster_res_all", subset = "Source == 'CBC'")
+        test_data =  clean_data(count_data, metadata, "Sample_ID", "cluster_res_all", subset = "Source != 'CBC'")
+        
         #Mask non-useful genes from train/test data
         mask = np.array([1 if x in good_genes else 0 for x in genes]) == 1
         train_data[0] = np.array(train_data[0])[mask, :]  
@@ -74,39 +73,23 @@ def main():
         #model_testtrain = LinearSVC(C=1, penalty='l2', dual=False, max_iter=10000)
         model_testtrain.fit(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
 
-        # #test
-        # accuracy = model_testtrain.score(test_data[0].T, np.array(test_data[1][cat], dtype = np.int))
-        # print(test_data[0].shape)
+        #test
+        accuracy = model_testtrain.score(test_data[0].T, np.array(test_data[1][cat], dtype = np.int))
+        print(test_data[0].shape)
 
-        # train_accuracy = model_testtrain.score(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
+        train_accuracy = model_testtrain.score(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
 
-        # print(f"The test accuracy for {cat} was: {accuracy}")
-        # print(f"The train accuracy for {cat} was: {train_accuracy}")
+        print(f"The test accuracy for {cat} was: {accuracy}")
+        print(f"The train accuracy for {cat} was: {train_accuracy}")
 
-        #Test classification for validation data for cat = cluster_res_cbc:
-        if cat == "cluster_res_cbc":
+        # Might be a good idea to cluster the external samples (no CBC)
+        # If they cluster similarly, try to see if the clusters correspond to the CBC data.
+        # Then train on the CBC data and then classify aginst the k-means results for the 
+        # corresponding non-cbc clusters 
 
-            validation_counts = validation_counts.loc[good_genes]
-
-            validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
-                subset = "Source != 'CBC'")
-
-            print([data.shape for data in validation_data])
-
-            print(model_testtrain.predict(validation_data[0].T))
-
-            prediction = model_testtrain.predict(validation_data[0].T)
-            prediction_probability = model_testtrain.predict_proba(validation_data[0].T) 
-
-            results = pd.DataFrame({'Sample_ID':validation_data[1]["Sample_ID"], \
-                                    'prediction': prediction.tolist(),\
-                                    'prediction_proba:' : prediction_probability.tolist()})
-
-            results.to_csv("./analysis/validation/predictions.csv", index = False)
-        
         #Export Results
         for i in range(0, len(model_featureselect.lr.classes_)):
-            cat_name = model_testtrain.classes_[i] #So that the names are correct           
+            cat_name = model_testtrain.classes_[i] #So that the names are correct
             out_goodgenes = pd.DataFrame(good_genes, columns = ["Predictor Genes"])
             out_goodgenes_filename = f"{output_dir}/GoodGenes_{cat}.csv"
             out_goodgenes.to_csv(out_goodgenes_filename, index = False)
@@ -132,16 +115,27 @@ def main():
             out_data = out_data.sort_values("Coefficient", ascending = False)
             out_data.to_csv(out_file, index = False)
 
+        #TEST ON VALIDATION DATA 
+        if cat == "cluster_res_cbc":
+            validation_counts = validation_counts.loc[good_genes]
+            validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
+                subset = "Source != 'CBC'")
+            print([data.shape for data in validation_data])
+            print(model_testtrain.predict(validation_data[0].T))
+            prediction = model_testtrain.predict(validation_data[0].T)
+            prediction_probability = model_testtrain.predict_proba(validation_data[0].T) 
+            results = pd.DataFrame({'Sample_ID':validation_data[1]["Sample_ID"], \
+                                    'prediction': prediction.tolist(),\
+                                    'prediction_proba:' : prediction_probability.tolist()})
+            results.to_csv("./analysis/validation/predictions.csv", index = False)
+
 def clean_data(data, metadata, sample_id_colname, classifier_term, subset = False ):
     """ This function will take a rna-seq count data set, metadata,
         and identifying col name to remove samples from metadata that aren't
         in the main data. 
-
         It returns a list where the first element is the metadata and the second is
         the metadata.
-
         It will also make sure the metadata and count data are in the proper order 
-
         Note: If classifier term, it returns the data as np arrays instead of pandas(actally doesnt 
         look like this is true )
     """
@@ -235,11 +229,8 @@ class Linear_classifier():
     data_path - Path to count data. Data should be a data frame of normalized counts exported from R as csv
                 where the first row contains the sample_IDs and the first column contains the genes included
                 in the analysis.
-
     metadata_path - a csv file containg the sample ids and any relevant metadata
-
     classifier_term - a string the metadata variable used to train the classifier against
-
     subset - a pandas.query() string which is used to subset the data [optional]
     """
     def __init__(self, data, metadata, classifier_term, max_features , subset=False):

@@ -230,8 +230,8 @@ PCA_maincontribs<-
 plot_grid(PCA_maincontribs[[2]])
 
 #Fix up PCA plot 
-PCA_plots_all[[15]]<-
-addSmallLegend(PCA_plots_all[[15]], pointSize = 2, 
+PCA_plots_all[[20]]<-
+addSmallLegend(PCA_plots_all[[20]], pointSize = 2, 
                textSize = 5, spaceLegend = 0.4)+
   theme(legend.position = c(0.8,0.8))+
   labs(color = "K-means Cluster")
@@ -262,7 +262,7 @@ titles <- lapply(c("a. Contributions of Variables to PCs",
 GO_grid <- plot_grid(plot_data[[1]], plot_data[[2]], nrow = 2, align = "hv", labels = c("c. Enriched Pathways (C3 vs C2)", 
                                                                                         "d. Enriched Pathways (C1 vs C2)"),
                      label_x = -0.4)
-PCA_grid <- plot_grid(PCA_maincontribs[[2]], PCA_plots_all[[15]], nrow = 2, rel_heights = c(0.6,0.3),
+PCA_grid <- plot_grid(PCA_maincontribs[[2]], PCA_plots_all[[20]], nrow = 2, rel_heights = c(0.6,0.3),
                       labels = c("a.", "b."), label_y = c(1, 1.1))
 
 FINAL_Fig2<-
@@ -411,7 +411,7 @@ SVC_plots<-lapply(SVC_res, function(plot_data){
 })
 
 
-cluster_plots <- plot_grid(plotlist = SVC_plots[c(2,3,1)], 
+cluster_plots <- plot_grid(plotlist = SVC_plots[c(1,2,3)], 
                            ncol = 3,
                            labels = c("a. Cluster 1", "b. Cluster 2", "c. Cluster 3"),
                            align = "hv")

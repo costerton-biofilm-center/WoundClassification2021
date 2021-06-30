@@ -31,7 +31,7 @@ source("./scripts/analysis_utils.R")
 counts <- read.csv("./data/Example_data/ALL_counts.csv", row.names = 1) #If importing from a count matrix tsv 
 metadata <- get_metadata("./data/Example_data/ALL_metadata_Ranalysis.tsv")
 annotation_path <- c("./data/annotation_gff/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff")
-kraken_dir = "./data/kraken_newdata"
+kraken_dir = "./data/kraken"
 
 # Define data Output_directory 
 # out_dir needs to contain empty folder called: 
@@ -41,7 +41,7 @@ out_dir <- "./analysis/"
 
 # Select columns of interest from metadata ====================================
 
-# Select Metadata Columns of Interest.
+# Select Metadata Columns which might be of interest.
 # Not sure if the analysis will work with 
 # continuous/numeric metadata.
 
@@ -51,17 +51,24 @@ factors<-c("Ulcer_duration_cat", "IDSA_SCORE_1to4", "not_healed0_healed1",
 # Convert any numeric to factors
 metadata[,factors]<- apply(metadata[,factors], 2, as.factor)
 
-#Select only validation data 
+#Split data and metadata into main and validation(includes validation data)
 
-counts_main <- counts[, colnames(counts) %in% metadata$Sample_ID[metadata$Data_set == "Main"]]
+#Save full data for train/testing
+counts_validation <- counts 
+metadata_validation <- metadata
+
+#Subset to only use "Main" data set 
+counts <- counts[,c(colnames(counts) %in% metadata$Sample_ID[metadata$Data_set == "Main"])]
+metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
+
 
 # Filtering ===================================================================
 
 # Filter out samples with less than 1M reads
-counts_main <- counts_main[,colSums(counts_main) > 1000000]
+counts <- counts[,colSums(counts) > 1000000]
 
 # Remove the filtered samples from the metadata set
-metadata_main<-subset(metadata, metadata$Sample_ID %in% colnames(counts_main))
+metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
 # =============================================================================
 # Differential Gene Expression (DESeq2) of metadata factors
@@ -70,7 +77,7 @@ metadata_main<-subset(metadata, metadata$Sample_ID %in% colnames(counts_main))
 
 
 # Get counts for only CBC data
-counts_cbconly <- counts_main[, colnames(counts_main) %in% metadata_main$Sample_ID[metadata_main$Source=="CBC"]]
+counts_cbconly <- counts[, colnames(counts) %in% metadata$Sample_ID[metadata$Source=="CBC"]]
 
 # Only count mRNA coding regions on exons
 counts_cbconly <- filterCountsbyGeneType(counts_cbconly, annotation_path, "exon", "mRNA")
@@ -103,7 +110,7 @@ CBC_DEgenes_UlcerDuration_sig <- filter_DESeq(CBC_DEgenes_UlcerDuration, 2, 0.05
 # Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
 # Remove MW_CW5 and MW_CW6 because they're acute burn wounds
 
-counts_filtered<-counts_main[,colnames(counts_main)!="HH5" & colnames(counts_main)!="MW_CW5"& colnames(counts_main)!="MW_CW6"]
+counts_filtered<-counts[,colnames(counts)!="HH5" & colnames(counts)!="MW_CW5"& colnames(counts)!="MW_CW6"]
 metadata_filtered<-subset(metadata, metadata$Sample_ID %in% colnames(counts_filtered))
 
 # Remove genes differentially expressed based on the "Endedness"
@@ -269,7 +276,7 @@ DESeq_summary<-
 
 library(tidyverse)
 
-kraken_data <-
+kraken_data <- 
   list.files(kraken_dir, full.names = T) %>%
   set_names(., nm = map(.x = ., ~gsub(".kraken.report", "", basename(.x)))) %>%
   map(function(x) {
@@ -295,17 +302,12 @@ metadata_kmeans <- dplyr::left_join(metadata_kmeans, kraken_data, by="Sample_ID"
 # Analyze Validation Data 
 #=========================
 
-# Read in the data again
-counts_validation <- read.csv("./data/Example_data/ALL_counts.csv", row.names = 1)
-metadata_validation <- get_metadata("./data/Example_data/ALL_metadata_Ranalysis.tsv")
-annotation_path <- c("./data/annotation_gff/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff")
-
 # Filtering ====================
 
 # Filter out samples with less than 1M reads
 counts_validation <- counts_validation[,colSums(counts_validation) > 1000000]
 # Remove the filtered samples from the metadata set
-metadata_validation<-subset(metadata_validation, metadata$Sample_ID %in% colnames(counts_validation))
+metadata_validation<-subset(metadata_validation, metadata_validation$Sample_ID %in% colnames(counts_validation))
 
 # Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
 # Including MW_CW5 and MW_CW6 because they're acute burn wounds - Added back in for evaluation
@@ -317,8 +319,8 @@ metadata_validation_filtered<-subset(metadata_validation, metadata$Sample_ID %in
 
 # Only use genes which were used in main data
 
-unbiased_genes <- read.delim("./analysis/GO_analysis/counts_batchnorm_genelist.txt", header = F)
-counts_validation_batchnorm <- counts_validation_filtered[row.names(counts_validation_filtered) %in% unbiased_genes$V1,]
+unbiased_genes <- row.names(counts_batchnorm)
+counts_validation_batchnorm <- counts_validation_filtered[row.names(counts_validation_filtered) %in% unbiased_genes,]
 
 # Only count mRNA from exonic regions
 counts_validation_batchnorm_mRNA <- filterCountsbyGeneType(counts_validation_batchnorm, annotation_path, "exon", "mRNA")
@@ -326,7 +328,9 @@ counts_validation_batchnorm_mRNA <- filterCountsbyGeneType(counts_validation_bat
 #Normalize the counts 
 counts_validation_batchnorm_vst <- DESeq2::vst(as.matrix(counts_validation_batchnorm_mRNA))
 
+#Add Kraken Data
 metadata_validation_filtered <- dplyr::left_join(metadata_validation_filtered, kraken_data, by="Sample_ID")
+
 
 #=========================================================================
 # Export gene counts data tables and analysis results to output directory
@@ -340,7 +344,7 @@ writeLines(as.character(seed), paste0(out_dir,"seed.txt"))
 writeLines(capture.output(sessionInfo()), paste0(out_dir,"sessionInfo.txt"))
 
 # Export Counts
-write.csv(counts_batchnorm_vst, paste0(out_dir,"normalized_counts/Allcounts_batchnorm_vst.csv"))
+write.csv(counts_batchnorm_vst, paste0(out_dir,"normalized_counts/Main_counts_batchnorm_vst.csv"))
 write.csv(counts_cbconly_vst, paste0(out_dir,"normalized_counts/counts_cbconly_vst.csv"))
 
 # Export DESeq results
@@ -387,8 +391,8 @@ write.table(row.names(counts_batchnorm),
 
 #Export validation Data analysis
 
-write.csv(counts_batchnorm_vst, "./analysis/validation/Validation_counts_batchnorm_vst.csv")
-write.csv(metadata_validation_filtered, "./analysis/validation/Validation_metadata.csv", row.names = F)
+write.csv(counts_validation_batchnorm_vst, "./data/Example_data/Validation_counts_batchnorm_vst.csv")
+write.csv(metadata_validation_filtered, "./data/Example_data/Validation_metadata.csv", row.names = F)
 
 
 
