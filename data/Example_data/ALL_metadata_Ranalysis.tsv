@@ -60,26 +60,6 @@ KK_CW4	PRI_CXEF_1A1.concat.fastq.gz	NA	1A1	Main	KK	SE	NEBSmallRNA	39	M		2		1	0		
 KK_CW5	PRI_VVK3_17A2.concat.fastq.gz	NA	17A2	Main	KK	SE	NEBSmallRNA	77	F		2		1	0						DFU	1	DFU
 KK_CW6	PRI_VVK3_6A2.concat.fastq.gz	NA	6A2	Main	KK	SE	NEBSmallRNA	90	F		2		0	0						DFU	1	DFU
 KK_CW7	PRI_VVK3_9A1.concat.fastq.gz	NA	9A1	Main	KK	SE	NEBSmallRNA	94	F		2		1	0						DFU	1	DFU
-RAD_P08_B	SRR14174610_1.fastq.gz	SRR14174610_2.fastq.gz	RAD_P08_B	Validation	RAD	PE	ZymoTotalRNA				2								B	DFU	0	DFU
-RAD_P05_E	SRR14174611_1.fastq.gz	SRR14174611_2.fastq.gz	RAD_P05_E	Validation	RAD	PE	ZymoTotalRNA				2								E	DFU	0	DFU
-RAD_P05_M	SRR14174612_1.fastq.gz	SRR14174612_2.fastq.gz	RAD_P05_M	Validation	RAD	PE	ZymoTotalRNA				2								M	DFU	0	DFU
-RAD_P05_B	SRR14174613_1.fastq.gz	SRR14174613_2.fastq.gz	RAD_P05_B	Validation	RAD	PE	ZymoTotalRNA				2								B	DFU	0	DFU
-RAD_P04_E	SRR14174614_1.fastq.gz	SRR14174614_2.fastq.gz	RAD_P04_E	Validation	RAD	PE	ZymoTotalRNA				2								E	DFU	0	DFU
-RAD_P04_M	SRR14174615_1.fastq.gz	SRR14174615_2.fastq.gz	RAD_P04_M	Validation	RAD	PE	ZymoTotalRNA				2								M	DFU	0	DFU
-RAD_P04_B	SRR14174616_1.fastq.gz	SRR14174616_2.fastq.gz	RAD_P04_B	Validation	RAD	PE	ZymoTotalRNA				2								B	DFU	0	DFU
-RAD_P01_E	SRR14174617_1.fastq.gz	SRR14174617_2.fastq.gz	RAD_P01_E	Validation	RAD	PE	ZymoTotalRNA				2								E	DFU	0	DFU
-RAD_Ctrl_2	SRR14174618_1.fastq.gz	SRR14174618_2.fastq.gz	RAD_Ctrl_2	Validation	RAD	PE	ZymoTotalRNA				2								2	HealthySkin	0	HealthySkin - Foot
-RAD_Ctrl_1	SRR14174619_1.fastq.gz	SRR14174619_2.fastq.gz	RAD_Ctrl_1	Validation	RAD	PE	ZymoTotalRNA				2								1	HealthySkin	0	HealthySkin - Foot
-RAD_P10_E	SRR14174620_1.fastq.gz	SRR14174620_2.fastq.gz	RAD_P10_E	Validation	RAD	PE	ZymoTotalRNA				2								E	DFU	0	DFU
-RAD_P10_M	SRR14174621_1.fastq.gz	SRR14174621_2.fastq.gz	RAD_P10_M	Validation	RAD	PE	ZymoTotalRNA				2								M	DFU	0	DFU
-RAD_P10_B	SRR14174622_1.fastq.gz	SRR14174622_2.fastq.gz	RAD_P10_B	Validation	RAD	PE	ZymoTotalRNA				2								B	DFU	0	DFU
-RAD_P09_E	SRR14174623_1.fastq.gz	SRR14174623_2.fastq.gz	RAD_P09_E	Validation	RAD	PE	ZymoTotalRNA				2								E	DFU	0	DFU
-RAD_P09_M	SRR14174624_1.fastq.gz	SRR14174624_2.fastq.gz	RAD_P09_M	Validation	RAD	PE	ZymoTotalRNA				2								M	DFU	0	DFU
-RAD_P09_B	SRR14174625_1.fastq.gz	SRR14174625_2.fastq.gz	RAD_P09_B	Validation	RAD	PE	ZymoTotalRNA				2								B	DFU	0	DFU
-RAD_P08_E	SRR14174626_1.fastq.gz	SRR14174626_2.fastq.gz	RAD_P08_E	Validation	RAD	PE	ZymoTotalRNA				2								E	DFU	0	DFU
-RAD_P08_M	SRR14174627_1.fastq.gz	SRR14174627_2.fastq.gz	RAD_P08_M	Validation	RAD	PE	ZymoTotalRNA				2								M	DFU	0	DFU
-RAD_P01_M	SRR14174628_1.fastq.gz	SRR14174628_2.fastq.gz	RAD_P01_M	Validation	RAD	PE	ZymoTotalRNA				2								M	DFU	0	DFU
-RAD_P01_B	SRR14174629_1.fastq.gz	SRR14174629_2.fastq.gz	RAD_P01_B	Validation	RAD	PE	ZymoTotalRNA				2								B	DFU	0	DFU
 SAW_DFS_#11	SRR9699309.fastq.gz	NA	SAW_DFS_#11	Validation	SAW	SE	IlluminaTruSeq													HealthySkin	0	HealthySkin - Foot
 SAW_DFS_#20	SRR9699310.fastq.gz	NA	SAW_DFS_#20	Validation	SAW	SE	IlluminaTruSeq													HealthySkin	0	HealthySkin - Foot
 SAW_DFS_#21	SRR9699311.fastq.gz	NA	SAW_DFS_#21	Validation	SAW	SE	IlluminaTruSeq													HealthySkin	0	HealthySkin - Foot
