@@ -106,11 +106,11 @@ prediction_guesses$correct <- c(prediction_guesses$cluster_guess==prediction_gue
 
 #Plot confidence by cluster 
 
-ggplot(subset(prediction_guesses), aes(x = as.factor(prediction), y = probab_selection))+
+ggplot(prediction_guesses, aes(x = as.factor(prediction), y = probab_selection))+
   geom_violin(scale = "count")+
   geom_jitter(aes(shape = Specific_Type, color = Specific_Type), position = position_jitter(width=0.05, height = 0))+
   scale_fill_discrete(name = "Tissue Type")+
-  ylim(0.5, 1.0)+
+  ylim(0, 1.0)+
   ggtitle("Prediction Confidence")+
   ylab("Probability")+
   xlab("Cluster")+

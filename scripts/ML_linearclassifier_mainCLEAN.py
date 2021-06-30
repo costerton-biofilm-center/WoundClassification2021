@@ -16,7 +16,7 @@ def main():
 
     #data paths
     counts_path = "./analysis/normalized_counts/Main_counts_batchnorm_vst.csv"
-    metadata_path = "./data/Example_data/Main_metadata_Ranalysis.tsv"
+    metadata_path = "./data/Example_data/Example_metadata_Ranalysis.tsv"
     kmeans_CBC_path = "./analysis/kmeans/kmeans_groups_cbc.csv" 
     kmeans_all_path = "./analysis/kmeans/kmeans_groups_all.csv" 
 
@@ -69,7 +69,7 @@ def main():
         mask = np.array([1 if x in good_genes else 0 for x in genes]) == 1
         train_data[0] = np.array(train_data[0])[mask, :]  
         test_data[0] = np.array(test_data[0])[mask, :] 
-        model_testtrain = SVC(C=0.8, max_iter=10000, probability = True)
+        model_testtrain = SVC(C=0.8, max_iter=10000, probability = True, random_state = 15815) #Same seed as R analysis
         #model_testtrain = LinearSVC(C=1, penalty='l2', dual=False, max_iter=10000)
         model_testtrain.fit(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
 
@@ -116,7 +116,7 @@ def main():
             out_data.to_csv(out_file, index = False)
 
         #TEST ON VALIDATION DATA 
-        if cat == "cluster_res_cbc":
+        if cat == "cluster_res_all":
             validation_counts = validation_counts.loc[good_genes]
             validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
                 subset = "Source != 'CBC'")

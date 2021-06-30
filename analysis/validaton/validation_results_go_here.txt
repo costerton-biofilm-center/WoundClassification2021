@@ -1,1 +1,0 @@
-Validation results are exported into this directory
