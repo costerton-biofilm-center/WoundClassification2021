@@ -198,7 +198,9 @@ GO_3v1UP <- reducePanther(panther = "./analysis/GO_analysis/RESULTS_3v1sigUP_120
 #theme 
 mytheme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0, fontsize = 9)),
                                      colhead=list(fg_params=list(hjust = 0, x = 0, fontsize = 9))
-                                     )
+)
+
+
 
 plot_data <- lapply(list(GO_3v2UP, GO_1v2UP), function(x){
   data <- x[,c(1,6,7)] #Select name, log fold change, padj
@@ -228,8 +230,8 @@ PCA_maincontribs<-
 plot_grid(PCA_maincontribs[[2]])
 
 #Fix up PCA plot 
-PCA_plots_all[[15]]<-
-addSmallLegend(PCA_plots_all[[15]], pointSize = 2, 
+PCA_plots_all[[20]]<-
+addSmallLegend(PCA_plots_all[[20]], pointSize = 2, 
                textSize = 5, spaceLegend = 0.4)+
   theme(legend.position = c(0.8,0.8))+
   labs(color = "K-means Cluster")
@@ -260,7 +262,7 @@ titles <- lapply(c("a. Contributions of Variables to PCs",
 GO_grid <- plot_grid(plot_data[[1]], plot_data[[2]], nrow = 2, align = "hv", labels = c("c. Enriched Pathways (C3 vs C2)", 
                                                                                         "d. Enriched Pathways (C1 vs C2)"),
                      label_x = -0.4)
-PCA_grid <- plot_grid(PCA_maincontribs[[2]], PCA_plots_all[[15]], nrow = 2, rel_heights = c(0.6,0.3),
+PCA_grid <- plot_grid(PCA_maincontribs[[2]], PCA_plots_all[[20]], nrow = 2, rel_heights = c(0.6,0.3),
                       labels = c("a.", "b."), label_y = c(1, 1.1))
 
 FINAL_Fig2<-
@@ -409,7 +411,7 @@ SVC_plots<-lapply(SVC_res, function(plot_data){
 })
 
 
-cluster_plots <- plot_grid(plotlist = SVC_plots[c(2,3,1)], 
+cluster_plots <- plot_grid(plotlist = SVC_plots[c(1,2,3)], 
                            ncol = 3,
                            labels = c("a. Cluster 1", "b. Cluster 2", "c. Cluster 3"),
                            align = "hv")
@@ -428,8 +430,57 @@ ggsave("./analysis/Figures/Figure4.pdf",
        height = 150, 
        dpi = 300)
 
+###############################
+#Figure 5 Model Validations
+###############################
+
+#Summary Stats
+pred_summary<-
+  prediction_guesses %>% 
+  select(Specific_Type, cluster_guess, prediction, probab_selection) %>%
+  group_by(Specific_Type, cluster_guess) %>%
+  summarize("n_correct" = sum(cluster_guess == prediction),
+            "n_incorrect" = sum(cluster_guess != prediction),
+            "prcnt_correct" = round(n_correct/(n_correct + n_incorrect)*100),
+            "Mean Assignment \nConfidence" = round(mean(probab_selection), digits = 3),
+            "SD" = round(sd(probab_selection), digits = 2))
 
 
-     
+fig5_theme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0.1, fontsize = 9),
+                                               padding=unit(c(5, 5), "mm")),
+                                     colhead=list(fg_params=list(hjust = 0, x = 0.1, fontsize = 9))
+)
+
+#To Grob Table 
+
+fig5a<-tableGrob(pred_summary, theme = fig5_theme, rows = NULL)
 
 
+#Plot confidence by cluster 
+prob_plot<-
+ggplot(subset(prediction_guesses), aes(x = as.factor(prediction), y = probab_selection))+
+  geom_violin(scale = "count")+
+  geom_jitter(aes(shape = Specific_Type, color = Specific_Type), position = position_jitter(width=0.05, height = 0))+
+  scale_fill_discrete(name = "Tissue Type")+
+  ylim(0.2, 1.0)+
+  ggtitle("Prediction Confidence")+
+  ylab("Probability")+
+  xlab("Cluster")+
+  theme_half_open()
+
+FINAL_Fig5<-
+plot_grid(fig5a, prob_plot, nrow = 2, rel_heights = c(0.3, 0.4), labels = c("a", "b"))
+
+FINAL_Fig5
+
+ggsave("./analysis/Figures/Figure5.pdf",      
+       FINAL_Fig5, units = "mm", 
+       width = 180, 
+       height = 150, 
+       dpi = 300)
+
+ggsave("./analysis/Figures/Figure5.png",      
+       FINAL_Fig5, units = "mm", 
+       width = 180, 
+       height = 150, 
+       dpi = 300)

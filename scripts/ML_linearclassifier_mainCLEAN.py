@@ -15,16 +15,25 @@ def main():
     output_dir = "./analysis/linearSVM_out"
 
     #data paths
-    counts_path = "./analysis/normalized_counts/Allcounts_batchnorm_vst.csv"
+    counts_path = "./analysis/normalized_counts/Main_counts_batchnorm_vst.csv"
     metadata_path = "./data/Example_data/Example_metadata_Ranalysis.tsv"
     kmeans_CBC_path = "./analysis/kmeans/kmeans_groups_cbc.csv" 
     kmeans_all_path = "./analysis/kmeans/kmeans_groups_all.csv" 
+
+    validation_counts_path = "./data/Example_data/Validation_counts_batchnorm_vst.csv"
+    validation_metadata_path = "./data/Example_data/Validation_metadata.csv"
 
     #read in the data 
     count_data = pd.read_csv(counts_path, index_col=0, sep = ",")
     metadata = pd.read_csv(metadata_path, sep = "\t")
     kmeans_data_cbc = pd.read_csv(kmeans_CBC_path)
     kmeans_data_all = pd.read_csv(kmeans_all_path)
+
+    validation_counts = pd.read_csv(validation_counts_path, index_col=0, sep = ",")
+    validation_metadata = pd.read_csv(validation_metadata_path, sep = ",")
+
+    #Feels bad to write this...need to fix #'s in SAW names later
+    validation_counts.columns=validation_counts.columns.str.replace('.','#') 
 
     #Merge kmeans with metdata
     metadata = metadata.merge(kmeans_data_cbc, on = "Sample_ID", how = "left")
@@ -49,18 +58,18 @@ def main():
 
         print(f"For the predictor {cat}, the good genes are: {good_genes}")
       
-        if cat == "cluster_res_cbc": 
-            cat = "cluster_res_all"
-
+        if cat == "cluster_res_cbc":
+            cat = "cluster_res_all" 
+        
         ######## Model Training ######### 
-        train_data = clean_data(count_data, metadata, "Sample_ID", cat, subset = "Source == 'CBC'")
-        test_data =  clean_data(count_data, metadata, "Sample_ID", cat, subset = "Source != 'CBC'")
-
+        train_data = clean_data(count_data, metadata, "Sample_ID", "cluster_res_all", subset = "Source == 'CBC'")
+        test_data =  clean_data(count_data, metadata, "Sample_ID", "cluster_res_all", subset = "Source != 'CBC'")
+        
         #Mask non-useful genes from train/test data
         mask = np.array([1 if x in good_genes else 0 for x in genes]) == 1
         train_data[0] = np.array(train_data[0])[mask, :]  
         test_data[0] = np.array(test_data[0])[mask, :] 
-        model_testtrain = SVC(C=0.8, max_iter=10000)
+        model_testtrain = SVC(C=0.8, max_iter=10000, probability = True, random_state = 15815) #Same seed as R analysis
         #model_testtrain = LinearSVC(C=1, penalty='l2', dual=False, max_iter=10000)
         model_testtrain.fit(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
 
@@ -106,16 +115,27 @@ def main():
             out_data = out_data.sort_values("Coefficient", ascending = False)
             out_data.to_csv(out_file, index = False)
 
+        #TEST ON VALIDATION DATA 
+        if cat == "cluster_res_all":
+            validation_counts = validation_counts.loc[good_genes]
+            validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
+                subset = "Source != 'CBC'")
+            print([data.shape for data in validation_data])
+            print(model_testtrain.predict(validation_data[0].T))
+            prediction = model_testtrain.predict(validation_data[0].T)
+            prediction_probability = model_testtrain.predict_proba(validation_data[0].T) 
+            results = pd.DataFrame({'Sample_ID':validation_data[1]["Sample_ID"], \
+                                    'prediction': prediction.tolist(),\
+                                    'prediction_proba:' : prediction_probability.tolist()})
+            results.to_csv("./analysis/validation/predictions.csv", index = False)
+
 def clean_data(data, metadata, sample_id_colname, classifier_term, subset = False ):
     """ This function will take a rna-seq count data set, metadata,
         and identifying col name to remove samples from metadata that aren't
         in the main data. 
-
         It returns a list where the first element is the metadata and the second is
         the metadata.
-
         It will also make sure the metadata and count data are in the proper order 
-
         Note: If classifier term, it returns the data as np arrays instead of pandas(actally doesnt 
         look like this is true )
     """
@@ -209,11 +229,8 @@ class Linear_classifier():
     data_path - Path to count data. Data should be a data frame of normalized counts exported from R as csv
                 where the first row contains the sample_IDs and the first column contains the genes included
                 in the analysis.
-
     metadata_path - a csv file containg the sample ids and any relevant metadata
-
     classifier_term - a string the metadata variable used to train the classifier against
-
     subset - a pandas.query() string which is used to subset the data [optional]
     """
     def __init__(self, data, metadata, classifier_term, max_features , subset=False):

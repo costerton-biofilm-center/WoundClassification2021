@@ -28,9 +28,8 @@ get_metadata <- function(metadata_path){
 
 get_counts <- function(counts_path, min_gene_length=0){#Could also be a vector of folder paths
   file_list <- lapply(counts_path,list.files, pattern = "*.txt", full.names = T)
-  file_names <- lapply(counts_path,list.files, pattern = "*.txt", full.names = F)
   file_list <- unlist(file_list)
-  counts <- lapply(file_list, read.delim, comment.char = "#")
+  counts <- lapply(file_list, read.delim, skip = 1, check.names = F)
 
   #if using featureCounts, length is not always accurate 
   counts_lengthFiltered <- lapply(counts, function(x) x[x$Length>min_gene_length,] )
@@ -41,7 +40,7 @@ get_counts <- function(counts_path, min_gene_length=0){#Could also be a vector o
   })
 
   gene_ids<-unlist(cleaned[[1]][1]) #Get ids from first list entry
-  df_out<-data.frame(c(1:length(gene_ids)))
+  df_out<-data.frame(c(1:length(gene_ids)), check.names = F)
   rownames(df_out)<-gene_ids
   
   for (sample in 1:length(cleaned)){
@@ -53,7 +52,7 @@ get_counts <- function(counts_path, min_gene_length=0){#Could also be a vector o
   #We only want the sample_id
   
   require(stringr)
-  file_names <- str_extract(colnames(df_out), "\\w*.aligned.bam")
+  file_names <- basename(colnames(df_out))
   sample_ids <- gsub(pattern = ".aligned.bam", "", file_names)
   colnames(df_out) <- sample_ids
   
@@ -411,6 +410,28 @@ reducePanther<-
     #for some reason a space before word in Eliminated 
     out <- subset(out, Eliminated == " False")
     return(out)
+  }
+
+#Calculate accuracy
+
+calc_Accuracy<-
+  function(data, guess_col, prediction_col){
+    if(length(data[,guess_col])!=length(data[,prediction_col])){
+      stop("ERROR: Length of guess and prediction not the same")
+    }
+    n_correct <- length(which(data[,guess_col] == data[,prediction_col]))
+    n_incorrect <- length(which(data[,guess_col]!= data[,prediction_col]))
+    if((n_correct+n_incorrect)!= length(data[,guess_col])){
+      stop("ERROR: Length of n_correct and n_incorrect do not \n 
+           sum to input length. Check input data for NAs.")
+    }
+    
+    n_summary <- list("n_correct" = n_correct, "n_incorrect" = n_incorrect, 
+                      "n_total" = n_correct + n_incorrect)
+    print(n_summary)
+    
+    accuracy <- n_correct/(n_correct+n_incorrect)
+    return(accuracy)
   }
 
 #################################################

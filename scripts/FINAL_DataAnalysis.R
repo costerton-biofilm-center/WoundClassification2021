@@ -27,28 +27,40 @@ set.seed(seed)
 source("./scripts/analysis_utils.R")
 
 # Import counts, metadata and define relative path to annotation file
-#counts <- get_counts("./data/20201209_ClusterPaper_generate_AllData/counts/")
-counts <- read.csv("./data/Example_data/Example_counts.csv", row.names = 1)
-metadata <- get_metadata("./data/Example_data/Example_metadata_Ranalysis.tsv")
+#counts <- get_counts("./data/counts/") #Uncomment if importing counts from a folder with raw count files
+counts <- read.csv("./data/Example_data/ALL_counts.csv", row.names = 1) #If importing from a count matrix tsv 
+metadata <- get_metadata("./data/Example_data/ALL_metadata_Ranalysis.tsv")
 annotation_path <- c("./data/annotation_gff/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff")
+kraken_dir = "./data/kraken"
 
 # Define data Output_directory 
 # out_dir needs to contain empty folder called: 
-# "normalized_counts", "DESeq2", and "kmeans"
+# "normalized_counts", "DESeq2", "kmeans", and "validation"
 
 out_dir <- "./analysis/"
 
 # Select columns of interest from metadata ====================================
 
-# Select Metadata Columns of Interest.
+# Select Metadata Columns which might be of interest.
 # Not sure if the analysis will work with 
 # continuous/numeric metadata.
 
 factors<-c("Ulcer_duration_cat", "IDSA_SCORE_1to4", "not_healed0_healed1", 
-           "Diabetes_type", "PAD", "Acute0_Chronic1")
+           "Diabetes_type", "PAD", "Acute0_Chronic1", "is_NEBSmallRNA")
 
 # Convert any numeric to factors
 metadata[,factors]<- apply(metadata[,factors], 2, as.factor)
+
+#Split data and metadata into main and validation(includes validation data)
+
+#Save full data for train/testing
+counts_validation <- counts 
+metadata_validation <- metadata
+
+#Subset to only use "Main" data set 
+counts <- counts[,c(colnames(counts) %in% metadata$Sample_ID[metadata$Data_set == "Main"])]
+metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
+
 
 # Filtering ===================================================================
 
@@ -60,7 +72,7 @@ metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
 # =============================================================================
 # Differential Gene Expression (DESeq2) of metadata factors
-# for "CBC" data (Note: this data is referred to as "LHS" in manuscript.) 
+# for "CBC" data (Note: this data is referred to as "LHS" in manuscript.)
 # =============================================================================
 
 
@@ -68,7 +80,7 @@ metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 counts_cbconly <- counts[, colnames(counts) %in% metadata$Sample_ID[metadata$Source=="CBC"]]
 
 # Only count mRNA coding regions on exons
-counts_cbconly <- filterCountsbyGeneType(counts_cbconly, annotation_path, "exon", "mRNA") 
+counts_cbconly <- filterCountsbyGeneType(counts_cbconly, annotation_path, "exon", "mRNA")
 
 # Generate the DESeq2 Data set for the CBC data
 
@@ -78,7 +90,7 @@ CBC_DEseq2 <- run_DESeq2(metadata = subset(metadata, Source == "CBC"),
                          metadata_vars = c("Ulcer_duration_cat","IDSA_SCORE_1to4","Acute0_Chronic1"),
                          formula = ~ Ulcer_duration_cat + IDSA_SCORE_1to4 + Acute0_Chronic1)
 
-# Test for differential expression 
+# Test for differential expression
 CBC_DEgenes_UlcerDuration<-DESeq2::results(CBC_DEseq2, contrast = c("Ulcer_duration_cat", "2", "0"))
 CBC_DEgenes_IDSAScore<-DESeq2::results(CBC_DEseq2, contrast = c("IDSA_SCORE_1to4", "4","2"))
 CBC_DEgenes_Acute0_Chronic1<-DESeq2::results(CBC_DEseq2, contrast = c("Acute0_Chronic1", "1", "0"))
@@ -104,7 +116,8 @@ metadata_filtered<-subset(metadata, metadata$Sample_ID %in% colnames(counts_filt
 # Remove genes differentially expressed based on the "Endedness"
 # In the metadata, Endedness is either "PE" or "SE" and only the NEB Small RNA kit is "SE"
 
-counts_batchnorm <- remove_batch_effect(counts_filtered, metadata_filtered, ~Endedness, 1)
+counts_batchnorm <- remove_batch_effect(counts_filtered, metadata_filtered, ~is_NEBSmallRNA, 1)
+
 
 ## DESeq2 ======================================================================
 
@@ -149,7 +162,7 @@ counts_cbconly_vst <- counts_cbconly_vst[!novar_filter, ]
 # Perform the kmeans clustering
 set.seed(seed) # Set Seed for reproducibility
 kmeans_cbc <- kmeans(t(counts_cbconly_vst), centers = 3, nstart = 25)
-
+print(kmeans_cbc$cluster)
 # Get the results 
 
 kmeans_groups_cbc <- data.frame(Sample_ID = names(kmeans_cbc$cluster), cluster_res_cbc = as.character(kmeans_cbc$cluster))
@@ -171,8 +184,23 @@ kmeans_all <- kmeans(t(counts_batchnorm_vst), centers = 3, nstart = 25)
 kmeans_groups_all <- data.frame(Sample_ID = names(kmeans_all$cluster), cluster_res_all = as.character(kmeans_all$cluster))
 
 ####  Fix kmeans cluster names #####################################
-# This is a ugly way to switch the cluster names in the Combined data so they are consistent among the CBC samples and 
-# the Combined samples. Make sure t
+kmeans_groups_cbc$cluster_res_cbc<-
+  lapply(kmeans_groups_cbc$cluster_res_cbc, function(cluster){
+    if(cluster=="1"){
+      cluster <- "3"
+    }
+    else if(cluster=="2"){
+      cluster <- "1"
+    }
+    else if(cluster=="3"){
+      cluster<-"2"
+    }
+    else{
+      stop("ERROR CONVERTING KMEANS GROUPS!!")
+    }
+  })
+
+kmeans_groups_cbc$cluster_res_cbc <- unlist(kmeans_groups_cbc$cluster_res_cbc)
 
 kmeans_groups_all$cluster_res_all<-
   lapply(kmeans_groups_all$cluster_res_all, function(cluster){
@@ -248,8 +276,8 @@ DESeq_summary<-
 
 library(tidyverse)
 
-kraken_data <-
-  list.files("./data/kraken/", full.names = T) %>%
+kraken_data <- 
+  list.files(kraken_dir, full.names = T) %>%
   set_names(., nm = map(.x = ., ~gsub(".kraken.report", "", basename(.x)))) %>%
   map(function(x) {
     x <- read.delim(x, header = F)
@@ -270,6 +298,40 @@ kraken_data <-
 #Add kraken_results to kmeans metadata 
 metadata_kmeans <- dplyr::left_join(metadata_kmeans, kraken_data, by="Sample_ID")
 
+#=========================
+# Analyze Validation Data 
+#=========================
+
+# Filtering ====================
+
+# Filter out samples with less than 1M reads
+counts_validation <- counts_validation[,colSums(counts_validation) > 1000000]
+# Remove the filtered samples from the metadata set
+metadata_validation<-subset(metadata_validation, metadata_validation$Sample_ID %in% colnames(counts_validation))
+
+# Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
+# Including MW_CW5 and MW_CW6 because they're acute burn wounds - Added back in for evaluation
+
+counts_validation_filtered<-counts_validation[,colnames(counts_validation)!="HH5"]
+metadata_validation_filtered<-subset(metadata_validation, metadata$Sample_ID %in% colnames(counts_validation_filtered))
+
+# Normalization ====================
+
+# Only use genes which were used in main data
+
+unbiased_genes <- row.names(counts_batchnorm)
+counts_validation_batchnorm <- counts_validation_filtered[row.names(counts_validation_filtered) %in% unbiased_genes,]
+
+# Only count mRNA from exonic regions
+counts_validation_batchnorm_mRNA <- filterCountsbyGeneType(counts_validation_batchnorm, annotation_path, "exon", "mRNA")
+
+#Normalize the counts 
+counts_validation_batchnorm_vst <- DESeq2::vst(as.matrix(counts_validation_batchnorm_mRNA))
+
+#Add Kraken Data
+metadata_validation_filtered <- dplyr::left_join(metadata_validation_filtered, kraken_data, by="Sample_ID")
+
+
 #=========================================================================
 # Export gene counts data tables and analysis results to output directory
 #
@@ -282,7 +344,7 @@ writeLines(as.character(seed), paste0(out_dir,"seed.txt"))
 writeLines(capture.output(sessionInfo()), paste0(out_dir,"sessionInfo.txt"))
 
 # Export Counts
-write.csv(counts_batchnorm_vst, paste0(out_dir,"normalized_counts/Allcounts_batchnorm_vst.csv"))
+write.csv(counts_batchnorm_vst, paste0(out_dir,"normalized_counts/Main_counts_batchnorm_vst.csv"))
 write.csv(counts_cbconly_vst, paste0(out_dir,"normalized_counts/counts_cbconly_vst.csv"))
 
 # Export DESeq results
@@ -326,7 +388,14 @@ write.table(row.names(subset(DEseq_kmeans_all_1v2_sig,log2FoldChange < -2)),
 write.table(row.names(counts_batchnorm),
             row.names = F, sep = "", quote = F, col.names  = F,
             paste0(out_dir,"GO_analysis/counts_batchnorm_genelist.txt"))
-          
+
+#Export validation Data analysis
+
+write.csv(counts_validation_batchnorm_vst, "./data/Example_data/Validation_counts_batchnorm_vst.csv")
+write.csv(metadata_validation_filtered, "./data/Example_data/Validation_metadata.csv", row.names = F)
+
+
+
 
 
 
