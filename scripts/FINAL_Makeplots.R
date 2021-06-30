@@ -462,7 +462,7 @@ ggplot(subset(prediction_guesses), aes(x = as.factor(prediction), y = probab_sel
   geom_violin(scale = "count")+
   geom_jitter(aes(shape = Specific_Type, color = Specific_Type), position = position_jitter(width=0.05, height = 0))+
   scale_fill_discrete(name = "Tissue Type")+
-  ylim(0.5, 1.0)+
+  ylim(0.2, 1.0)+
   ggtitle("Prediction Confidence")+
   ylab("Probability")+
   xlab("Cluster")+
