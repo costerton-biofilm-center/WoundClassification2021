@@ -28,7 +28,7 @@ source("./scripts/analysis_utils.R")
 
 # Import counts, metadata and define relative path to annotation file
 #counts <- get_counts("./data/counts/") #Uncomment if importing counts from a folder with raw count files
-counts <- read.csv("./data/Example_data/ALL_counts.csv", row.names = 1) #If importing from a count matrix tsv 
+counts <- read.csv("./data/Example_data/ALL_counts.csv", row.names = 1, check.names = F, comment.char = "") #If importing from a count matrix tsv 
 metadata <- get_metadata("./data/Example_data/ALL_metadata_Ranalysis.tsv")
 annotation_path <- c("./data/annotation_gff/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff")
 kraken_dir = "./data/kraken"
