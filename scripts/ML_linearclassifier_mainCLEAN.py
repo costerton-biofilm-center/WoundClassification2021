@@ -69,7 +69,7 @@ def main():
         mask = np.array([1 if x in good_genes else 0 for x in genes]) == 1
         train_data[0] = np.array(train_data[0])[mask, :]  
         test_data[0] = np.array(test_data[0])[mask, :] 
-        model_testtrain = SVC(C=0.8, max_iter=10000, probability = True, random_state = 15815) #Same seed as R analysis
+        model_testtrain = SVC(C=0.8, max_iter=10000, probability = True) 
         #model_testtrain = LinearSVC(C=1, penalty='l2', dual=False, max_iter=10000)
         model_testtrain.fit(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
 
@@ -117,17 +117,28 @@ def main():
 
         #TEST ON VALIDATION DATA 
         if cat == "cluster_res_all":
-            validation_counts = validation_counts.loc[good_genes]
-            validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
-                subset = "Source != 'CBC'")
-            print([data.shape for data in validation_data])
-            print(model_testtrain.predict(validation_data[0].T))
-            prediction = model_testtrain.predict(validation_data[0].T)
-            prediction_probability = model_testtrain.predict_proba(validation_data[0].T) 
-            results = pd.DataFrame({'Sample_ID':validation_data[1]["Sample_ID"], \
-                                    'prediction': prediction.tolist(),\
-                                    'prediction_proba:' : prediction_probability.tolist()})
-            results.to_csv("./analysis/validation/predictions.csv", index = False)
+
+            res = pd.DataFrame(columns = ['Sample_ID', 'prediction', 'prediction_proba'])
+            n_iter = 1000
+
+            print("Now iterating over validation data")
+            for i in tqdm(range(1,n_iter)):
+                validation_model_testtrain = SVC(C=0.8, max_iter=10000, probability = True)
+                validation_model_testtrain.fit(train_data[0].T, np.array(train_data[1][cat], dtype = np.int))
+
+                validation_counts = validation_counts.loc[good_genes]
+                validation_data = clean_data(validation_counts, validation_metadata, "Sample_ID", "Specific_ID", \
+                    subset = "Source != 'CBC'")
+                #print([data.shape for data in validation_data])
+                #print(model_testtrain.predict(validation_data[0].T))
+                prediction = validation_model_testtrain.predict(validation_data[0].T)
+                prediction_probability = validation_model_testtrain.predict_proba(validation_data[0].T) 
+                results = pd.DataFrame({'Sample_ID':validation_data[1]["Sample_ID"], \
+                                        'prediction': prediction.tolist(),\
+                                        'prediction_proba' : prediction_probability.tolist()})
+                res = res.append(results)
+
+            res.to_csv("./analysis/validation/predictions.csv", index = False)
 
 def clean_data(data, metadata, sample_id_colname, classifier_term, subset = False ):
     """ This function will take a rna-seq count data set, metadata,

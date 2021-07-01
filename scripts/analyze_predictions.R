@@ -40,7 +40,7 @@ model_predictions <- read.csv("./analysis/validation/predictions.csv")
 # Split the prediction probability string
 model_predictions<-
 model_predictions %>%
-  separate(prediction_proba., c("prob_C1", "prob_C2", "prob_C3"), sep = ",") 
+  separate(prediction_proba, c("prob_C1", "prob_C2", "prob_C3"), sep = ",") 
 
 # Remove brackets, whitespace, and make numeric
 model_predictions[,c("prob_C1", "prob_C2", "prob_C3")]<-
@@ -51,6 +51,17 @@ model_predictions[,c("prob_C1", "prob_C2", "prob_C3")]<-
     return(out_numeric)
   })
 
+# Summarize 
+model_predictions<-
+model_predictions %>%
+  select(Sample_ID, starts_with("prob_")) %>%
+  group_by(Sample_ID) %>%
+  summarize("mean_prob_C1" = mean(prob_C1),
+            "mean_prob_C2" = mean(prob_C2), 
+            "mean_prob_C3" = mean(prob_C3))
+
+model_predictions$prediction<-colnames(model_predictions[2:4])[apply(model_predictions[2:4],1,which.max)]
+model_predictions$prediction <- gsub("mean_prob_C", "", model_predictions$prediction)
 
 #Combine predictions with prediction_guesses 
 
@@ -98,7 +109,7 @@ accuracy_noninfectedDFUC2 <- calc_Accuracy(subset(prediction_guesses,
 #Get prob for predicted cluster
 
 prediction_guesses$probab_selection <- 
-  apply(prediction_guesses[,c("prob_C1", "prob_C2", "prob_C3")], 1, max)
+  apply(prediction_guesses[,c("mean_prob_C1", "mean_prob_C2", "mean_prob_C3")], 1, max)
 
 #Create column to show which were predicted accurately 
 
