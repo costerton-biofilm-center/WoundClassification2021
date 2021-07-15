@@ -1,8 +1,8 @@
-# Novel Classification of Human Ulcers with Host Gene Expression
+# Transcriptomic-Based Alternative to Clinical Classification of Human Ulcers
 ---------------------------
 
 This markdown will describe the data, scripts, programs, etc. required for reproducing the 
-analysis and figures or the article: *Novel Classification of Human Ulcers with Host Gene Expression*.
+analysis and figures or the article: *Transcriptomic-Based Alternative to Clinical Classification of Human Ulcers*.
 
 
 # Scripts
