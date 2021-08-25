@@ -434,6 +434,47 @@ calc_Accuracy<-
     return(accuracy)
   }
 
+fitmodel<-
+  function(gene_counts, IDSA_scores, high_bacteria){
+    #Get counts
+    gene_counts <- as.numeric(gene_counts)
+    IDSA_scores <- factor(IDSA_scores, levels = c("2","3","4"))
+    high_bac <- factor(high_bacteria, levels = c("low", "high"))
+
+    model_data <- data.frame(IDSA_scores, high_bac, gene_counts)
+    
+    #Remove NA
+    model_data <- model_data[complete.cases(model_data),]
+    
+    #fit model
+    model <- anova(lm(gene_counts ~ IDSA_scores + high_bac, data = model_data))
+    
+    #Extract parameters
+    df_IDSA<-model$Df[1]
+    SS_IDSA <- model$`Sum Sq`[1]
+    var_IDSA <- SS_IDSA/df_IDSA
+    
+    df_highbac <- model$Df[2]
+    SS_highbac <- model$`Sum Sq`[2]
+    var_highbac <- SS_highbac/df_highbac
+  
+
+    df_resid <- model$Df[3]
+    SS_resid <- model$`Sum Sq`[3]
+    var_resid <- SS_resid/df_resid
+    
+    #calculate contribs
+    
+    contrib_highbac <- var_highbac/sum(var_highbac+var_IDSA+var_resid)
+    contrib_idsa <- var_IDSA/sum(var_highbac+var_IDSA+var_resid)
+    
+
+    output <- list("var_prcnt_highbac" = contrib_highbac, 
+                   "var_prcnt_idsa" = contrib_idsa)
+
+    return(output)
+  }
+
 #################################################
 ### Plotting Functions ##########################
 #################################################

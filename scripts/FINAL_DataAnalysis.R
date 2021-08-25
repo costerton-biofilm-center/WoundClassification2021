@@ -70,6 +70,12 @@ counts <- counts[,colSums(counts) > 1000000]
 # Remove the filtered samples from the metadata set
 metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
+# Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
+# Remove MW_CW5 and MW_CW6 because they're acute burn wounds
+
+counts<-counts[,colnames(counts)!="HH5" & colnames(counts)!="MW_CW5"& colnames(counts)!="MW_CW6"]
+metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
+
 # =============================================================================
 # Differential Gene Expression (DESeq2) of metadata factors
 # for "CBC" data (Note: this data is referred to as "LHS" in manuscript.)
@@ -107,16 +113,11 @@ CBC_DEgenes_UlcerDuration_sig <- filter_DESeq(CBC_DEgenes_UlcerDuration, 2, 0.05
 
 # Batch Normalization ========================================================
 
-# Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
-# Remove MW_CW5 and MW_CW6 because they're acute burn wounds
-
-counts_filtered<-counts[,colnames(counts)!="HH5" & colnames(counts)!="MW_CW5"& colnames(counts)!="MW_CW6"]
-metadata_filtered<-subset(metadata, metadata$Sample_ID %in% colnames(counts_filtered))
 
 # Remove genes differentially expressed based on the "Endedness"
 # In the metadata, Endedness is either "PE" or "SE" and only the NEB Small RNA kit is "SE"
 
-counts_batchnorm <- remove_batch_effect(counts_filtered, metadata_filtered, ~is_NEBSmallRNA, 1)
+counts_batchnorm <- remove_batch_effect(counts, metadata, ~is_NEBSmallRNA, 1)
 
 
 ## DESeq2 ======================================================================
@@ -128,7 +129,7 @@ counts_batchnorm_mRNA <- filterCountsbyGeneType(counts_batchnorm, annotation_pat
 # Generate the DESeq2 Data set for the combined data set (Note: This excludes the MW and KK data bc they dont have
 # both Ulcer_duration_cat and IDSA_Score_1to4 metadata)
 
-combined_DESeq2 <- run_DESeq2(metadata = metadata_filtered,
+combined_DESeq2 <- run_DESeq2(metadata = metadata,
                               counts = counts_batchnorm_mRNA,
                               id_colname = "Sample_ID",
                               metadata_vars = c("Ulcer_duration_cat","IDSA_SCORE_1to4", "Lib_prep"),
@@ -152,7 +153,7 @@ combined_DEgenes_IDSAScore_sig <- filter_DESeq(combined_DEgenes_IDSAScore, 2, 0.
 metadata_cbconly <- subset(metadata, Source=="CBC")
 
 # Normalize the counts 
-counts_cbconly_vst <- DESeq2::vst(as.matrix(counts_cbconly))
+counts_cbconly_vst <- DESeq2::vst(as.matrix(counts_cbconly), blind = FALSE)
 
 # Remove genes with zero variance across all samples
 novar_filter <- apply(counts_cbconly_vst, 1, sd)
@@ -298,6 +299,40 @@ kraken_data <-
 #Add kraken_results to kmeans metadata 
 metadata_kmeans <- dplyr::left_join(metadata_kmeans, kraken_data, by="Sample_ID")
 
+#Add Category for high bacteria to kmeans metadata 
+
+metadata_kmeans$high_bacteria <- ifelse(metadata_kmeans$Bac_prcnt>10, "high", "low")
+
+#=======================================================================================
+# Analysis of Variance for IDSA_Score/High_bacteria/Cluster on Gene Expression per gene
+#=======================================================================================
+
+# Sample-Sample Correlation Matrix and Heirarchical clustering
+dist_mat <- dist(t(counts_batchnorm_vst), method = 'euclidian')
+hclust_avg <- hclust(dist_mat, method = 'average')
+plot(hclust_avg) #Note: HH28-P509 correspond to the samples with high bacteria! Highlight in figure
+
+var_counts <- counts_batchnorm_vst[,order(colnames(counts_batchnorm_vst))]
+var_metadata <- metadata_kmeans[order(metadata_kmeans$Sample_ID),]
+
+#Check that samples are the same
+
+all(colnames(var_counts) == var_metadata$Sample_ID)
+
+# Calculate percentage of variance due to IDSA_score and high percentage of bacteria for each gene
+
+variance_contribs<-
+   apply(var_counts, 1, fitmodel, IDSA_scores = var_metadata$IDSA_SCORE_1to4,
+         high_bacteria  = var_metadata$high_bacteria)
+
+# Format data for plotting 
+variance_contribs <- bind_rows(variance_contribs) 
+
+#Make the plot 
+
+ggplot(data = pivot_longer(variance_contribs, cols = c(1,2)), aes(x= value, fill= name))+
+  geom_histogram(bins = 50, color = "black", alpha = 0.5, position = "identity")
+
 #=========================
 # Analyze Validation Data 
 #=========================
@@ -393,9 +428,4 @@ write.table(row.names(counts_batchnorm),
 
 write.csv(counts_validation_batchnorm_vst, "./data/Example_data/Validation_counts_batchnorm_vst.csv")
 write.csv(metadata_validation_filtered, "./data/Example_data/Validation_metadata.csv", row.names = F)
-
-
-
-
-
 
