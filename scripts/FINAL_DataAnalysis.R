@@ -124,7 +124,7 @@ counts_batchnorm <- remove_batch_effect(counts, metadata, ~is_NEBSmallRNA, 1)
 
 # Only count mRNA from exonic regions
 
-counts_batchnorm_mRNA <- filterCountsbyGeneType(counts_batchnorm, annotation_path, "exon", "mRNA")
+counts_batchnorm_mRNA <- filterCountsbyGeneType(counts_batchnorm, annotation_path, "exon", c("mRNA", "lnc_RNA", "pseudogene"))
 
 # Generate the DESeq2 Data set for the combined data set (Note: This excludes the MW and KK data bc they dont have
 # both Ulcer_duration_cat and IDSA_Score_1to4 metadata)
@@ -302,6 +302,89 @@ metadata_kmeans <- dplyr::left_join(metadata_kmeans, kraken_data, by="Sample_ID"
 #Add Category for high bacteria to kmeans metadata 
 
 metadata_kmeans$high_bacteria <- ifelse(metadata_kmeans$Bac_prcnt>10, "high", "low")
+
+#=========================================================================
+# Analyze species and genera abundance from Kraken
+#=========================================================================
+
+#Note: Kraken files need to include Eukaryota, Bacteria, Viruses, and Archaea
+
+kraken_bac <- 
+  list.files(kraken_dir, full.names = T) %>%
+  set_names(., nm = map(.x = ., ~gsub(".kraken.report", "", basename(.x)))) %>%
+  map(function(x) {
+    #### Read in the files and format a bit 
+    x <- read.delim(x, header = F)
+    x$V6 <- trimws(x$V6, which = "left")
+    x <- x[, c(1,2,4,6)] #"Subset columns of interest"
+    colnames(x)<-c("Prcnt_root_taxon", "nr_reads_root_taxon", "Rank_code", "ID")
+    
+    #### We need to extract the bacteria info, but the order of the domains in the file are not consistent
+    #### So here is some ugly code to get only bacterial species
+    
+    domain_indices <- subset(x, Rank_code == "D") #get indexes of domain ranks 
+    domain_indices$index <-c(1:nrow(domain_indices)) #make a vector for indexing
+    
+
+    bac_index <- domain_indices$index[domain_indices$ID =="Bacteria"] #Find which row is bacteria 
+    next_domain <- bac_index+1
+    
+    bac_index <- as.numeric(row.names(domain_indices)[bac_index])
+    
+    if(next_domain == nrow(domain_indices)){
+      stop_index <- nrow(x)
+    }
+    else{ 
+      stop_index <-as.numeric(row.names(domain_indices)[next_domain])-1
+    }
+    x <- x[bac_index:stop_index,]
+    x <- subset(x, Rank_code == "S")
+    return(x)}) %>%
+   bind_rows(., .id = "Sample_ID")
+
+
+kraken_bac_abundance <-
+  metadata_kmeans[,c("Sample_ID","Bac_reads", "Human_reads")] %>%
+    left_join(kraken_bac, by = "Sample_ID") %>%
+    group_by(Sample_ID) %>%
+    mutate("Rel_abund" = nr_reads_root_taxon/sum(nr_reads_root_taxon)*100)
+
+
+
+# Get only samples with high bacteria 
+
+high_bac_microbiome <- 
+  subset(kraken_bac_abundance, Sample_ID %in% metadata_kmeans$Sample_ID[metadata_kmeans$Bac_prcnt>30]) 
+
+high_bac_microbiome_top_species <- 
+  high_bac_microbiome %>% 
+    group_by(Sample_ID) %>%
+    arrange(Sample_ID, desc(Rel_abund)) %>%
+    filter(Rel_abund>1)
+
+
+
+#Make a plot 
+
+library(RColorBrewer)
+mycolors <- colorRampPalette(brewer.pal(12, "Paired"))(length(unique(high_bac_microbiome_top_species$ID)))
+
+
+
+plot_high_bac<-
+ggplot(high_bac_microbiome_top_species, aes(x = Sample_ID, y = Rel_abund, fill = fct_reorder(ID, Rel_abund), label = ID))+
+  geom_bar(stat = "identity", width = 0.9)+
+  scale_fill_manual(values = mycolors)#+
+  #geom_text(size = 3, position = position_stack(vjust = 0.5))
+
+plot_high_bac
+
+ggsave("./analysis/Figures/plot_high_bac.pdf",
+       plot_high_bac, units = "mm", 
+       width = 120, 
+       height = 90, 
+       dpi = 300)
+
 
 #=======================================================================================
 # Analysis of Variance for IDSA_Score/High_bacteria/Cluster on Gene Expression per gene
