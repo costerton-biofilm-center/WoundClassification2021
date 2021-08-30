@@ -76,6 +76,7 @@ metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 counts<-counts[,colnames(counts)!="HH5" & colnames(counts)!="MW_CW5"& colnames(counts)!="MW_CW6"]
 metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
+counts_filtered <- counts #Save for plotting
 # =============================================================================
 # Differential Gene Expression (DESeq2) of metadata factors
 # for "CBC" data (Note: this data is referred to as "LHS" in manuscript.)
