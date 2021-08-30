@@ -419,6 +419,7 @@ calc_Accuracy<-
     if(length(data[,guess_col])!=length(data[,prediction_col])){
       stop("ERROR: Length of guess and prediction not the same")
     }
+    data<-data[complete.cases(data),] #Removes any NA values
     n_correct <- length(which(data[,guess_col] == data[,prediction_col]))
     n_incorrect <- length(which(data[,guess_col]!= data[,prediction_col]))
     if((n_correct+n_incorrect)!= length(data[,guess_col])){
