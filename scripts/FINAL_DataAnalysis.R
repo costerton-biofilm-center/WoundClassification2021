@@ -415,7 +415,9 @@ variance_contribs <- bind_rows(variance_contribs)
 #Make the plot 
 
 ggplot(data = pivot_longer(variance_contribs, cols = c(1,2)), aes(x= value, fill= name))+
-  geom_histogram(bins = 50, color = "black", alpha = 0.5, position = "identity")
+  geom_histogram(bins = 50, color = "black", alpha = 0.5, position = "identity")+
+  labs( x = expression(paste("Proportion of Explained Variation (",eta^{2}, ")")),
+        y = "# of Genes")
 
 #=========================
 # Analyze Validation Data 

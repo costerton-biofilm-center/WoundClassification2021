@@ -437,6 +437,7 @@ calc_Accuracy<-
 
 fitmodel<-
   function(gene_counts, IDSA_scores, high_bacteria){
+    require(car)
     #Get counts
     gene_counts <- as.numeric(gene_counts)
     IDSA_scores <- factor(IDSA_scores, levels = c("2","3","4"))
@@ -448,7 +449,7 @@ fitmodel<-
     model_data <- model_data[complete.cases(model_data),]
     
     #fit model
-    model <- anova(lm(gene_counts ~ IDSA_scores + high_bac, data = model_data))
+    model <- car::Anova(lm(gene_counts ~ IDSA_scores + high_bac, data = model_data), type = 2)
     
     #Extract parameters
     df_IDSA<-model$Df[1]
@@ -464,11 +465,10 @@ fitmodel<-
     SS_resid <- model$`Sum Sq`[3]
     var_resid <- SS_resid/df_resid
     
-    #calculate contribs
+    #calculate eta squared for each parameter
     
-    contrib_highbac <- var_highbac/sum(var_highbac+var_IDSA+var_resid)
-    contrib_idsa <- var_IDSA/sum(var_highbac+var_IDSA+var_resid)
-    
+    contrib_highbac <- SS_highbac/sum(model$`Sum Sq`)
+    contrib_idsa <- SS_IDSA/sum(model$`Sum Sq`)
 
     output <- list("var_prcnt_highbac" = contrib_highbac, 
                    "var_prcnt_idsa" = contrib_idsa)
