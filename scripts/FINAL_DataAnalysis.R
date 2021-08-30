@@ -419,6 +419,11 @@ ggplot(data = pivot_longer(variance_contribs, cols = c(1,2)), aes(x= value, fill
   labs( x = expression(paste("Proportion of Explained Variation (",eta^{2}, ")")),
         y = "# of Genes")
 
+# Paired Wilcox Rank sum test to check if median % variability explained 
+# is different between the groups
+
+wilcox.test(unlist(variance_contribs[,1]),unlist(variance_contribs[,2]), paired = T)
+
 #=========================
 # Analyze Validation Data 
 #=========================
