@@ -448,6 +448,10 @@ metadata_validation_filtered<-subset(metadata_validation, metadata$Sample_ID %in
 unbiased_genes <- row.names(counts_batchnorm)
 counts_validation_batchnorm <- counts_validation_filtered[row.names(counts_validation_filtered) %in% unbiased_genes,]
 
+#Remove MW_CW5 and MW_CW6 and HH5
+counts_validation_batchnorm <- counts_validation_batchnorm[,!c(colnames(counts_validation_batchnorm) %in% c("HH5", "MW_CW5", "MW_CW6"))]
+metadata_validation_filtered <- metadata_validation_filtered[!metadata_validation_filtered$Sample_ID %in% c("HH5", "MW_CW5", "MW_CW6"),]
+
 # Only count mRNA from exonic regions
 counts_validation_batchnorm_mRNA <- filterCountsbyGeneType(counts_validation_batchnorm, annotation_path, "exon", "mRNA")
 
@@ -457,6 +461,36 @@ counts_validation_batchnorm_vst <- DESeq2::vst(as.matrix(counts_validation_batch
 #Add Kraken Data
 metadata_validation_filtered <- dplyr::left_join(metadata_validation_filtered, kraken_data, by="Sample_ID")
 
+
+# Make Prediction Guesses 
+
+prediction_guesses <- data.frame("Sample_ID" = metadata_validation_filtered$Sample_ID,
+                                 "Train_test" = metadata_validation_filtered$Source,
+                                 "Ulcer_duration_cat" = metadata_validation_filtered$Ulcer_duration_cat,
+                                 "Bac_prcnt" = metadata_validation_filtered$Bac_prcnt,
+                                 "Source" = metadata_validation_filtered$Source,
+                                 "Type" = metadata_validation_filtered$Type,
+                                 "IDSA_SCORE_1to4" = metadata_validation_filtered$IDSA_SCORE_1to4,
+                                 "Specific_Type" = metadata_validation_filtered$Specific_Type,
+                                 stringsAsFactors = F)
+
+prediction_guesses<-
+  prediction_guesses %>% 
+  mutate(Train_test = ifelse(Train_test == "CBC", "Train", "Test")) %>%
+  mutate( cluster_guess = ifelse(Type == "DFU" & Bac_prcnt > 10, "3", "")) %>%
+  mutate( cluster_guess = ifelse(Type == "DFU" & Bac_prcnt < 10, "2", cluster_guess)) %>%
+  mutate( cluster_guess = ifelse(Type != "DFU" & Bac_prcnt < 10, "1",  cluster_guess)) %>%
+  mutate( Specific_Type = ifelse(Type == "DFU" & Bac_prcnt < 10, "DFU - Not Infected", Specific_Type)) %>%
+  mutate( Specific_Type = ifelse(Type == "DFU" & Bac_prcnt > 10, "DFU - Infected",  Specific_Type))
+
+#Make sure validation output does not contain NAs
+
+
+prediction_guesses <- prediction_guesses[!is.na(prediction_guesses$cluster_guess),]
+counts_validation_batchnorm_vst <- counts_validation_batchnorm_vst[,colnames(counts_validation_batchnorm_vst) %in%
+                                                                     prediction_guesses$Sample_ID]
+
+prediction_guesses$is_infected <- ifelse(prediction_guesses$Bac_prcnt>10, "1", "0")
 
 #=========================================================================
 # Export gene counts data tables and analysis results to output directory
@@ -519,4 +553,5 @@ write.table(row.names(counts_batchnorm),
 
 write.csv(counts_validation_batchnorm_vst, "./data/Example_data/Validation_counts_batchnorm_vst.csv")
 write.csv(metadata_validation_filtered, "./data/Example_data/Validation_metadata.csv", row.names = F)
+write.csv(prediction_guesses, "./data/Validation_prediction_guesses", row.names = F)
 

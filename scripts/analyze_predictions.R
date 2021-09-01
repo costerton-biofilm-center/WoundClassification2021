@@ -8,27 +8,6 @@ library(cowplot)
 #C2 - > DFU but <10% bacteria, <4 weeks 
 #C3 - > DFU but greater than 10% bac
 
-prediction_guesses <- data.frame("Sample_ID" = metadata_validation_filtered$Sample_ID,
-                                 "Train_test" = metadata_validation_filtered$Source,
-                                 "Ulcer_duration_cat" = metadata_validation_filtered$Ulcer_duration_cat,
-                                 "Bac_prcnt" = metadata_validation_filtered$Bac_prcnt,
-                                 "Source" = metadata_validation_filtered$Source,
-                                 "Type" = metadata_validation_filtered$Type,
-                                 "IDSA_SCORE_1to4" = metadata_validation_filtered$IDSA_SCORE_1to4,
-                                 "Specific_Type" = metadata_validation_filtered$Specific_Type,
-                                 stringsAsFactors = F)
-
-prediction_guesses<-
-prediction_guesses %>% 
-  mutate(Train_test = ifelse(Train_test == "CBC", "Train", "Test")) %>%
-  mutate( cluster_guess = ifelse(Type == "DFU" & Bac_prcnt > 10, "3", "")) %>%
-  mutate( cluster_guess = ifelse(Type == "DFU" & Bac_prcnt < 10, "2", cluster_guess)) %>%
-  mutate( cluster_guess = ifelse(Type != "DFU" & Bac_prcnt < 10, "1",  cluster_guess)) %>%
-  mutate( Specific_Type = ifelse(Type == "DFU" & Bac_prcnt < 10, "DFU - Not Infected", Specific_Type)) %>%
-  mutate( Specific_Type = ifelse(Type == "DFU" & Bac_prcnt > 10, "DFU - Infected",  Specific_Type))
-
-
-
 ##===========================
 ## Analyze Prediction CSV
 ##============================
