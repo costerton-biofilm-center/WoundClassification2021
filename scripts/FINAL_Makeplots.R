@@ -182,9 +182,30 @@ ggsave("./analysis/Figures/Figure1.pdf",
        height = 180, 
        dpi = 300)
 
+#=============================================
+#Figure 2: Variance analysis and Microbiome 
+#=============================================
+
+variance_plot<-
+ggplot(data = pivot_longer(variance_contribs, cols = c(1,2)), aes(x= value, fill= name))+
+  geom_histogram(bins = 50, color = "black", alpha = 0.5, position = "identity")+
+  labs( x = expression(paste("Proportion of Explained Variation (",eta^{2}, ")")),
+        y = "# of Genes")
+
+library(RColorBrewer)
+mycolors <- colorRampPalette(brewer.pal(12, "Paired"))(length(unique(high_bac_microbiome_top_species$ID)))
+
+plot_high_bac<-
+  ggplot(high_bac_microbiome_top_species, aes(x = Sample_ID, y = Rel_abund, fill = fct_reorder(ID, Rel_abund), label = ID))+
+  geom_bar(stat = "identity", width = 0.9)+
+  scale_fill_manual(values = mycolors)#+
+#geom_text(size = 3, position = position_stack(vjust = 0.5))
+
+ggplot(metadata_kmeans, aes(y=Bac_prcnt, x = fct_reorder(Sample_ID, Bac_prcnt, .desc = T)))+
+         geom_bar(stat = "identity")
 
 #=============================================#
-# Figure 2 Kmeans, PCA contibs, GO            #
+# Figure 3 Kmeans, PCA contibs, GO            #
 #=============================================#
 
 # Go Terms - Output frmo Panther, Reduced by Revigo 
@@ -265,25 +286,25 @@ GO_grid <- plot_grid(plot_data[[1]], plot_data[[2]], nrow = 2, align = "hv", lab
 PCA_grid <- plot_grid(PCA_maincontribs[[2]], PCA_plots_all[[20]], nrow = 2, rel_heights = c(0.6,0.3),
                       labels = c("a.", "b."), label_y = c(1, 1.1))
 
-FINAL_Fig2<-
+FINAL_Fig3<-
 plot_grid(PCA_grid, GO_grid,  ncol = 2)
 
 
-ggsave("./analysis/Figures/Figure2.png",      
-       FINAL_Fig2, units = "mm", 
+ggsave("./analysis/Figures/Figure3.png",      
+       FINAL_Fig3, units = "mm", 
        width = 180, 
        height = 200, 
        dpi = 300)
 
-ggsave("./analysis/Figures/Figure2.pdf",      
-       FINAL_Fig2, units = "mm", 
+ggsave("./analysis/Figures/Figure3.pdf",      
+       FINAL_Fig3, units = "mm", 
        width = 180, 
        height = 200, 
        dpi = 300)
 
 
 #==========================================================#
-# Figure  3 - Predictor Genes Table and Expression Plots   #
+# Figure  4 - Predictor Genes Table and Expression Plots   #
 #==========================================================#
 
 ### Import results from SVM ################################
@@ -308,7 +329,7 @@ warning(paste0("Changing: ", names(SVM_genes), " to ", c("K-means Cluster", "IDS
 SVM_names_new <- c("K-means Cluster", "IDSA/PEDIS Score", "Ulcer Duration")
 
 
-### Figure 3a #############################################
+### Figure 4a #############################################
 
 #Get the annotations for the good genes (takes several minutes to run!)
 
@@ -319,7 +340,7 @@ lapply(SVM_genes, function(x){
 })
 
 
-### Figure 3b ###############################################
+### Figure 4b ###############################################
 
 # SVM_genes <- 
 #   lapply(list.files(SVM_dir, pattern = SVM_names , full.names = T), read.delim, sep = ",")
@@ -354,7 +375,7 @@ plots <- lapply(seq_along(plot_data), function(x){
 })
 
 
-### Combine 3a and 3b for Final Figure
+### Combine 4a and 4b for Final Figure
 
 lapply(seq_along(plots), function(x){
   name <- names(SVM_genes)[x]
@@ -374,13 +395,13 @@ lapply(seq_along(plots), function(x){
                     labels = c("a", "c"), rel_widths = c(0.5,0.5))
   
   
-  ggsave(paste0("./analysis/Figures/Figure3_", name, ".png"),
+  ggsave(paste0("./analysis/Figures/Figure4_", name, ".png"),
          out_plot, units = "mm",
          width = 300,
          height = 300,
          dpi = 300) 
   
-  ggsave(paste0("./analysis/Figures/Figure3_", name, ".pdf"),
+  ggsave(paste0("./analysis/Figures/Figure4_", name, ".pdf"),
          out_plot, units = "mm",
          width = 300,
          height = 300,
@@ -389,7 +410,7 @@ lapply(seq_along(plots), function(x){
 
 
 ######################################
-# Figure 4 - SVC Results Figure     ##
+# Figure 5 - SVC Results Figure     ##
 ######################################
 
 SVC_res<-
@@ -418,20 +439,20 @@ cluster_plots <- plot_grid(plotlist = SVC_plots[c(1,2,3)],
 
 cluster_plots
 
-ggsave("./analysis/Figures/Figure4.png",      
+ggsave("./analysis/Figures/Figure5.png",      
        cluster_plots, units = "mm", 
        width = 300, 
        height = 150, 
        dpi = 300)
 
-ggsave("./analysis/Figures/Figure4.pdf",      
+ggsave("./analysis/Figures/Figure5.pdf",      
        cluster_plots, units = "mm", 
        width = 300, 
        height = 150, 
        dpi = 300)
 
 ###############################
-#Figure 5 Model Validations
+#Figure 6 Model Validations
 ###############################
 
 #Summary Stats
@@ -453,7 +474,7 @@ fig5_theme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 
 
 #To Grob Table 
 
-fig5a<-tableGrob(pred_summary, theme = fig5_theme, rows = NULL)
+fig6a<-tableGrob(pred_summary, theme = fig6_theme, rows = NULL)
 
 
 #Plot confidence by cluster 
@@ -468,19 +489,19 @@ ggplot(subset(prediction_guesses), aes(x = as.factor(prediction), y = probab_sel
   xlab("Cluster")+
   theme_half_open()
 
-FINAL_Fig5<-
-plot_grid(fig5a, prob_plot, nrow = 2, rel_heights = c(0.3, 0.4), labels = c("a", "b"))
+FINAL_Fig6<-
+plot_grid(fig6a, prob_plot, nrow = 2, rel_heights = c(0.3, 0.4), labels = c("a", "b"))
 
-FINAL_Fig5
+FINAL_Fig6
 
-ggsave("./analysis/Figures/Figure5.pdf",      
-       FINAL_Fig5, units = "mm", 
+ggsave("./analysis/Figures/Figure6.pdf",      
+       FINAL_Fig6, units = "mm", 
        width = 180, 
        height = 150, 
        dpi = 300)
 
-ggsave("./analysis/Figures/Figure5.png",      
-       FINAL_Fig5, units = "mm", 
+ggsave("./analysis/Figures/Figure6.png",      
+       FINAL_Fig6, units = "mm", 
        width = 180, 
        height = 150, 
        dpi = 300)

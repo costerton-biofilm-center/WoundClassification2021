@@ -365,20 +365,6 @@ high_bac_microbiome_top_species <-
 
 
 
-#Make a plot 
-
-library(RColorBrewer)
-mycolors <- colorRampPalette(brewer.pal(12, "Paired"))(length(unique(high_bac_microbiome_top_species$ID)))
-
-
-
-plot_high_bac<-
-ggplot(high_bac_microbiome_top_species, aes(x = Sample_ID, y = Rel_abund, fill = fct_reorder(ID, Rel_abund), label = ID))+
-  geom_bar(stat = "identity", width = 0.9)+
-  scale_fill_manual(values = mycolors)#+
-  #geom_text(size = 3, position = position_stack(vjust = 0.5))
-
-plot_high_bac
 
 ggsave("./analysis/Figures/plot_high_bac.pdf",
        plot_high_bac, units = "mm", 
@@ -411,13 +397,6 @@ variance_contribs<-
 
 # Format data for plotting 
 variance_contribs <- bind_rows(variance_contribs) 
-
-#Make the plot 
-
-ggplot(data = pivot_longer(variance_contribs, cols = c(1,2)), aes(x= value, fill= name))+
-  geom_histogram(bins = 50, color = "black", alpha = 0.5, position = "identity")+
-  labs( x = expression(paste("Proportion of Explained Variation (",eta^{2}, ")")),
-        y = "# of Genes")
 
 # Paired Wilcox Rank sum test to check if median % variability explained 
 # is different between the groups
