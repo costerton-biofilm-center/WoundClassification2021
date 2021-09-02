@@ -190,7 +190,9 @@ variance_plot<-
 ggplot(data = pivot_longer(variance_contribs, cols = c(1,2)), aes(x= value, fill= name))+
   geom_histogram(bins = 50, color = "black", alpha = 0.5, position = "identity")+
   labs( x = expression(paste("Proportion of Explained Variation (",eta^{2}, ")")),
-        y = "# of Genes")
+        y = "# of Genes")+
+  theme(legend.position = c(0.6, 0.8),
+        legend.background = element_rect(fill = "white", color = "black"))
 
 library(RColorBrewer)
 mycolors <- colorRampPalette(brewer.pal(12, "Paired"))(length(unique(high_bac_microbiome_top_species$ID)))
@@ -198,11 +200,30 @@ mycolors <- colorRampPalette(brewer.pal(12, "Paired"))(length(unique(high_bac_mi
 plot_high_bac<-
   ggplot(high_bac_microbiome_top_species, aes(x = Sample_ID, y = Rel_abund, fill = fct_reorder(ID, Rel_abund), label = ID))+
   geom_bar(stat = "identity", width = 0.9)+
-  scale_fill_manual(values = mycolors)#+
-#geom_text(size = 3, position = position_stack(vjust = 0.5))
+  scale_fill_manual(values = mycolors)+
+  labs(x = "Sample", y = "Relative Abundance (%)")+
+  geom_text(size = 3, position = position_stack(vjust = 0.5))+
+  theme(legend.position = "none")
 
-ggplot(metadata_kmeans, aes(y=Bac_prcnt, x = fct_reorder(Sample_ID, Bac_prcnt, .desc = T)))+
-         geom_bar(stat = "identity")
+plot_bac_prop<-
+ggplot(subset(metadata_kmeans, Bac_prcnt>1), aes(y=Bac_prcnt, x = fct_reorder(Sample_ID, Bac_prcnt, .desc = T)))+
+  geom_bar(stat = "identity")+
+  labs(x = "Sample", y = "Percentage of reads assigned to bacteria (%)")+
+  theme(axis.text.x = element_text(angle = 90))
+  
+fig2_top<-
+plot_grid(variance_plot, plot_bac_prop, ncol = 2) 
+
+fig2<-
+plot_grid(fig2_top, plot_high_bac, nrow = 2)
+
+fig2
+
+ggsave("./analysis/Figures/Figure2.pdf",      
+       fig2, units = "mm", 
+       width = 180, 
+       height = 180, 
+       dpi = 300)
 
 #=============================================#
 # Figure 3 Kmeans, PCA contibs, GO            #
@@ -301,7 +322,6 @@ ggsave("./analysis/Figures/Figure3.pdf",
        width = 180, 
        height = 200, 
        dpi = 300)
-
 
 #==========================================================#
 # Figure  4 - Predictor Genes Table and Expression Plots   #
@@ -467,7 +487,7 @@ pred_summary<-
             "SD" = round(sd(probab_selection), digits = 2))
 
 
-fig5_theme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0.1, fontsize = 9),
+fig6_theme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0.1, fontsize = 9),
                                                padding=unit(c(5, 5), "mm")),
                                      colhead=list(fg_params=list(hjust = 0, x = 0.1, fontsize = 9))
 )
