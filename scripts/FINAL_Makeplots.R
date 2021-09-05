@@ -157,12 +157,12 @@ ggsave("./analysis/Figures/Figure2.png",
 #=============================================#
 
 # Go Terms - Output frmo Panther, Reduced by Revigo 
-GO_3v2UP <- reducePanther(panther = "./analysis/GO_analysis/RESULTS_3v2sigUP_12032021.txt", 
-                          revigo = "./analysis/GO_analysis/Revigo_3v2_OUT.csv")
-GO_1v2UP <- reducePanther(panther = "./analysis/GO_analysis/RESULTS_1v2sigUP_12032021.txt", 
-                          revigo = "./analysis/GO_analysis/Revigo_1v2_OUT.csv")
-GO_3v1UP <- reducePanther(panther = "./analysis/GO_analysis/RESULTS_3v1sigUP_12032021.txt", 
-                          revigo = "./analysis/GO_analysis/Revigo_3v1_OUT.csv")
+GO_3v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigUP.txt", 
+                          revigo = "./analysis/GO_analysis/REVIGO_kmeans_3v2_sigUP.csv")
+GO_1v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigUP.txt", 
+                          revigo = "./analysis/GO_analysis/REVIGO_kmeans_1v2_sigUP.csv")
+GO_3v1UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigUP.txt", 
+                          revigo = "./analysis/GO_analysis/REVIGO_kmeans_3v1_sigUP.csv")
 
 #theme 
 mytheme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0, fontsize = 9)),
@@ -193,7 +193,7 @@ plot_data <- lapply(list(GO_3v2UP, GO_1v2UP), function(x){
 #Get the contributions to the PCA 
 
 PCA_maincontribs<-
-  lapply(list(counts_batchnorm_vst, counts_cbconly_vst), plot_contribs, PCs = c(1,2), n_contrib = 20)
+  lapply(list(counts_batchnorm_vst, counts_batchnorm_vst), plot_contribs, PCs = c(1,2), n_contrib = 20)
 
 
 plot_grid(PCA_maincontribs[[2]])

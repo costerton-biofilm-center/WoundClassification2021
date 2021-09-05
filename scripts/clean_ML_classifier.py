@@ -13,12 +13,14 @@ def main():
 	output_dir = "./analysis/linearSVM_out"
 
 	# Data Paths
-	counts_path = "./data/Example_data/Validation_counts_batchnorm_vst.csv"
+	counts_path = "./analysis/normalized_counts/Main_counts_batchnorm_vst.csv"
+	validation_path = "./data/Example_data/Validation_counts_batchnorm_vst.csv"
 	metadata_path = "./data/Example_data/Validation_metadata.csv"
 	kmeans_path = "./analysis/kmeans/kmeans_groups_all.csv" 
-
+	
 	# Get the data 
 	count_data = pd.read_csv(counts_path, index_col=0, sep = ",")
+	validation_counts = pd.read_csv(validation_path, index_col=0, sep = ",")
 	metadata = pd.read_csv(metadata_path, sep = ",")
 	kmeans_data = pd.read_csv(kmeans_path, dtype = np.str)
 
@@ -83,12 +85,15 @@ def main():
 			out_data.to_csv(out_file, index = False)
 
 		# Train and fit using only good genes
+		valid_data_train = clean_data(validation_counts, metadata[metadata['Source'] == 'CBC'], "Sample_ID", cat)
+		valid_data_test = clean_data(validation_counts, metadata[metadata['Source'] != 'CBC'], "Sample_ID", cat)
+
 		model_validation = SVC(probability=True)
-		model_validation.fit(np.array(cleaned_data[0][mask]).T, np.array(cleaned_data[1][cat], dtype = np.int)) 
+		model_validation.fit(np.array(valid_data_train[0][mask]).T, np.array(valid_data_train[1][cat], dtype = np.int)) 
 
 		# Predict on test data
 		test_samples = metadata['Sample_ID'][metadata['Data_set'] == 'Validation']
-		test_counts = count_data.filter(items = test_samples)[mask]
+		test_counts = valid_data_test[0].filter(items = test_samples)[mask]
 
 		prediction = model_validation.predict(np.array(test_counts).T)
 		prediction_prob = model_validation.predict_proba(np.array(test_counts).T)
@@ -98,6 +103,7 @@ def main():
 								'prediction_proba' : prediction_prob.tolist()})
         
 		results.to_csv(f"./analysis/validation/{cat}_predictions.csv", index = False)
+
 
 def clean_data(data, metadata, sample_id_colname, classifier_term, subset = False ):
     """ This function will take a rna-seq count data set, metadata,

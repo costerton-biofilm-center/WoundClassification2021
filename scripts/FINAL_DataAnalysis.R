@@ -171,6 +171,7 @@ metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
 #counts_batchnorm <- remove_batch_effect(counts, metadata, ~is_NEBSmallRNA, 1)
 counts_batchnorm <- counts
+
 # DESeq2 ======================================================================
 
 # Only count mRNA from exonic regions
@@ -195,6 +196,12 @@ combined_DEgenes_UlcerDuration_sig <- filter_DESeq(combined_DEgenes_UlcerDuratio
 combined_DEgenes_IDSAScore_sig <- filter_DESeq(combined_DEgenes_IDSAScore, 2, 0.05)
 
 #==================================================================================
+# Variance stabilizing transformation
+#===================================================================================
+
+counts_batchnorm_vst <- DESeq2::vst(as.matrix(counts_batchnorm_mRNA))
+
+#==================================================================================
 # Quick Heirarchical Clustering
 #==================================================================================
 
@@ -207,15 +214,12 @@ plot(hclust_avg) #Note: HH28-P509 correspond to the samples with high bacteria! 
 # Perform K-means clustering analysis 
 #===================================================================================
 
-#Normalize the counts 
-counts_batchnorm_vst <- DESeq2::vst(as.matrix(counts_batchnorm_mRNA))
-
 #Remove genes with zero variance 
 novar_filter <- apply(counts_batchnorm_vst, 1, sd)
 novar_filter <- novar_filter == 0
-counts_batchnorm_vst <- counts_batchnorm_vst[!novar_filter, ]
+counts_batchnorm_vst_noVar <- counts_batchnorm_vst[!novar_filter, ]
 set.seed(seed) # Set Seed for reproducibility
-kmeans_all <- kmeans(t(counts_batchnorm_vst), centers = 3, nstart = 25)
+kmeans_all <- kmeans(t(counts_batchnorm_vst_noVar), centers = 3, nstart = 25)
 
 # Get the results 
 
@@ -246,10 +250,10 @@ kmeans_groups_all$cluster_res_all <- unlist(kmeans_groups_all$cluster_res_all)
 #=======================================================
 
 # Add kmeans results to metadata 
-metadata_kmeans <- dplyr::left_join(metadata, kmeans_groups_all, by="Sample_ID")
+metadata <- dplyr::left_join(metadata, kmeans_groups_all, by="Sample_ID")
 
 # Run DESeq2
-dds_kmeans <- run_DESeq2(metadata = metadata_kmeans, 
+dds_kmeans <- run_DESeq2(metadata = metadata, 
                          counts = counts_batchnorm_mRNA,
                          id_colname = "Sample_ID",
                          metadata_vars = c("Source","cluster_res_all"),
@@ -288,9 +292,8 @@ DESeq_summary<-
 #=============================================================
 
 # Normalize for Library Prep Kit 
-
 counts_validation_mRNA <- filterCountsbyGeneType(counts_validation, annotation_path, "exon", c("mRNA"))
-counts_validation_mRNA_vst <- DESeq2::vst(as.matrix(counts_validation))
+counts_validation_vst <- DESeq2::vst(as.matrix(counts_validation_mRNA))
 
 #=========================================================================
 # Export gene counts data tables and analysis results to output directory
@@ -348,6 +351,6 @@ write.table(row.names(counts_batchnorm),
 #Export validation Data analysis
 
 write.csv(counts_validation_vst, "./data/Example_data/Validation_counts_batchnorm_vst.csv")
-write.csv(metadata_validation_mRNA_vst, "./data/Example_data/Validation_metadata.csv", row.names = F, quote = TRUE)
+write.csv(metadata_validation, "./data/Example_data/Validation_metadata.csv", row.names = F, quote = TRUE)
 
 
