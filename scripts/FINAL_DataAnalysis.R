@@ -344,7 +344,7 @@ write.table(row.names(subset(DEseq_kmeans_all_1v2_sig,log2FoldChange > 2)),
 write.table(row.names(subset(DEseq_kmeans_all_1v2_sig,log2FoldChange < -2)),
             row.names = F, sep = "", quote = F, col.names  = F,
             paste0(out_dir,"GO_analysis/DEseq_kmeans_all_1v2_sigDOWN.txt"))
-write.table(row.names(counts_batchnorm),
+write.table(row.names(counts_batchnorm_vst),
             row.names = F, sep = "", quote = F, col.names  = F,
             paste0(out_dir,"GO_analysis/counts_batchnorm_genelist.txt"))
 

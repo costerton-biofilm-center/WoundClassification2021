@@ -28,7 +28,7 @@ library(RColorBrewer)
 # Figure 1 
 #===============================================================
 
-PCA_vars = c("Source", "IDSA_SCORE_1to4", "Ulcer_duration_cat", "Bac_prcnt")
+PCA_vars = c("Source", "IDSA_SCORE_1to4", "Ulcer_duration_cat", "Bac_prcnt", "cluster_res_all")
 
 PCA_plots_all<-
   lapply(PCA_vars, function(metadata_cat) {
@@ -73,9 +73,9 @@ flowchart<-
   draw_image("./analysis/Figures/Sampling_overview.png")+
   theme(plot.margin = margin(0,0,0,0,"cm"))
 
-# Import hDendogram
+# Import Dendogram
 
-dend <-ggdendogram(hculst_avg)
+dend <-ggdendrogram(hclust_avg)
 
 #Build Plot 
 
@@ -127,7 +127,7 @@ plot_high_bac<-
 
 
 plot_bac_prop<-
-ggplot(subset(metadata_kmeans, Bac_prcnt>0), aes(y=Bac_prcnt, x = fct_reorder(Sample_ID, Bac_prcnt, .desc = T)))+
+ggplot(subset(metadata, Bac_prcnt>0), aes(y=Bac_prcnt, x = fct_reorder(Sample_ID, Bac_prcnt, .desc = T)))+
   geom_bar(stat = "identity")+
   labs(x = "Sample", y = "Bacterial:Human Reads (%)")+
   theme(axis.text.x = element_text(angle = 90))
@@ -184,7 +184,7 @@ plot_data <- lapply(list(GO_3v2UP, GO_1v2UP), function(x){
   })
   data[,1]<-unlist(newlines)
   #data[,1]<-gsub(pattern = " *\\(GO", replacement = "\n(GO", data[,1]) #Trim GO Term IDs from the names 
-  data <- data[order(data[,3], decreasing = F),] #sort by fold enrichment
+  data <- data[order(data[,2], decreasing = T),] #sort by fold enrichment
   plot_out <- tableGrob(head(data), rows = NULL, theme = mytheme)
   plot_out$widths <- unit(c(47,20,20), "mm") 
   return(plot_out)
@@ -192,15 +192,13 @@ plot_data <- lapply(list(GO_3v2UP, GO_1v2UP), function(x){
 
 #Get the contributions to the PCA 
 
-PCA_maincontribs<-
-  lapply(list(counts_batchnorm_vst, counts_batchnorm_vst), plot_contribs, PCs = c(1,2), n_contrib = 20)
+PCA_maincontribs<-plot_contribs(counts_batchnorm_vst, c(1,2), n_contrib = 20)
 
 
-plot_grid(PCA_maincontribs[[2]])
 
 #Fix up PCA plot 
-PCA_plots_all[[20]]<-
-addSmallLegend(PCA_plots_all[[20]], pointSize = 2, 
+PCA_plots_all[["cluster_res_all"]]<-
+addSmallLegend(PCA_plots_all[["cluster_res_all"]], pointSize = 2, 
                textSize = 5, spaceLegend = 0.4)+
   theme(legend.position = c(0.8,0.8))+
   labs(color = "K-means Cluster")
@@ -228,10 +226,13 @@ titles <- lapply(c("a. Contributions of Variables to PCs",
 #Build the plot 
 
 
-GO_grid <- plot_grid(plot_data[[1]], plot_data[[2]], nrow = 2, align = "hv", labels = c("c. Enriched Pathways (C3 vs C2)", 
-                                                                                        "d. Enriched Pathways (C1 vs C2)"),
-                     label_x = -0.4)
-PCA_grid <- plot_grid(PCA_maincontribs[[2]], PCA_plots_all[[20]], nrow = 2, rel_heights = c(0.6,0.3),
+GO_grid <- plot_grid(NULL, plot_data[[1]], NULL, plot_data[[2]], nrow = 4, align = "hv", labels = c("","c. Enriched Pathways (C3 vs C2)", 
+                                                                                        "","d. Enriched Pathways (C1 vs C2)"),
+                     label_x = -0.4,
+                     vjust = c(0, -1.8 , 0, 0, -1), 
+                     rel_heights = c(0.05,0.35,0.05,0.4))
+
+PCA_grid <- plot_grid(PCA_maincontribs, PCA_plots_all[["cluster_res_all"]], nrow = 2, rel_heights = c(0.6,0.3),
                       labels = c("a.", "b."), label_y = c(1, 1.1))
 
 FINAL_Fig3<-
