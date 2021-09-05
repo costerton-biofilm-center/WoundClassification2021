@@ -194,6 +194,15 @@ combined_DEgenes_IDSAScore<-DESeq2::results(combined_DESeq2, contrast = c("IDSA_
 combined_DEgenes_UlcerDuration_sig <- filter_DESeq(combined_DEgenes_UlcerDuration, 2, 0.05)
 combined_DEgenes_IDSAScore_sig <- filter_DESeq(combined_DEgenes_IDSAScore, 2, 0.05)
 
+#==================================================================================
+# Quick Heirarchical Clustering
+#==================================================================================
+
+dist_mat <- dist(t(counts_batchnorm_vst), method = 'euclidian')
+hclust_avg <- hclust(dist_mat, method = 'average')
+plot(hclust_avg) #Note: HH28-P509 correspond to the samples with high bacteria! Highlight in figure
+
+
 #===================================================================================
 # Perform K-means clustering analysis 
 #===================================================================================

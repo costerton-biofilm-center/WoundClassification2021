@@ -21,167 +21,92 @@
 library(ggplot2)
 library(cowplot)
 library(gridExtra)
-
+library(ggdendro)
 #===============================================================
 # Figure 1 
 #===============================================================
-#NOTE: This also generates and saves PCA plots of all the
-#      metadata variables in the metadata file.  
 
-
-#Make and Export PCAs for all the Metadata Variables 
-PCA_plots_CBC<-
-  lapply(colnames(metadata_kmeans[,5:ncol(metadata_kmeans)]), function(metadata_cat) {
-    print(metadata_cat)
-    if(metadata_cat %in% c("Sample_ID", "R1_name", "R2_name", "Specific_ID")){} 
-    else{
-      
-      plot<-
-        plot_PCA(counts_cbconly_vst, metadata_kmeans, c(1,2), 
-                 metadata_cat, normalize = F)
-      # ggsave(paste0("./analysis/Figures/PCA_CBC_", metadata_cat, ".png"),
-      #        plot = plot,
-      #        width = 5, height = 5)
-      return(plot+theme(legend.position = "none"))
-    }
-  })
+PCA_vars = c("Source", "IDSA_SCORE_1to4", "Ulcer_duration_cat", "Bac_prcnt")
 
 PCA_plots_all<-
-  lapply(colnames(metadata_kmeans[,5:ncol(metadata_kmeans)]), function(metadata_cat) {
-    if(metadata_cat %in% c("Sample_ID", "R1_name", "R2_name", "Specific_ID")){} 
-    else{
-      plot<-
-        plot_PCA(counts_batchnorm_vst, metadata_kmeans, c(1,2), 
-                 metadata_cat, normalize = F)
-      # ggsave(paste0("./analysis/Figures/PCA_All_", metadata_cat, ".png"),
-      #        width = 5, height = 5)
-      return(plot+theme(legend.position = "none"))
-    }
+  lapply(PCA_vars, function(metadata_cat) {
+    plot<-
+      plot_PCA(counts_batchnorm_vst, metadata, c(1,2), 
+               metadata_cat, normalize = F)
+    # ggsave(paste0("./analysis/Figures/PCA_All_", metadata_cat, ".png"),
+    #        width = 5, height = 5)
+    return(plot+theme(legend.position = "none"))
   })
 
 #Assign names to the list outputs for each access
-names(PCA_plots_CBC)<-colnames(metadata_kmeans[,5:ncol(metadata_kmeans)])
-names(PCA_plots_all)<-colnames(metadata_kmeans[,5:ncol(metadata_kmeans)])
+names(PCA_plots_all)<-PCA_vars
 
+# Manually format the PCAs to make pretty 
 
-#Make the labels for the PCA plot section
+PCA_plots_all[["Bac_prcnt"]]<- 
+  addSmallLegend(PCA_plots_all[["Bac_prcnt"]], 
+                 pointSize = 2, textSize = 5, 
+                 spaceLegend = 0.4, scale = "continuous")+
+  theme(legend.position = c(0.8,0.8))+
+  labs(color = "% Bacterial Reads")
 
-titles <- lapply(c("a. Design",
-                   "b. Pre-normalization",
-                   "c. Batch Normalized",
-                   "d. Infection Severity (IDSA/PEDIS)",
-                   "e. Ulcer Duration", 
-                   "f. Proportion Bacterial Reads to Human"),
-                 function(title){
-                   ggdraw()+
-                     draw_label(title, 
-                          x=0, hjust = 0)+
-                     theme(
-                       # add margin on the left of the drawing canvas,
-                       # so title is aligned with left edge of first plot
-                       plot.margin = margin(0, 0, 0, 7)
-                     )
-                 })
+PCA_plots_all[["IDSA_SCORE_1to4"]]<- 
+  addSmallLegend(PCA_plots_all[["IDSA_SCORE_1to4"]], 
+                 pointSize = 2,textSize = 5, spaceLegend = 0.4)+
+  theme(legend.position = c(0.8,0.8))+
+  labs(color = "IDSA Score")+
+  scale_color_manual(values = c("#84D7E1B2", "#FF6F00B2", "#C71000B2"), na.value = "#3F4041B2")
 
-#Get the flowchart and add the title 
+PCA_plots_all[["Ulcer_duration_cat"]]<-
+  addSmallLegend(PCA_plots_all[["Ulcer_duration_cat"]],
+                 pointSize = 2,textSize = 5, spaceLegend = 0.4)+
+  theme(legend.position = c(0.8,0.8))+
+  labs(color = "Ulcer Duration")+
+  scale_color_manual(values = c("#ADE2D0B2","#FF95A8B2", "#8A4198B2"), na.value = "#999999")
+
+# Import flowchart 
 
 flowchart<-
   ggdraw() + 
   draw_image("./analysis/Figures/Sampling_overview.png")+
   theme(plot.margin = margin(0,0,0,0,"cm"))
 
-flowchart <- plot_grid(titles[[1]], flowchart, 
-                       ncol = 1, 
-                       rel_heights = c(0.2,0.7)
+# Import hDendogram
+
+dend <-ggdendogram(hculst_avg)
+
+#Build Plot 
+
+PCA_grid <- plot_grid(PCA_plots_all[["IDSA_SCORE_1to4"]],
+                      PCA_plots_all[["Ulcer_duration_cat"]],
+                      PCA_plots_all[["Bac_prcnt"]], ncol = 3,
+                      labels = c("b. Infection Score", 
+                                 "c. Ulcer Duration", 
+                                 "d. Bac:Human Reads"), 
+                      vjust = -0.5, hjust = -0.04
 )
 
-#Make PCAs for pre and post normalization 
-pre_normalization_pca <- 
-  plot_PCA(counts_filtered, metadata_kmeans, c(1,2), 
-           "Lib_prep", normalize = T)+
-  theme(legend.position = "none")
+Final_Fig1 <- plot_grid(flowchart, PCA_grid, dend, nrow = 3, 
+                        labels = c("a. Design Flowchart",
+                                   "", "c. Heirarchical Clustering"), 
+                        hjust = -0.04, vjust = c(1.5,0,0.5)
+                        
+)
 
-post_normalization_pca  <- plot_PCA(counts_batchnorm_vst, metadata_kmeans, c(1,2), 
-                                    "Lib_prep", normalize = F)+
-  theme(legend.position = "none")
+# Export Plot 
 
-
-# Manually prettying up the PCAs in Figure1 
-
-PCA_plots_all[["Bac_prcnt"]]<- addSmallLegend(PCA_plots_all[["Bac_prcnt"]], pointSize = 2, 
-                                            textSize = 5, spaceLegend = 0.4,
-                                            scale = "continuous")+
-  theme(legend.position = c(0.8,0.8))+
-  labs(color = "% Bacterial Reads")
-
-PCA_plots_all[["IDSA_SCORE_1to4"]]<- addSmallLegend(PCA_plots_all[["IDSA_SCORE_1to4"]], pointSize = 2, 
-                                              textSize = 5, spaceLegend = 0.4)+
-  theme(legend.position = c(0.8,0.8))+
-  labs(color = "IDSA Score")+
-  scale_color_manual(values = c("#84D7E1B2", "#FF6F00B2", "#C71000B2"), na.value = "#3F4041B2")
-
-PCA_plots_all[["Ulcer_duration_cat"]]<- addSmallLegend(PCA_plots_all[["Ulcer_duration_cat"]], pointSize = 2, 
-                                                    textSize = 5, spaceLegend = 0.4)+
-  theme(legend.position = c(0.8,0.8))+
-  labs(color = "Ulcer Duration")+
-  scale_color_manual(values = c("#ADE2D0B2","#FF95A8B2", "#8A4198B2"), na.value = "#999999")
-
-pre_normalization_pca<-addSmallLegend(pre_normalization_pca, pointSize = 2, 
-                                      textSize = 5, spaceLegend = 0.4)+
-  theme(legend.position = c(0.8,0.8))+
-  scale_color_manual(values = c("#3C5488FF","#E64B35FF", "#91D1C2FF"), na.value = "#999999")+
-  labs(color = "Library Prep Kit")
-
-post_normalization_pca<-addSmallLegend(post_normalization_pca, pointSize = 2, 
-                                      textSize = 5, spaceLegend = 0.4)+
-  theme(legend.position = c(0.8,0.8))+
-  scale_color_manual(values = c("#3C5488FF","#E64B35FF", "#91D1C2FF"), na.value = "#999999")+
-  labs(color = "Library Prep Kit")
-
-
-#Make the plot_grids
-pca_plotgrid <- 
-  plot_grid(titles[[4]], plot_grid(plotlist = c(PCA_plots_all["IDSA_SCORE_1to4"])),
-            titles[[5]], plot_grid(plotlist = c(PCA_plots_all["Ulcer_duration_cat"])),
-            titles[[6]], plot_grid(plotlist = c(PCA_plots_all["Bac_prcnt"])),
-            rel_heights = (c(0.2,0.8,0.2,0.8,0.2,0.8)),
-            ncol = 1,
-            align = "hv"
-  )
-
-normalization_plotgrid <- 
-  plot_grid(titles[[2]], pre_normalization_pca, titles[[3]], post_normalization_pca,NULL,
-            ncol = 1,
-            nrow = 5,
-            byrow = T, 
-            rel_heights = c(0.1,0.4, 0.1, 0.4, 0.1),
-            vjust = -0.1)
-
-combined<-plot_grid(normalization_plotgrid,NULL, 
-                    pca_plotgrid,NULL, ncol = 4, 
-                    rel_widths = c(0.5,0.05, 0.5, 0.05),
-                    align = "h")
-
-#Make the final plot 
-
-final_plot <- 
-  plot_grid(flowchart, combined,
-            nrow = 2, rel_heights = c(0.35, 1))
-
-#ggsave("./analysis/Figures/Figure1.png",
 ggsave("./analysis/Figures/Figure1.png",      
-       final_plot, units = "mm", 
+       Final_Fig1, units = "mm", 
        width = 180, 
        height = 180, 
        dpi = 300)
 
 #Also save as svg for editing 
 ggsave("./analysis/Figures/Figure1.pdf",      
-       final_plot, units = "mm", 
+       Final_Fig1, units = "mm", 
        width = 180, 
        height = 180, 
        dpi = 300)
-
 #=============================================
 #Figure 2: Variance analysis and Microbiome 
 #=============================================
