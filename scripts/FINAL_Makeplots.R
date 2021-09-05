@@ -22,6 +22,8 @@ library(ggplot2)
 library(cowplot)
 library(gridExtra)
 library(ggdendro)
+library(RColorBrewer)
+
 #===============================================================
 # Figure 1 
 #===============================================================
@@ -107,46 +109,44 @@ ggsave("./analysis/Figures/Figure1.pdf",
        width = 180, 
        height = 180, 
        dpi = 300)
+
 #=============================================
-#Figure 2: Variance analysis and Microbiome 
+#Figure 2: Bacterial Load  
 #=============================================
 
-variance_plot<-
-ggplot(data = pivot_longer(variance_contribs, cols = c(1,2)), aes(x= value, fill= factor(name, labels = c("Bacterial Activity", "Clinical Score"))))+
-  geom_histogram(bins = 50, color = "black", alpha = 0.5, position = "identity")+
-  labs( x = expression(paste("Proportion of Explained Variation (",eta^{2}, ")")),
-        y = "# of Genes")+
-  theme(legend.position = c(0.6, 0.8),
-        legend.background = element_rect(fill = "white", color = "black"))+
-  guides(fill = guide_legend(title = "Factor"))
-
-
-library(RColorBrewer)
 mycolors <- colorRampPalette(brewer.pal(12, "Paired"))(length(unique(high_bac_microbiome_top_species$ID)))
 
 plot_high_bac<-
-  ggplot(high_bac_microbiome_top_species, aes(x = Sample_ID, y = Rel_abund, fill = fct_reorder(ID, Rel_abund), label = ID))+
+  ggplot(high_bac_microbiome_top_species, aes(x = Sample_ID, y = Rel_abund, fill = fct_reorder(ID, Rel_abund)))+
   geom_bar(stat = "identity", width = 0.9)+
   scale_fill_manual(values = mycolors)+
-  labs(x = "Sample", y = "Relative Abundance (%)")+
+  labs(x = "Sample", y = "Relative Activity (%)")+
   guides(fill = guide_legend(title = "Bacterial Species"))+
   theme(legend.text = element_text(size = 8))
 
+
+
 plot_bac_prop<-
-ggplot(subset(metadata_kmeans, Bac_prcnt>5), aes(y=Bac_prcnt, x = fct_reorder(Sample_ID, Bac_prcnt, .desc = T)))+
+ggplot(subset(metadata_kmeans, Bac_prcnt>0), aes(y=Bac_prcnt, x = fct_reorder(Sample_ID, Bac_prcnt, .desc = T)))+
   geom_bar(stat = "identity")+
-  labs(x = "Sample", y = "% Bacterial Reads")+
+  labs(x = "Sample", y = "Bacterial:Human Reads (%)")+
   theme(axis.text.x = element_text(angle = 90))
-  
-fig2_top<-
-plot_grid(variance_plot, plot_bac_prop, ncol = 2, labels = c("a.", "b."), rel_widths = c(0.6,0.4)) 
+
 
 fig2<-
-plot_grid(fig2_top, plot_high_bac, nrow = 2, labels = c(" ","c."))
-
-fig2
+plot_grid(NULL, plot_bac_prop, NULL, plot_high_bac, nrow = 4, 
+          labels = c("","a. Percentage of Bac:Human Reads","", 
+                     "b. Relative Activity: # of Reads(Species):# of Reads(Bacteria)"),
+          rel_heights = c(0.05, 0.5, 0.08, 0.5),
+          vjust = c(0, -0.7, 0, -1.8) , hjust = -0.05)
 
 ggsave("./analysis/Figures/Figure2.pdf",      
+       fig2, units = "mm", 
+       width = 180, 
+       height = 180, 
+       dpi = 300)
+
+ggsave("./analysis/Figures/Figure2.png",      
        fig2, units = "mm", 
        width = 180, 
        height = 180, 
