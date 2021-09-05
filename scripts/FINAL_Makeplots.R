@@ -121,7 +121,7 @@ plot_high_bac<-
   geom_bar(stat = "identity", width = 0.9)+
   scale_fill_manual(values = mycolors)+
   labs(x = "Sample", y = "Relative Activity (%)")+
-  guides(fill = guide_legend(title = "Bacterial Species"))+
+  guides(fill = guide_legend(title = ""))+
   theme(legend.text = element_text(size = 8))
 
 
