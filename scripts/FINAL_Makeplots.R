@@ -270,13 +270,145 @@ names(SVM_genes) <- gsub("GoodGenes_","", names(SVM_genes))
 names(SVM_genes) <- gsub("*.csv","", names(SVM_genes))
 
 # Hard-coding the metadata names in so they look nice in the plots. Prints a warnnig 
-warning(paste0("Changing: ", names(SVM_genes), " to ", c("K-means Cluster", "IDSA/PEDIS Score", "Ulcer Duration"),
+warning(paste0("Changing: ", names(SVM_genes), " to ", c("Infection Score", "Cluster1", "Cluster2", "Cluster3"),
                " in SVM_names_new. Make sure names are correct.", sep = "\n"))
 
-#This will be used for the graphs to have nice labels
-SVM_names_new <- c("K-means Cluster", "IDSA/PEDIS Score", "Ulcer Duration")
+#Make plots of Coefficients
+
+coef_samples<- list.files(SVM_dir, pattern = "COEF.*.csv", full.names = T)
+coef_data <- lapply(coef_samples, read.delim, sep = ",", col.names = c("Gene", "Coef"))
+names(coef_data) <- basename(coef_samples)
+
+SVM_coefs_plots <- 
+  lapply(seq_along(coef_data), function(x){
+    data <- coef_data[[x]]
+    name <- str_extract(names(coef_data)[x], "isCluster_[1-3]")
+    name<-gsub("isCluster_", "Cluster ", name)
+    print(name)
+    plot<-
+    ggplot(data, aes(x = Coef, y = fct_reorder(Gene, Coef)))+
+      geom_bar(stat = "identity")+
+      xlim(-0.25, 0.25)+
+      labs(title = name, x = "Coefficient")+
+      theme(axis.text = element_text(size = 5),
+            axis.title.y = element_blank())
+    return(plot)
+    
+  })
+
+SVM_expression_data <- lapply(coef_data, function(x){
+  data <- x
+  pos_coef <- data$Gene[data$Coef>0]
+  #Get expression data 
+  expression_values <- subset(counts_batchnorm_vst, row.names(counts_batchnorm_vst) %in% pos_coef)
+  expression_values <- as.data.frame(expression_values)
+  expression_values <-
+    expression_values %>%
+    rownames_to_column("Gene_ID") %>%
+    pivot_longer(cols = -1, names_to = "Sample_ID", values_to = "Norm_expression") %>%
+    left_join(metadata, by = "Sample_ID")
+})
 
 
+#Format names for x axis
+metadata_vars<-
+lapply(names(SVM_expression_data), function(x){
+  name <- gsub("COEF_", "", x)
+  name <- gsub("_0.csv", "", name)
+  name <- gsub(".csv", "", name)
+  if(grepl("IDSA", name)){
+    name <- "IDSA_SCORE_1to4"
+    return(name)
+  }
+  else{return(name)}
+})
+
+plots <- lapply(seq_along(SVM_expression_data), function(x){
+  n_genes <- length(unique(SVM_expression_data[[x]]$Gene_ID))
+  gene_names <- unique(SVM_expression_data[[x]]$Gene_ID)
+  facet_annotations <- data.frame(label = gene_names, Gene_ID = gene_names, x = 0.9, y = 24)
+  if(n_genes < 7){
+    violin_plot<-
+      ggplot(SVM_expression_data[[x]], 
+             aes_string(x=metadata_vars[[x]], y="Norm_expression"))+
+      geom_violin(scale = "width", trim = FALSE, aes_string(fill=metadata_vars[[x]]))+
+      geom_jitter(position = position_jitter(width=0.05, height = 0), size = 1)+
+      scale_y_continuous(limits = c(0,25), breaks = c(seq(5,25,5)))+
+      theme_half_open()+
+      theme(legend.position = "none",
+            panel.spacing = unit(0, "lines"),
+            panel.border = element_rect(colour = "black", fill=NA, size=0.5),
+            axis.title.x = element_blank(),
+            axis.title.y = element_text(size = 8),
+            axis.ticks.x = element_blank(),
+            axis.text.x = element_blank(),
+            axis.text.y = element_text(size = 8))+
+      ylab("Normalized\nExpression")+
+      facet_grid(~ Gene_ID, scales = "free")+
+      theme(strip.background = element_blank(),
+            strip.text.x = element_blank())+
+      geom_text(data = facet_annotations, 
+                mapping = aes(x = x, 
+                              y = y,
+                              label = Gene_ID,),
+                size = 2)
+  }
+  else{
+    violin_plot<-
+      ggplot(SVM_expression_data[[x]], 
+             aes_string(x=metadata_vars[[x]], y="Norm_expression"))+
+      geom_violin(scale = "width", trim = FALSE, aes_string(fill=metadata_vars[[x]]))+
+      geom_jitter(position = position_jitter(width=0.05, height = 0), size = 1)+
+      scale_y_continuous(limits = c(0,25), breaks = c(seq(5,25,5)))+
+      xlab(metadata_vars[[x]])+
+      theme_half_open()+
+      theme(legend.position = "none",
+            panel.spacing = unit(0, "lines"),
+            panel.border = element_rect(colour = "black", fill=NA, size=0.5),
+            axis.title.x = element_blank(),
+            axis.title.y = element_text(size = 8),
+            axis.ticks.x = element_blank(),
+            axis.text.x = element_blank(),
+            axis.text.y = element_text(size = 8))+
+      ylab("Normalized\nExpression")+
+      facet_wrap(~ Gene_ID, ncol = 7)+
+      theme(strip.background = element_blank(),
+            strip.text.x = element_blank())+
+      geom_text(data = facet_annotations, 
+                mapping = aes(x = x, 
+                              y = y,
+                              label = Gene_ID,),
+                size = 2)
+  }
+})
+
+#Build the plots 
+
+
+plots_COEFS<-plot_grid(plotlist = SVM_coefs_plots[4:6], ncol = 3)
+
+#plots_test<-as.list(plots[4], NULL)
+expression_plots1 <- plot_grid(plotlist = as.list(plots[4], NULL), ncol = 2, rel_widths = c(0.73, 0.27))
+expression_plots2 <- plot_grid(expression_plots1, plotlist = plots[5:6], 
+                               nrow = 3, rel_heights = c(0.20,0.3,0.3), 
+                               labels = c("b.", "c.", "d."), vjust = c(0,0,0))
+ 
+
+Final_Fig4<-
+plot_grid(plots_COEFS, expression_plots2, nrow = 2, rel_heights = c(0.3, 0.7), labels = c("a.") )
+
+ggsave("./analysis/Figures/Figure4.png",      
+       Final_Fig4, units = "mm", 
+       width = 180, 
+       height = 200, 
+       dpi = 300)
+
+ggsave("./analysis/Figures/Figure4.pdf",      
+       Final_Fig4, units = "mm", 
+       width = 180, 
+       height = 200, 
+       dpi = 300)
+  
 ### Figure 4a #############################################
 
 #Get the annotations for the good genes (takes several minutes to run!)
@@ -287,40 +419,10 @@ lapply(SVM_genes, function(x){
   get_gene_names(data, annotation_path, "exon", "mRNA")
 })
 
-
 ### Figure 4b ###############################################
 
-# SVM_genes <- 
+# SVM_genes <-
 #   lapply(list.files(SVM_dir, pattern = SVM_names , full.names = T), read.delim, sep = ",")
-
-
-# For each metadata cat of interest, make a data set for plotting
-plot_data <- lapply(seq_along(SVM_genes), function(x){
-  expression_values <- subset(counts_batchnorm_vst, row.names(counts_batchnorm_vst) %in% unlist(SVM_genes[x]))
-  expression_values <- as.data.frame(expression_values)
-  expression_values <-
-    expression_values %>%
-      rownames_to_column("Gene_ID") %>%
-      pivot_longer(cols = -1, names_to = "Sample_ID", values_to = "Norm_expression") %>%
-      left_join(metadata_kmeans, by = "Sample_ID")
-
-})
-
-#Make a faceted grid of violin plots for each metadata cat in SVM output
-plots <- lapply(seq_along(plot_data), function(x){
-  violin_plot<-
-  ggplot(plot_data[[x]], aes_string(x=names(SVM_genes)[x], y="Norm_expression"))+
-    geom_violin(scale = "width", trim = FALSE, aes_string(fill=names(SVM_genes)[x]))+
-    geom_jitter(position = position_jitter(width=0.05, height = 0))+
-    xlab(SVM_names_new[x])+
-    ylab("Normalized Expression")+
-    theme_half_open()+
-    theme(legend.position = "none",
-          panel.spacing = unit(0, "lines"),
-          panel.border = element_rect(colour = "black", fill=NA, size=0.5))+
-    facet_wrap(~ Gene_ID, nrow = 5, ncol = 4)
-  return(violin_plot)
-})
 
 
 ### Combine 4a and 4b for Final Figure
@@ -329,31 +431,34 @@ lapply(seq_along(plots), function(x){
   name <- names(SVM_genes)[x]
   
   #Get accuracy plot (Exported by ML python script)
-  accuracy <- ggdraw() + 
-    draw_image(paste0("./analysis/Figures/Accuracy_", name,".png"))+
-    theme(plot.margin = margin(0,0,0,0,"cm"))
+  # accuracy <- ggdraw() + 
+  #   draw_image(paste0("./analysis/Figures/Accuracy_", name,".png"))+
+  #   theme(plot.margin = margin(0,0,0,0,"cm"))
   
-  plot_leftside <- plot_grid(tableGrob(gene_products[[x]], rows = NULL),
-                             accuracy, nrow = 2, ncol = 1, labels = c("", "b"),
-                             rel_heights = c(0.5,0.4))
+  #Annotation Table 
+  tableGrob(gene_products[[x]])
   
-  
-  out_plot <- plot_grid(plot_leftside,
-                    plots[[x]], ncol = 2,
-                    labels = c("a", "c"), rel_widths = c(0.5,0.5))
+  # plot_leftside <- plot_grid(tableGrob(gene_products[[x]], rows = NULL),
+  #                            accuracy, nrow = 2, ncol = 1, labels = c("", "b"),
+  #                            rel_heights = c(0.5,0.4))
   
   
-  ggsave(paste0("./analysis/Figures/Figure4_", name, ".png"),
-         out_plot, units = "mm",
-         width = 300,
-         height = 300,
-         dpi = 300) 
-  
-  ggsave(paste0("./analysis/Figures/Figure4_", name, ".pdf"),
-         out_plot, units = "mm",
-         width = 300,
-         height = 300,
-         dpi = 300) 
+  # out_plot <- plot_grid(plot_leftside,
+  #                   plots[[x]], ncol = 2,
+  #                   labels = c("a", "c"), rel_widths = c(0.5,0.5))
+  # 
+  # 
+  # ggsave(paste0("./analysis/Figures/Figure4_", name, ".png"),
+  #        out_plot, units = "mm",
+  #        width = 300,
+  #        height = 300,
+  #        dpi = 300) 
+  # 
+  # ggsave(paste0("./analysis/Figures/Figure4_", name, ".pdf"),
+  #        out_plot, units = "mm",
+  #        width = 300,
+  #        height = 300,
+  #        dpi = 300) 
 })
 
 

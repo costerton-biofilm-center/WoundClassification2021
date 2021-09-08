@@ -270,6 +270,13 @@ DEseq_kmeans_all_3v2_sig <- filter_DESeq(DEseq_kmeans_all_3v2, 2, 0.05)
 DEseq_kmeans_all_1v2_sig <- filter_DESeq(DEseq_kmeans_all_1v2, 2, 0.05)
 DEseq_kmeans_all_3v1_sig <- filter_DESeq(DEseq_kmeans_all_3v1, 2, 0.05)
 
+#=========================================================
+# Dummy kmeans variables
+#=========================================================
+
+metadata$isCluster_1<-ifelse(metadata$cluster_res_all=="1", "1", "0")
+metadata$isCluster_2<-ifelse(metadata$cluster_res_all=="2", "1", "0")
+metadata$isCluster_3<-ifelse(metadata$cluster_res_all=="3", "1", "0")
 
 #=========================================================
 # Count # of differentially expressed genes from DESeq 
