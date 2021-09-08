@@ -419,48 +419,40 @@ lapply(SVM_genes, function(x){
   get_gene_names(data, annotation_path, "exon", "mRNA")
 })
 
-### Figure 4b ###############################################
+#============================================================
+# Annotation Tables Out 
+#===========================================================
 
-# SVM_genes <-
-#   lapply(list.files(SVM_dir, pattern = SVM_names , full.names = T), read.delim, sep = ",")
-
-
-### Combine 4a and 4b for Final Figure
-
-lapply(seq_along(plots), function(x){
-  name <- names(SVM_genes)[x]
+annotation_tables <- lapply(seq_along(gene_products), function(x){
+  name <- names(gene_products)[x]
+  data <- gene_products[[x]]
   
-  #Get accuracy plot (Exported by ML python script)
-  # accuracy <- ggdraw() + 
-  #   draw_image(paste0("./analysis/Figures/Accuracy_", name,".png"))+
-  #   theme(plot.margin = margin(0,0,0,0,"cm"))
-  
-  #Annotation Table 
-  tableGrob(gene_products[[x]])
-  
-  # plot_leftside <- plot_grid(tableGrob(gene_products[[x]], rows = NULL),
-  #                            accuracy, nrow = 2, ncol = 1, labels = c("", "b"),
-  #                            rel_heights = c(0.5,0.4))
-  
-  
-  # out_plot <- plot_grid(plot_leftside,
-  #                   plots[[x]], ncol = 2,
-  #                   labels = c("a", "c"), rel_widths = c(0.5,0.5))
-  # 
-  # 
-  # ggsave(paste0("./analysis/Figures/Figure4_", name, ".png"),
-  #        out_plot, units = "mm",
-  #        width = 300,
-  #        height = 300,
-  #        dpi = 300) 
-  # 
-  # ggsave(paste0("./analysis/Figures/Figure4_", name, ".pdf"),
-  #        out_plot, units = "mm",
-  #        width = 300,
-  #        height = 300,
-  #        dpi = 300) 
+  #Add line break if annotation longer than 45 chars 
+  data$Product <- gsub('(.{1,30})(\\s|$)', '\\1\n', data$Product)
+  data$Product <- gsub('\n$', '', data$Product)
+  table <- tableGrob(data, rows = NULL,
+                     theme = ttheme_default(core=list(fg_params=list(cex = 0.8, hjust=0, x=0.1)),
+                                            padding = unit(c(0.8,1.3), "mm")))
 })
 
+
+annotation_out<-
+plot_grid(plotlist = annotation_tables[2:4], ncol = 3, align = "hv",
+          labels = c("a. Cluster 1", "b. Cluster 2","c. Cluster 3"),
+          vjust = 1.1, hjust = -0.08)
+
+annotation_out
+
+ggsave("./analysis/Figures/Fig_Annotation.pdf",      
+       annotation_out, units = "mm", 
+       width = 250, 
+       height = 183, 
+       dpi = 300)
+ggsave("./analysis/Figures/Fig_Annotation.png",      
+       annotation_out, units = "mm", 
+       width = 250, 
+       height = 183, 
+       dpi = 300)
 
 ######################################
 # Figure 5 - SVC Results Figure     ##
