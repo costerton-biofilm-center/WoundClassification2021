@@ -90,7 +90,7 @@ PCA_grid <- plot_grid(PCA_plots_all[["IDSA_SCORE_1to4"]],
 
 Final_Fig1 <- plot_grid(flowchart, PCA_grid, dend, nrow = 3, 
                         labels = c("a. Design Flowchart",
-                                   "", "c. Heirarchical Clustering"), 
+                                   "", "e. Heirarchical Clustering"), 
                         hjust = -0.04, vjust = c(1.5,0,0.5)
                         
 )
@@ -192,9 +192,9 @@ plot_data <- lapply(list(GO_3v2UP, GO_1v2UP), function(x){
 
 #Get the contributions to the PCA 
 
-PCA_maincontribs<-plot_contribs(counts_batchnorm_vst, c(1,2), n_contrib = 20)
+PCA_maincontribs_plots<-plot_contribs(counts_batchnorm_vst, c(1,2), n_contrib = 20)
 
-
+PCA_maincontribs <- gridExtra::grid.arrange(PCA_maincontribs[1], PCA_maincontribs[2])
 
 #Fix up PCA plot 
 PCA_plots_all[["cluster_res_all"]]<-
@@ -422,10 +422,13 @@ lapply(SVM_genes, function(x){
 #============================================================
 # Annotation Tables Out 
 #===========================================================
+#Only include annotations for clusters
 
 annotation_tables <- lapply(seq_along(gene_products), function(x){
   name <- names(gene_products)[x]
   data <- gene_products[[x]]
+  
+  
   
   #Add line break if annotation longer than 45 chars 
   data$Product <- gsub('(.{1,30})(\\s|$)', '\\1\n', data$Product)

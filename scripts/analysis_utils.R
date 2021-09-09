@@ -517,7 +517,8 @@ plot_contribs<-function(norm_counts, PCs, n_contrib){
   contribs2 <- factoextra::fviz_contrib(PCA, choice = "var", axes = 2, top = n_contrib)+
     ggtitle("Contributions of variables to PC2")
   
-  plot <- gridExtra::grid.arrange(contribs1, contribs2)
-  return(plot)
+
+  return(list(contribs1, contribs2))
 }
+
 

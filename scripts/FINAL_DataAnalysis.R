@@ -184,17 +184,19 @@ counts_batchnorm_mRNA <- filterCountsbyGeneType(counts_batchnorm, annotation_pat
 combined_DESeq2 <- run_DESeq2(metadata = metadata,
                               counts = counts_batchnorm_mRNA,
                               id_colname = "Sample_ID",
-                              metadata_vars = c("Ulcer_duration_cat","IDSA_SCORE_1to4", "Lib_prep"),
-                              formula = ~ Ulcer_duration_cat + IDSA_SCORE_1to4)
+                              metadata_vars = c("Ulcer_duration_cat","IDSA_SCORE_1to4", "high_bacteria"),
+                              formula = ~ Ulcer_duration_cat + IDSA_SCORE_1to4 + high_bacteria)
 
 # Test for differential expression between "extreme" values of metadata
 combined_DEgenes_UlcerDuration<-DESeq2::results(combined_DESeq2, contrast = c("Ulcer_duration_cat", "2", "0"))
 combined_DEgenes_IDSAScore<-DESeq2::results(combined_DESeq2, contrast = c("IDSA_SCORE_1to4", "4","2"))
-
+combined_DEgenes_high_bacteria <- DESeq2::results(combined_DESeq2, contrast = c("high_bacteria", "high","low"))
+  
 # Filter for genes with abs(log2FoldChange > 2) and padj < 0.05
 combined_DEgenes_UlcerDuration_sig <- filter_DESeq(combined_DEgenes_UlcerDuration, 2, 0.05)
 combined_DEgenes_IDSAScore_sig <- filter_DESeq(combined_DEgenes_IDSAScore, 2, 0.05)
-
+combined_DEgenes_high_bacteria_sig <- filter_DESeq(combined_DEgenes_high_bacteria, 2, 0.05)
+  
 #==================================================================================
 # Variance stabilizing transformation
 #===================================================================================
@@ -293,6 +295,13 @@ DESeq_summary<-
             "DEseq_kmeans_all_3v2",
             "DEseq_kmeans_all_1v2",
             "DEseq_kmeans_all_3v1"))
+
+#=========================================================
+# Test Bacterial Load Between clusters
+#=========================================================
+
+fit <- glm(Bac_prcnt/100 ~ cluster_res_all, data = metadata, family = binomial())
+anova(fit, test = "Chisq")
 
 #=============================================================
 # Prepare Validation Data 
