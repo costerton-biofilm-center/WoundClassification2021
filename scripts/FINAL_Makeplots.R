@@ -158,11 +158,11 @@ ggsave("./analysis/Figures/Figure2.png",
 
 # Go Terms - Output frmo Panther, Reduced by Revigo 
 GO_3v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigUP.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_kmeans_3v2_sigUP.csv")
+                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v2_sigUP.csv")
 GO_1v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigUP.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_kmeans_1v2_sigUP.csv")
+                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_1v2_sigUP.csv")
 GO_3v1UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigUP.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_kmeans_3v1_sigUP.csv")
+                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v1_sigUP.csv")
 
 
 GO_3v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigDOWN.txt", 
