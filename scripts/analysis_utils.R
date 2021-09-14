@@ -490,7 +490,7 @@ getSharedGO<-function(df1, df2){
   data_combined <- 
     data_combined[data_combined$TermID %in% intersect(df1$TermID, df2$TermID),] %>%
     group_by(TermID) %>%
-    filter(P.value == min(P.value))
+    filter(P.value == max(P.value))
   return(data_combined)
 }
 
