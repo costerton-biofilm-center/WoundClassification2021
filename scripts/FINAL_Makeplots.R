@@ -164,8 +164,8 @@ mytheme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0, 
 
 
 
-plot_data <- lapply(list(GO_3v2UP, GO_1v2UP), function(x){
-  data <- x[,c(1,6,7)] #Select name, log fold change, padj
+plot_data <- lapply(list(GO_C3UP_shared, GO_C1UP_shared), function(x){
+  data <- as.data.frame(x[,c(1,6,7)]) #Select name, log fold change, padj
   colnames(data) <- c("GO Term", "Fold Enric.", "adj. p-value")
   newlines <- lapply(data[,1], function(x){
     if(nchar(x)>32){
@@ -219,8 +219,8 @@ titles <- lapply(c("a. Contributions of Variables to PCs",
 #Build the plot 
 
 
-GO_grid <- plot_grid(NULL, plot_data[[1]], NULL, plot_data[[2]], nrow = 4, align = "hv", labels = c("","c. Enriched Pathways (C3 vs C2)", 
-                                                                                        "","d. Enriched Pathways (C1 vs C2)"),
+GO_grid <- plot_grid(NULL, plot_data[[1]], NULL, plot_data[[2]], nrow = 4, align = "hv", labels = c("","c. Enriched Pathways - C3", 
+                                                                                        "","d. Enriched Pathways C1"),
                      label_x = -0.4,
                      vjust = c(0, -1.8 , 0, 0, -1), 
                      rel_heights = c(0.05,0.35,0.05,0.4))

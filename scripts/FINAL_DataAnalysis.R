@@ -307,21 +307,26 @@ anova(fit, test = "Chisq")
 # GO Analysis 
 #==========================================================
 
-# Go Terms - Output frmo Panther, Reduced by Revigo 
+# Go Terms - Output from Panther, Reduced by Revigo 
 GO_3v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigUP.txt", 
                           revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v2_sigUP.csv")
 GO_1v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigUP.txt", 
                           revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_1v2_sigUP.csv")
 GO_3v1UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigUP.txt", 
                           revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v1_sigUP.csv")
-
-
 GO_3v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigDOWN.txt", 
                             revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v2_sigDOWN.csv")
 GO_1v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigDOWN.txt", 
                             revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_1v2_sigDOWN.csv")
 GO_3v1DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigDOWN.txt", 
                             revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v1_sigDOWN.csv")
+
+###  Find shared pathways enriched in C3 when compared to C2 and C1
+
+GO_C3UP_shared <- getSharedGO(GO_3v2UP, GO_3v1UP)
+GO_C2UP_shared <- getSharedGO(GO_1v2DOWN, GO_3v2DOWN)
+GO_C1UP_shared <- getSharedGO(GO_1v2DOWN, GO_3v2DOWN)
+
 
 
 #=============================================================

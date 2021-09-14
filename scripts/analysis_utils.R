@@ -476,6 +476,24 @@ fitmodel<-
     return(output)
   }
 
+getSharedGO<-function(df1, df2){
+  data <-
+    lapply(list(df1, df2), function(x){ #Make colnames consistent
+      data <- x
+      colnames(data) #Make colnames consistent
+      colnames(data)[2:7]<-c("n_ref_genes", "n_DE_genes", "Expected", 
+                             "over.under", "fold.Enrichment", "P.value")
+      return(data)
+    })
+  #Combine the two dfs
+  data_combined <- bind_rows(data)
+  data_combined <- 
+    data_combined[data_combined$TermID %in% intersect(df1$TermID, df2$TermID),] %>%
+    group_by(TermID) %>%
+    filter(P.value == min(P.value))
+  return(data_combined)
+}
+
 
 
 #################################################
