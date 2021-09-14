@@ -387,22 +387,22 @@ expression_plots2 <- plot_grid(expression_plots1, plotlist = plots[5:6],
                                labels = c("b.", "c.", "d."), vjust = c(0,0,0))
  
 
-Final_Fig4<-
+Final_Fig5<-
 plot_grid(plots_COEFS, expression_plots2, nrow = 2, rel_heights = c(0.3, 0.7), labels = c("a.") )
 
-ggsave("./analysis/Figures/Figure4.png",      
+ggsave("./analysis/Figures/Figure5.png",      
        Final_Fig4, units = "mm", 
        width = 180, 
        height = 200, 
        dpi = 300)
 
-ggsave("./analysis/Figures/Figure4.pdf",      
+ggsave("./analysis/Figures/Figure5.pdf",      
        Final_Fig4, units = "mm", 
        width = 180, 
        height = 200, 
        dpi = 300)
   
-### Figure 4a #############################################
+
 
 
 #============================================================
@@ -441,12 +441,12 @@ plot_grid(plotlist = annotation_tables[2:4], ncol = 3, align = "hv",
 
 annotation_out
 
-ggsave("./analysis/Figures/Fig_Annotation.pdf",      
+ggsave("./analysis/Figures/Fig4.pdf",      
        annotation_out, units = "mm", 
        width = 250, 
        height = 183, 
        dpi = 300)
-ggsave("./analysis/Figures/Fig_Annotation.png",      
+ggsave("./analysis/Figures/Fig4.png",      
        annotation_out, units = "mm", 
        width = 250, 
        height = 183, 
