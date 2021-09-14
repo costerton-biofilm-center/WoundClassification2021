@@ -1,0 +1,82 @@
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20210224)
+Annotation Version and Release Date:	GO Ontology database DOI:  10.5281/zenodo.5080993 Released 2021-07-02
+Analyzed List:	DEseq_kmeans_all_3v1_sigDOWN.txt (Homo sapiens)
+Reference List:	counts_batchnorm_genelist.txt (Homo sapiens)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	9057
+GO biological process complete	counts_batchnorm_genelist.txt - REFLIST (19097)	DEseq_kmeans_all_3v1_sigDOWN.txt (829)	DEseq_kmeans_all_3v1_sigDOWN.txt (expected)	DEseq_kmeans_all_3v1_sigDOWN.txt (over/under)	DEseq_kmeans_all_3v1_sigDOWN.txt (fold Enrichment)	DEseq_kmeans_all_3v1_sigDOWN.txt (P-value)
+desmosome organization (GO:0002934)	10	8	.43	+	18.43	2.37E-03
+establishment of skin barrier (GO:0061436)	26	14	1.13	+	12.40	3.20E-06
+keratinization (GO:0031424)	57	30	2.47	+	12.12	4.18E-16
+regulation of water loss via skin (GO:0033561)	28	14	1.22	+	11.52	6.75E-06
+keratinocyte differentiation (GO:0030216)	107	48	4.64	+	10.33	5.86E-25
+peptide cross-linking (GO:0018149)	35	13	1.52	+	8.56	4.61E-04
+multicellular organismal water homeostasis (GO:0050891)	58	20	2.52	+	7.94	3.53E-07
+skin development (GO:0043588)	231	77	10.03	+	7.68	1.61E-34
+epidermal cell differentiation (GO:0009913)	160	52	6.95	+	7.49	6.94E-22
+epidermis development (GO:0008544)	278	85	12.07	+	7.04	4.27E-36
+water homeostasis (GO:0030104)	66	20	2.87	+	6.98	2.38E-06
+intermediate filament cytoskeleton organization (GO:0045104)	52	15	2.26	+	6.65	7.08E-04
+intermediate filament-based process (GO:0045103)	53	15	2.30	+	6.52	8.74E-04
+regulation of epidermal cell differentiation (GO:0045604)	55	14	2.39	+	5.86	6.94E-03
+regulation of epidermis development (GO:0045682)	61	15	2.65	+	5.66	4.10E-03
+hair cycle (GO:0042633)	91	17	3.95	+	4.30	2.03E-02
+molting cycle (GO:0042303)	91	17	3.95	+	4.30	2.03E-02
+cell-cell junction organization (GO:0045216)	167	29	7.25	+	4.00	2.59E-05
+epithelial cell differentiation (GO:0030855)	527	84	22.88	+	3.67	2.00E-18
+cell-cell junction assembly (GO:0007043)	120	19	5.21	+	3.65	4.58E-02
+regulation of epithelial cell differentiation (GO:0030856)	139	21	6.03	+	3.48	2.87E-02
+cell junction assembly (GO:0034329)	256	31	11.11	+	2.79	1.14E-02
+multicellular organismal homeostasis (GO:0048871)	347	41	15.06	+	2.72	4.19E-04
+epithelium development (GO:0060429)	964	113	41.85	+	2.70	4.29E-16
+cell-cell adhesion via plasma-membrane adhesion molecules (GO:0098742)	257	30	11.16	+	2.69	3.31E-02
+cell junction organization (GO:0034330)	473	50	20.53	+	2.44	4.09E-04
+tissue development (GO:0009888)	1595	161	69.24	+	2.33	2.34E-18
+cell-cell adhesion (GO:0098609)	514	50	22.31	+	2.24	4.57E-03
+cell adhesion (GO:0007155)	948	74	41.15	+	1.80	3.28E-02
+biological adhesion (GO:0022610)	954	74	41.41	+	1.79	3.60E-02
+lipid metabolic process (GO:0006629)	1143	86	49.62	+	1.73	1.77E-02
+animal organ development (GO:0048513)	3061	200	132.88	+	1.51	3.78E-05
+cell differentiation (GO:0030154)	3382	203	146.81	+	1.38	1.64E-02
+cellular developmental process (GO:0048869)	3440	206	149.33	+	1.38	1.53E-02
+system development (GO:0048731)	4147	247	180.02	+	1.37	9.38E-04
+anatomical structure development (GO:0048856)	4968	290	215.66	+	1.34	2.27E-04
+multicellular organism development (GO:0007275)	4500	254	195.34	+	1.30	4.92E-02
+developmental process (GO:0032502)	5526	311	239.88	+	1.30	1.84E-03
+Unclassified (UNCLASSIFIED)	2223	78	96.50	-	.81	0.00E00
+regulation of biosynthetic process (GO:0009889)	4051	119	175.85	-	.68	8.70E-03
+macromolecule metabolic process (GO:0043170)	5514	160	239.36	-	.67	6.71E-06
+regulation of cellular biosynthetic process (GO:0031326)	3988	115	173.12	-	.66	3.77E-03
+regulation of transcription, DNA-templated (GO:0006355)	3318	94	144.03	-	.65	2.63E-02
+regulation of nucleic acid-templated transcription (GO:1903506)	3319	94	144.08	-	.65	2.63E-02
+regulation of RNA biosynthetic process (GO:2001141)	3324	94	144.29	-	.65	2.14E-02
+regulation of RNA metabolic process (GO:0051252)	3600	101	156.28	-	.65	4.36E-03
+cellular protein metabolic process (GO:0044267)	3161	88	137.22	-	.64	2.13E-02
+regulation of nucleobase-containing compound metabolic process (GO:0019219)	3831	106	166.30	-	.64	7.30E-04
+regulation of macromolecule biosynthetic process (GO:0010556)	3837	106	166.56	-	.64	7.35E-04
+regulation of cellular macromolecule biosynthetic process (GO:2000112)	3808	104	165.31	-	.63	4.07E-04
+cellular macromolecule metabolic process (GO:0044260)	4338	114	188.31	-	.61	2.15E-06
+cellular nitrogen compound metabolic process (GO:0034641)	3095	81	134.35	-	.60	1.75E-03
+cellular aromatic compound metabolic process (GO:0006725)	2609	68	113.26	-	.60	1.85E-02
+heterocycle metabolic process (GO:0046483)	2548	60	110.61	-	.54	4.76E-04
+nucleobase-containing compound metabolic process (GO:0006139)	2398	53	104.10	-	.51	1.42E-04
+gene expression (GO:0010467)	1837	32	79.74	-	.40	7.52E-06
+nucleic acid metabolic process (GO:0090304)	1943	31	84.35	-	.37	1.58E-07
+RNA metabolic process (GO:0016070)	1353	17	58.73	-	.29	1.49E-06
+protein modification by small protein conjugation or removal (GO:0070647)	836	10	36.29	-	.28	5.26E-03
+protein modification by small protein conjugation (GO:0032446)	699	8	30.34	-	.26	2.82E-02
+detection of stimulus (GO:0051606)	654	7	28.39	-	.25	3.44E-02
+mRNA metabolic process (GO:0016071)	548	4	23.79	-	.17	1.24E-02
+RNA processing (GO:0006396)	826	6	35.86	-	.17	2.05E-05
+ribonucleoprotein complex biogenesis (GO:0022613)	415	2	18.02	-	.11	4.86E-02
+detection of stimulus involved in sensory perception (GO:0050906)	520	2	22.57	-	.09	8.10E-04
+detection of chemical stimulus involved in sensory perception of smell (GO:0050911)	405	1	17.58	-	.06	8.55E-03
+sensory perception of smell (GO:0007608)	430	1	18.67	-	.05	2.68E-03
+detection of chemical stimulus involved in sensory perception (GO:0050907)	450	1	19.53	-	.05	1.24E-03
+detection of chemical stimulus (GO:0009593)	486	1	21.10	-	.05	2.64E-04
