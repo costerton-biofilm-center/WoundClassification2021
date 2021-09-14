@@ -156,23 +156,6 @@ ggsave("./analysis/Figures/Figure2.png",
 # Figure 3 Kmeans, PCA contibs, GO            #
 #=============================================#
 
-# Go Terms - Output frmo Panther, Reduced by Revigo 
-GO_3v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigUP.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v2_sigUP.csv")
-GO_1v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigUP.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_1v2_sigUP.csv")
-GO_3v1UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigUP.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v1_sigUP.csv")
-
-
-GO_3v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigDOWN.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v2_sigDOWN.csv")
-GO_1v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigDOWN.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_1v2_sigDOWN.csv")
-GO_3v1DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigDOWN.txt", 
-                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v1_sigDOWN.csv")
-
-
 
 #theme 
 mytheme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0, fontsize = 9)),
