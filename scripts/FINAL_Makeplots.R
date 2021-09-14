@@ -164,6 +164,16 @@ GO_1v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans
 GO_3v1UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigUP.txt", 
                           revigo = "./analysis/GO_analysis/REVIGO_kmeans_3v1_sigUP.csv")
 
+
+GO_3v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigDOWN.txt", 
+                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v2_sigDOWN.csv")
+GO_1v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigDOWN.txt", 
+                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_1v2_sigDOWN.csv")
+GO_3v1DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigDOWN.txt", 
+                          revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v1_sigDOWN.csv")
+
+
+
 #theme 
 mytheme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0, fontsize = 9)),
                                      colhead=list(fg_params=list(hjust = 0, x = 0, fontsize = 9))
@@ -194,7 +204,7 @@ plot_data <- lapply(list(GO_3v2UP, GO_1v2UP), function(x){
 
 PCA_maincontribs_plots<-plot_contribs(counts_batchnorm_vst, c(1,2), n_contrib = 20)
 
-PCA_maincontribs <- gridExtra::grid.arrange(PCA_maincontribs[1], PCA_maincontribs[2])
+PCA_maincontribs <- gridExtra::grid.arrange(PCA_maincontribs_plots[[1]], PCA_maincontribs_plots[[2]])
 
 #Fix up PCA plot 
 PCA_plots_all[["cluster_res_all"]]<-
@@ -411,18 +421,20 @@ ggsave("./analysis/Figures/Figure4.pdf",
   
 ### Figure 4a #############################################
 
-#Get the annotations for the good genes (takes several minutes to run!)
-
-gene_products<-
-lapply(SVM_genes, function(x){
-  data <- unlist(x)
-  get_gene_names(data, annotation_path, "exon", "mRNA")
-})
 
 #============================================================
 # Annotation Tables Out 
 #===========================================================
 #Only include annotations for clusters
+
+#Get the annotations for the good genes (takes several minutes to run!)
+
+gene_products<-
+  lapply(SVM_genes, function(x){
+    data <- unlist(x)
+    get_gene_names(data, annotation_path, "exon", "mRNA")
+  })
+
 
 annotation_tables <- lapply(seq_along(gene_products), function(x){
   name <- names(gene_products)[x]
