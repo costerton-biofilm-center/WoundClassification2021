@@ -391,13 +391,13 @@ Final_Fig5<-
 plot_grid(plots_COEFS, expression_plots2, nrow = 2, rel_heights = c(0.3, 0.7), labels = c("a.") )
 
 ggsave("./analysis/Figures/Figure5.png",      
-       Final_Fig4, units = "mm", 
+       Final_Fig5, units = "mm", 
        width = 180, 
        height = 200, 
        dpi = 300)
 
 ggsave("./analysis/Figures/Figure5.pdf",      
-       Final_Fig4, units = "mm", 
+       Final_Fig5, units = "mm", 
        width = 180, 
        height = 200, 
        dpi = 300)
