@@ -7,6 +7,12 @@
 #
 #=============================================================================
 
+#===================================
+#Import libraries
+#===================================
+library(tidyverse)
+library(factoextra)
+
 #=============================================================================
 # Set seed, Data Import, and Formatting of Metadata 
 #=============================================================================
@@ -23,32 +29,35 @@ set.seed(seed)
 
 # Import Raw Counts, Metadata, and helper functions  ==========================
 
-# Run source to import helper functions
+# Run source to import helper functions and fix metadata 
 source("./scripts/analysis_utils.R")
+source("./scripts/Clean_metadata.R")
 
 # Import counts, metadata and define relative path to annotation file
-#counts <- get_counts("./data/counts/") #Uncomment if importing counts from a folder with raw count files
-counts <- read.csv("./data/Example_data/ALL_counts.csv", row.names = 1, check.names = F, comment.char = "") #If importing from a count matrix tsv 
-metadata <- get_metadata("./data/Example_data/ALL_metadata_Ranalysis.tsv")
+counts <- read.csv("./data/Example_data/Raw_counts.csv", row.names = 1, check.names = F, comment.char = "") #If importing from a count matrix tsv 
+metadata <- read.delim("./data/Example_data/Analysis_metadata.csv", sep = ",")
 annotation_path <- c("./data/annotation_gff/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff")
 kraken_dir = "./data/kraken"
 
 # Define data Output_directory 
-# out_dir needs to contain empty folder called: 
+# out_dir needs to contain empty folders called: 
 # "normalized_counts", "DESeq2", "kmeans", and "validation"
 
 out_dir <- "./analysis/"
 
-# Select columns of interest from metadata ====================================
+# Format Column types 
 
-# Select Metadata Columns which might be of interest.
-# Not sure if the analysis will work with 
-# continuous/numeric metadata.
+metadata <-
+  metadata %>%
+  mutate(across(c("Gender_0M_1F", "Peripheral_Neuropathy", "PAK", "CKD_stage5", 
+                  "IHD", "CCF", "Type_of_Diabetes_T1_T2","Ulcer_duration_cat", 
+                  "PEDIS_IDSA_1uninfected_2mild_3mod_4severe"), as.factor)) %>%
+  mutate(across(c("Age", "Duration_of_Diabetes_years", "Ulcer_duration_weeks", "WCC_10e9perL", "CRP_mgperL", "ESR_mLpermin",
+                  "Neutrophils_10e9perL", "HBA1c", "HBA1c_IFCC"), as.numeric))
 
-factors<-c("Ulcer_duration_cat", "IDSA_SCORE_1to4", "is_NEBSmallRNA")
-
-# Convert any numeric to factors
-metadata[,factors]<- apply(metadata[,factors], 2, as.factor)
+#=================================================================================
+# Quality filtering
+#=================================================================================
 
 # Filtering ===================================================================
 
@@ -56,18 +65,11 @@ metadata[,factors]<- apply(metadata[,factors], 2, as.factor)
 counts <- counts[,colSums(counts) > 1000000]
 metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
-# Remove MW_CW5 and MW_CW6, HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
-
-counts<-counts[,!(colnames(counts) %in% c("HH5","MW_CW5","MW_CW6"))]
+# Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
+counts<-counts[,!(colnames(counts) %in% c("HH5"))]
 metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
-#Subset to only have CBC and HH data 
-
-metadata <- subset(metadata, Source %in% c("CBC", "HH"))
-counts <- counts[,colnames(counts) %in% metadata$Sample_ID]
-
 # Organize count names 
-
 counts <- counts[,metadata$Sample_ID]
 
 #======================================================================
@@ -115,7 +117,7 @@ metadata <- dplyr::left_join(metadata, kraken_data, by="Sample_ID")
 
 #Add Category for high bacteria to kmeans metadata 
 
-metadata$high_bacteria <- ifelse(metadata$Bac_prcnt>10, "high", "low")
+metadata$high_bacteria_1High0Low <- ifelse(metadata$Bac_prcnt>10, "1", "0") #1 = High, 2=low
 
 #=========================================================================
 # Analyze species and genera abundance from Kraken
@@ -176,17 +178,6 @@ high_bac_microbiome_top_species <-
   arrange(Sample_ID, desc(Rel_abund)) %>%
   filter(Rel_abund>1)
 
-#=====================================================================================
-#Split data and metadata into Main and Validation(Main + Validation)
-#=====================================================================================
-counts_validation <- counts 
-metadata_validation <- metadata
-
-#Subset to only use "Main" data set 
-counts <- counts[,c(colnames(counts) %in% metadata$Sample_ID[metadata$Source %in% c("CBC", "HH")])]
-metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
-
-
 #====================================================================================
 # Batch Normalization and Differential Gene Expression (DESeq2) analysis of Metadata
 #====================================================================================
@@ -195,32 +186,31 @@ metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
 counts_batchnorm <- remove_batch_effect(counts, metadata, ~Source, 1)
 
-
 # DESeq2 ======================================================================
 
 # Only count mRNA from exonic regions
 
 counts_batchnorm_mRNA <- filterCountsbyGeneType(counts_batchnorm, annotation_path, "exon", c("mRNA"))
 
-# Generate the DESeq2 Data set for the combined data set (Note: This excludes the MW and KK data bc they dont have
-# both Ulcer_duration_cat and IDSA_Score_1to4 metadata)
+# Generate the DESeq2 Data set for the combined data set 
 
-combined_DESeq2 <- run_DESeq2(metadata = metadata,
+Clinical_DESeq2 <- run_DESeq2(metadata = metadata,
                               counts = counts_batchnorm_mRNA,
                               id_colname = "Sample_ID",
-                              metadata_vars = c("Ulcer_duration_cat","IDSA_SCORE_1to4", "high_bacteria"),
-                              formula = ~ Ulcer_duration_cat + IDSA_SCORE_1to4 + high_bacteria)
+                              metadata_vars = c("Ulcer_duration_cat",
+                                                "PEDIS_IDSA_1uninfected_2mild_3mod_4severe", "high_bacteria_1High0Low"),
+                              formula = ~ Ulcer_duration_cat + PEDIS_IDSA_1uninfected_2mild_3mod_4severe + high_bacteria_1High0Low)
 
-# Test for differential expression between "extreme" values of metadata
-combined_DEgenes_UlcerDuration<-DESeq2::results(combined_DESeq2, contrast = c("Ulcer_duration_cat", "2", "0"))
-combined_DEgenes_IDSAScore<-DESeq2::results(combined_DESeq2, contrast = c("IDSA_SCORE_1to4", "4","2"))
-combined_DEgenes_high_bacteria <- DESeq2::results(combined_DESeq2, contrast = c("high_bacteria", "high","low"))
-  
+
+DEgenes_UlcerDuration<-DESeq2::results(Clinical_DESeq2, contrast = c("Ulcer_duration_cat", "2", "0"))
+DEgenes_IDSAScore<-DESeq2::results(Clinical_DESeq2, contrast = c("PEDIS_IDSA_1uninfected_2mild_3mod_4severe", "4","2"))
+DEgenes_high_bacteria_1High0Low <- DESeq2::results(Clinical_DESeq2, contrast = c("high_bacteria_1High0Low", "1","0"))
+
 # Filter for genes with abs(log2FoldChange > 2) and padj < 0.05
-combined_DEgenes_UlcerDuration_sig <- filter_DESeq(combined_DEgenes_UlcerDuration, 2, 0.05)
-combined_DEgenes_IDSAScore_sig <- filter_DESeq(combined_DEgenes_IDSAScore, 2, 0.05)
-combined_DEgenes_high_bacteria_sig <- filter_DESeq(combined_DEgenes_high_bacteria, 2, 0.05)
-  
+DEgenes_UlcerDuration_sig <- filter_DESeq(DEgenes_UlcerDuration, 2, 0.05)
+DEgenes_IDSAScore_sig <- filter_DESeq(DEgenes_IDSAScore, 2, 0.05)
+DEgenes_high_bacteria_1High0Low_sig <- filter_DESeq(DEgenes_high_bacteria_1High0Low, 2, 0.05)
+
 #==================================================================================
 # Variance stabilizing transformation
 #===================================================================================
@@ -244,31 +234,17 @@ plot(hclust_avg) #Note: HH28-P509 correspond to the samples with high bacteria! 
 novar_filter <- apply(counts_batchnorm_vst, 1, sd)
 novar_filter <- novar_filter == 0
 counts_batchnorm_vst_noVar <- counts_batchnorm_vst[!novar_filter, ]
+
+#Optimal number of clusters?
+factoextra::fviz_nbclust(t(counts_batchnorm_vst_noVar), kmeans, method = "silhouette")
+
+#Run Kmeans
 set.seed(seed) # Set Seed for reproducibility
 kmeans_all <- kmeans(t(counts_batchnorm_vst_noVar), centers = 2, nstart = 25)
 
 # Get the results 
-
+set.seed(seed)
 kmeans_groups_all <- data.frame(Sample_ID = names(kmeans_all$cluster), cluster_res_all = as.character(kmeans_all$cluster))
-
-#Fix k-means cluster names 
-
-kmeans_groups_all$cluster_res_all<-
-  lapply(kmeans_groups_all$cluster_res_all, function(cluster){
-    if(cluster=="1"){
-      cluster <- "3"
-    }
-    else if(cluster=="2"){
-      cluster <- "1"
-    }
-    else if(cluster=="3"){
-      cluster<-"2"
-    }
-    else{
-      stop("ERROR CONVERTING KMEANS GROUPS!!")
-    }
-  })
-
 kmeans_groups_all$cluster_res_all <- unlist(kmeans_groups_all$cluster_res_all)
 
 #=======================================================
@@ -285,40 +261,23 @@ dds_kmeans <- run_DESeq2(metadata = metadata,
                          metadata_vars = c("Source","cluster_res_all"),
                          formula = ~ cluster_res_all) 
 
-
 # Extract DE genes results
-DEseq_kmeans_all_3v2 <- DESeq2::results(dds_kmeans, contrast = c("cluster_res_all", "3", "2"))
-DEseq_kmeans_all_1v2 <- DESeq2::results(dds_kmeans, contrast = c("cluster_res_all", "1", "2"))
-DEseq_kmeans_all_3v1 <- DESeq2::results(dds_kmeans, contrast = c("cluster_res_all", "3", "1"))
+DEseq_kmeans_1v2 <- DESeq2::results(dds_kmeans, contrast = c("cluster_res_all", "1", "2"))
 
 # Extract significant genes
-DEseq_kmeans_all_3v2_sig <- filter_DESeq(DEseq_kmeans_all_3v2, 2, 0.05)
-DEseq_kmeans_all_1v2_sig <- filter_DESeq(DEseq_kmeans_all_1v2, 2, 0.05)
-DEseq_kmeans_all_3v1_sig <- filter_DESeq(DEseq_kmeans_all_3v1, 2, 0.05)
-
-#=========================================================
-# Dummy kmeans variables
-#=========================================================
-
-metadata$isCluster_1<-ifelse(metadata$cluster_res_all=="1", "1", "0")
-metadata$isCluster_2<-ifelse(metadata$cluster_res_all=="2", "1", "0")
-metadata$isCluster_3<-ifelse(metadata$cluster_res_all=="3", "1", "0")
+DEseq_kmeans_1v2_sig <- filter_DESeq(DEseq_kmeans_1v2, 2, 0.05)
 
 #=========================================================
 # Count # of differentially expressed genes from DESeq 
 #=========================================================
 
 DESeq_summary<-
-  summarize_DESeq(list(combined_DEgenes_UlcerDuration, #2vs0
-                       combined_DEgenes_IDSAScore, #4vs2
-                       DEseq_kmeans_all_3v2,
-                       DEseq_kmeans_all_1v2,
-                       DEseq_kmeans_all_3v1),
-  names = c("combined_DEgenes_UlcerDuration", #2vs0
-            "combined_DEgenes_IDSAScore", #4vs2
-            "DEseq_kmeans_all_3v2",
-            "DEseq_kmeans_all_1v2",
-            "DEseq_kmeans_all_3v1"))
+  summarize_DESeq(list(DEgenes_UlcerDuration_sig, #2vs0
+                       DEgenes_IDSAScore_sig, #4vs2
+                       DEseq_kmeans_1v2_sig),
+                  names = c("combined_DEgenes_UlcerDuration", #2vs0
+                            "combined_DEgenes_IDSAScore", #4vs2
+                            "DEseq_kmeans_1v2_sig"))
 
 #=========================================================
 # Test Bacterial Load Between clusters
@@ -327,94 +286,50 @@ DESeq_summary<-
 fit <- glm(Bac_prcnt/100 ~ cluster_res_all, data = metadata, family = binomial())
 anova(fit, test = "Chisq")
 
-# #==========================================================
-# # GO Analysis 
-# #==========================================================
-# 
-# # Go Terms - Output from Panther, Reduced by Revigo 
-# GO_3v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigUP.txt", 
-#                           revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v2_sigUP.csv")
-# GO_1v2UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigUP.txt", 
-#                           revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_1v2_sigUP.csv")
-# GO_3v1UP <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigUP.txt", 
-#                           revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v1_sigUP.csv")
-# GO_3v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v2_sigDOWN.txt", 
-#                             revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v2_sigDOWN.csv")
-# GO_1v2DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_1v2_sigDOWN.txt", 
-#                             revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_1v2_sigDOWN.csv")
-# GO_3v1DOWN <- reducePanther(panther = "./analysis/GO_analysis/PANTHER_DEseq_kmeans_all_3v1_sigDOWN.txt", 
-#                             revigo = "./analysis/GO_analysis/REVIGO_DEseq_kmeans_all_3v1_sigDOWN.csv")
-# 
-# ###  Find shared pathways enriched in C3 when compared to C2 and C1
-# 
-# GO_C3UP_shared <- getSharedGO(GO_3v2UP, GO_3v1UP)
-# GO_C2UP_shared <- getSharedGO(GO_1v2DOWN, GO_3v2DOWN)
-# GO_C1UP_shared <- getSharedGO(GO_1v2DOWN, GO_3v2DOWN)
 
-# #=============================================================
-# # Prepare Validation Data 
-# #=============================================================
-# 
-# # Normalize for Library Prep Kit 
-# counts_validation_mRNA <- filterCountsbyGeneType(counts_validation, annotation_path, "exon", c("mRNA"))
-# counts_validation_vst <- DESeq2::vst(as.matrix(counts_validation_mRNA))
-
-#=========================================================================
-# Export gene counts data tables and analysis results to output directory
-#
-# WARNING!!! Will overwrite existing files without asking
-#=========================================================================
-
+#=========================================================
+# Export Data
+#=========================================================
 
 #Export Seed and Session Info 
 writeLines(as.character(seed), paste0(out_dir,"seed.txt"))
 writeLines(capture.output(sessionInfo()), paste0(out_dir,"sessionInfo.txt"))
 
 # Export Counts
-write.csv(counts_batchnorm_vst, paste0(out_dir,"normalized_counts/Main_counts_batchnorm_vst.csv"))
+write.csv(counts, paste0(out_dir, "counts/Raw_counts.csv"))
+write.csv(counts_batchnorm, paste0(out_dir, "counts/Batchnorm_counts.csv"))
+write.csv(counts_batchnorm_mRNA, paste0(out_dir, "counts/Batchnorm_mRNA_counts.csv"))
+write.csv(counts_batchnorm_vst, paste0(out_dir,"counts/Batchnorm_mRNA_vst.csv"))
 
-# Export DESeq results
-write.csv(combined_DEgenes_UlcerDuration_sig,paste0(out_dir,"DESeq2/combined_DEgenes_UlcerDuration.csv" ))
-write.csv(combined_DEgenes_IDSAScore_sig,paste0(out_dir,"DESeq2/combined_DEgenes_IDSAScore.csv" ))
-# write.csv(DEseq_kmeans_all_3v2_sig, paste0(out_dir,"DESeq2/DEseq_kmeans_all_3v2_sig.csv"))
-# write.csv(DEseq_kmeans_all_1v2_sig, paste0(out_dir,"DESeq2/DEseq_kmeans_all_1v2_sig.csv"))
-write.csv(DEseq_kmeans_all_3v1_sig, paste0(out_dir,"DESeq2/DEseq_kmeans_all_3v1_sig.csv"))
+#Export Metadata with results
+write.csv(metadata, paste0(out_dir, "metadata/metadata_with_results.csv"))
 
 #Export DESeq summary
-
 write.csv(DESeq_summary, paste0(out_dir,"DESeq2/n_sig_DEgenes.csv"))
+
+# Export DESeq results
+write.csv(DEgenes_UlcerDuration_sig,paste0(out_dir,"DESeq2/combined_DEgenes_UlcerDuration.csv" ))
+write.csv(DEgenes_IDSAScore_sig,paste0(out_dir,"DESeq2/combined_DEgenes_IDSAScore.csv" ))
+write.csv(DEseq_kmeans_1v2_sig, paste0(out_dir,"DESeq2/DEseq_kmeans_1v2_sig.csv"))
+write.csv(DEgenes_high_bacteria_1High0Low_sig, paste0(out_dir, "DESeq2/DEseq_HighvsLowBac_sig.csv"))
 
 # Export kmeans results
 write.csv(kmeans_groups_all, paste0(out_dir, "kmeans/kmeans_groups_all.csv"), row.names = FALSE)
 
+#Export Data for GO_analysis
+write.table(row.names(subset(DEseq_kmeans_1v2_sig,log2FoldChange > 2)), 
+            row.names = F, sep = "", quote = F, col.names  = F,
+            paste0(out_dir,"GO_analysis/DEseq_kmeans_1v2_sigUP.txt"))
 
-# Export Data for GO_analysis
+write.table(row.names(subset(DEseq_kmeans_1v2_sig,log2FoldChange < -2)), 
+            row.names = F, sep = "", quote = F, col.names  = F,
+            paste0(out_dir,"GO_analysis/DEseq_kmeans_1v2_sigDOWN.txt"))
 
-write.table(row.names(subset(DEseq_kmeans_all_3v2_sig,log2FoldChange > 2)), 
+write.table(row.names(subset(DEgenes_high_bacteria_1High0Low_sig,log2FoldChange > 2)), 
             row.names = F, sep = "", quote = F, col.names  = F,
-            paste0(out_dir,"GO_analysis/DEseq_kmeans_all_3v2_sigUP.txt"))
-write.table(row.names(subset(DEseq_kmeans_all_3v2_sig,log2FoldChange < -2)), 
-            row.names = F, sep = "", quote = F, col.names  = F,
-            paste0(out_dir,"GO_analysis/DEseq_kmeans_all_3v2_sigDOWN.txt"))
-write.table(row.names(subset(DEseq_kmeans_all_3v1_sig,log2FoldChange > 2)), 
-            row.names = F, sep = "", quote = F, col.names  = F,
-            paste0(out_dir,"GO_analysis/DEseq_kmeans_all_3v1_sigUP.txt"))
-write.table(row.names(subset(DEseq_kmeans_all_3v1_sig,log2FoldChange < -2)), 
-            row.names = F, sep = "", quote = F, col.names  = F,
-            paste0(out_dir,"GO_analysis/DEseq_kmeans_all_3v1_sigDOWN.txt"))
-write.table(row.names(subset(DEseq_kmeans_all_1v2_sig,log2FoldChange > 2)), 
-            row.names = F, sep = "", quote = F, col.names  = F,
-            paste0(out_dir,"GO_analysis/DEseq_kmeans_all_1v2_sigUP.txt"))
-write.table(row.names(subset(DEseq_kmeans_all_1v2_sig,log2FoldChange < -2)),
-            row.names = F, sep = "", quote = F, col.names  = F,
-            paste0(out_dir,"GO_analysis/DEseq_kmeans_all_1v2_sigDOWN.txt"))
-write.table(row.names(counts_batchnorm_vst),
-            row.names = F, sep = "", quote = F, col.names  = F,
-            paste0(out_dir,"GO_analysis/counts_batchnorm_genelist.txt"))
+            paste0(out_dir,"GO_analysis/DEseq_HighvsLowBac_sigUP.txt"))
 
-#Export validation Data analysis
-
-write.csv(counts_validation_vst, "./data/Example_data/Validation_counts_batchnorm_vst.csv")
-write.csv(metadata_validation, "./data/Example_data/Validation_metadata.csv", row.names = F, quote = TRUE)
-
+write.table(row.names(subset(DEgenes_high_bacteria_1High0Low_sig,log2FoldChange < -2)), 
+            row.names = F, sep = "", quote = F, col.names  = F,
+            paste0(out_dir,"GO_analysis/DEseq_HighvsLowBac_sigDOWN.txt"))
 

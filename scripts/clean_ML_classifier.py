@@ -13,35 +13,28 @@ def main():
 	output_dir = "./analysis/linearSVM_out"
 
 	# Data Paths
-	counts_path = "./analysis/normalized_counts/Main_counts_batchnorm_vst.csv"
-	validation_path = "./data/Example_data/Validation_counts_batchnorm_vst.csv"
-	metadata_path = "./data/Example_data/Validation_metadata.csv"
-	kmeans_path = "./analysis/kmeans/kmeans_groups_all.csv" 
-	
+	counts_path = "./analysis/counts/Batchnorm_mRNA_vst.csv"
+	metadata_path = "./analysis/metadata/metadata_with_results.csv"
+
 	# Get the data 
 	count_data = pd.read_csv(counts_path, index_col=0, sep = ",")
-	validation_counts = pd.read_csv(validation_path, index_col=0, sep = ",")
 	metadata = pd.read_csv(metadata_path, sep = ",")
-	kmeans_data = pd.read_csv(kmeans_path, dtype = np.str)
-
-	# Merge kmeans with metadata
-	metadata = metadata.merge(kmeans_data, on = "Sample_ID", how = "left")
 
 	#Filter metdata, format variables, make dummies 
-	metadata = metadata[["Sample_ID", "Source", "Data_set", "IDSA_SCORE_1to4", "cluster_res_all"]]
+	metadata = metadata[["Sample_ID", "Source", "cluster_res_all", "high_bacteria_1High0Low", "PEDIS_IDSA_1uninfected_2mild_3mod_4severe"]]
 	dummies = pd.get_dummies(metadata["cluster_res_all"], prefix = "isCluster")
 
 	#Combine the data'
 	metadata = pd.concat([metadata, dummies], axis=1)
 	
 	#Select training categories
-	categories = ["IDSA_SCORE_1to4", "isCluster_1", "isCluster_2" , "isCluster_3"]
+	categories = ["high_bacteria_1High0Low", "cluster_res_all"]
 
 	#Feature Selection 
 
 	for cat in categories: 
 		#Make sure the data is clean & only from CBC 
-		cleaned_data = clean_data(count_data, metadata[metadata['Source'] == 'CBC'], "Sample_ID", cat)
+		cleaned_data = clean_data(count_data, metadata, "Sample_ID", cat)
 
 		#Fit the model 
 		model = LinearSVC(C=1, penalty='l1', dual=False, max_iter=100000)
@@ -84,25 +77,25 @@ def main():
 			out_data = out_data.sort_values("Coefficient", ascending = False)
 			out_data.to_csv(out_file, index = False)
 
-		# Train and fit using only good genes
-		valid_data_train = clean_data(validation_counts, metadata[metadata['Source'] == 'CBC'], "Sample_ID", cat)
-		valid_data_test = clean_data(validation_counts, metadata[metadata['Source'] != 'CBC'], "Sample_ID", cat)
+		# # Train and fit using only good genes
+		# valid_data_train = clean_data(validation_counts, metadata[metadata['Source'] == 'CBC'], "Sample_ID", cat)
+		# valid_data_test = clean_data(validation_counts, metadata[metadata['Source'] != 'CBC'], "Sample_ID", cat)
 
-		model_validation = SVC(probability=True)
-		model_validation.fit(np.array(valid_data_train[0][mask]).T, np.array(valid_data_train[1][cat], dtype = np.int)) 
+		# model_validation = SVC(probability=True)
+		# model_validation.fit(np.array(valid_data_train[0][mask]).T, np.array(valid_data_train[1][cat], dtype = np.int)) 
 
-		# Predict on test data
-		test_samples = metadata['Sample_ID'][metadata['Data_set'] == 'Validation']
-		test_counts = valid_data_test[0].filter(items = test_samples)[mask]
+		# # Predict on test data
+		# test_samples = metadata['Sample_ID'][metadata['Data_set'] == 'Validation']
+		# test_counts = valid_data_test[0].filter(items = test_samples)[mask]
 
-		prediction = model_validation.predict(np.array(test_counts).T)
-		prediction_prob = model_validation.predict_proba(np.array(test_counts).T)
+		# prediction = model_validation.predict(np.array(test_counts).T)
+		# prediction_prob = model_validation.predict_proba(np.array(test_counts).T)
 
-		results = pd.DataFrame({'Sample_ID':test_counts.keys(), \
-								'prediction': prediction.tolist(),\
-								'prediction_proba' : prediction_prob.tolist()})
+		# results = pd.DataFrame({'Sample_ID':test_counts.keys(), \
+		# 						'prediction': prediction.tolist(),\
+		# 						'prediction_proba' : prediction_prob.tolist()})
         
-		results.to_csv(f"./analysis/validation/{cat}_predictions.csv", index = False)
+		# results.to_csv(f"./analysis/validation/{cat}_predictions.csv", index = False)
 
 
 def clean_data(data, metadata, sample_id_colname, classifier_term, subset = False ):
