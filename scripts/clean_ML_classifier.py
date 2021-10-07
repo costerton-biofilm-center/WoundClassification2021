@@ -28,7 +28,7 @@ def main():
 	metadata = pd.concat([metadata, dummies], axis=1)
 	
 	#Select training categories
-	categories = ["high_bacteria_1High0Low", "cluster_res_all"]
+	categories = ["cluster_res_all", "PEDIS_IDSA_1uninfected_2mild_3mod_4severe"]
 
 	#Feature Selection 
 

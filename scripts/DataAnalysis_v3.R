@@ -119,6 +119,7 @@ metadata <- dplyr::left_join(metadata, kraken_data, by="Sample_ID")
 
 metadata$high_bacteria_1High0Low <- ifelse(metadata$Bac_prcnt>10, "1", "0") #1 = High, 2=low
 
+
 #=========================================================================
 # Analyze species and genera abundance from Kraken
 #=========================================================================
@@ -166,7 +167,6 @@ kraken_bac_abundance <-
   mutate("Rel_abund" = nr_reads_root_taxon/sum(nr_reads_root_taxon)*100)
 
 
-
 # Get only samples with high bacteria 
 
 high_bac_microbiome <- 
@@ -177,6 +177,7 @@ high_bac_microbiome_top_species <-
   group_by(Sample_ID) %>%
   arrange(Sample_ID, desc(Rel_abund)) %>%
   filter(Rel_abund>1)
+
 
 #====================================================================================
 # Batch Normalization and Differential Gene Expression (DESeq2) analysis of Metadata
@@ -286,6 +287,41 @@ DESeq_summary<-
 fit <- glm(Bac_prcnt/100 ~ cluster_res_all, data = metadata, family = binomial())
 anova(fit, test = "Chisq")
 
+# Do samples in C2 show decreased alpha diversity? 
+n_species_1prcntRelAbund<-
+  kraken_bac_abundance %>%
+  group_by(Sample_ID) %>% 
+  filter(Rel_abund >= 5) %>% #remove noise from low abundance bacteria
+  arrange(Sample_ID, desc(Rel_abund)) %>%
+  mutate(cum_abund = cumsum(Rel_abund)) %>%
+  # filter(cum_abund < 75) %>% #Filter those 
+  summarize(n_species = n())
+
+n_species_1prcntRelAbund$high_bac <- ifelse(n_species_1prcntRelAbund$Sample_ID %in%
+                                              metadata$Sample_ID[metadata$cluster_res_all=="2"], "high", "low")
+
+ggplot(n_species_1prcntRelAbund, aes(x = high_bac, y = n_species))+
+  geom_jitter(width = 0.1)
+
+
+t.test(n_species_1prcntRelAbund$n_species[n_species_1prcntRelAbund$high_bac=="high"],
+       n_species_1prcntRelAbund$n_species[n_species_1prcntRelAbund$high_bac=="low"])
+
+#Are top species present in C2 also present in other samples?
+
+top_speciesC2 <- subset(high_bac_microbiome_top_species, Sample_ID %in% metadata$Sample_ID[metadata$cluster_res_all=="2"] & Rel_abund>10)
+
+top_species_C2inC1<-subset(kraken_bac_abundance, !c(Sample_ID %in% top_speciesC2$Sample_ID) & 
+                             ID %in% top_speciesC2$ID & 
+                             Rel_abund > 5) %>%
+  group_by(ID) %>%
+  summarize("mean_abund" = median(Rel_abund), "sd" = median(Rel_abund), n = n())
+
+#=========================================================
+# Run PCA analysis
+#=========================================================
+
+source("./scripts/PCA_analysis.R")
 
 #=========================================================
 # Export Data
@@ -317,6 +353,11 @@ write.csv(DEgenes_high_bacteria_1High0Low_sig, paste0(out_dir, "DESeq2/DEseq_Hig
 write.csv(kmeans_groups_all, paste0(out_dir, "kmeans/kmeans_groups_all.csv"), row.names = FALSE)
 
 #Export Data for GO_analysis
+
+write.table(row.names(counts_batchnorm_vst),
+            row.names = F, sep = "", quote = F, col.names  = F,
+            paste0(out_dir,"GO_analysis/counts_batchnorm_genelist.txt"))
+
 write.table(row.names(subset(DEseq_kmeans_1v2_sig,log2FoldChange > 2)), 
             row.names = F, sep = "", quote = F, col.names  = F,
             paste0(out_dir,"GO_analysis/DEseq_kmeans_1v2_sigUP.txt"))
