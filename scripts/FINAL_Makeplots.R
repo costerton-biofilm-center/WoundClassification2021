@@ -87,30 +87,84 @@ flowchart<-
   draw_image("./analysis/Figures/Sampling_overview.png")+
   theme(plot.margin = margin(0,0,0,0,"cm"))
 
+#Export PDFs
+# 
+# pdf("./analysis/Figures/Fig1/Fig1_corr.pdf",)
+# plt_corr
+# dev.off()
+# 
+# pdf("./analysis/Figures/Fig1/Fig1_loadings.pdf")
+# plt_loadings
+# dev.off()
+# 
+# pdf("./analysis/Figures/Fig1/Fig1_screeplot.pdf")
+# plt_screeplot
+# dev.off()
+# 
+# pdf("./analysis/Figures/Fig1/Fig1_PCA_BacPrcnt.pdf", width = 2.5, height = 2.5)
+# PCA_plots_all[["Bac_prcnt"]]
+# dev.off()
+# 
+# pdf("./analysis/Figures/Fig1/Fig1_PCA_IDSAPEDIS.pdf", width = 2.5, height = 2.5)
+# PCA_plots_all[["PEDIS_IDSA_1uninfected_2mild_3mod_4severe"]]
+# dev.off()
+# 
+# pdf("./analysis/Figures/Fig1/Fig1_PCA_Duration.pdf", width = 2.5, height = 2.5)
+# PCA_plots_all[["Ulcer_duration_cat"]]
+# dev.off()
 
-pdf("./analysis/Figures/Fig1/Fig1_corr.pdf", width = 15, height = 8)
+#Export as SVG
+
+svg("./analysis/Figures/Fig1/Fig1_corr.svg", width = 20, height = 20)
 plt_corr
 dev.off()
 
-pdf("./analysis/Figures/Fig1/Fig1_loadings.pdf")
+svg("./analysis/Figures/Fig1/Fig1_loadings.svg", width = 35, height = 11)
 plt_loadings
 dev.off()
 
-pdf("./analysis/Figures/Fig1/Fig1_screeplot.pdf")
+svg("./analysis/Figures/Fig1/Fig1_screeplot.svg")
 plt_screeplot
 dev.off()
 
-pdf("./analysis/Figures/Fig1/Fig1_PCA_BacPrcnt.pdf")
+svg("./analysis/Figures/Fig1/Fig1_PCA_BacPrcnt.svg", width = 2.5, height = 2.5)
 PCA_plots_all[["Bac_prcnt"]]
 dev.off()
 
-pdf("./analysis/Figures/Fig1/Fig1_PCA_IDSAPEDIS.pdf")
+svg("./analysis/Figures/Fig1/Fig1_PCA_IDSAPEDIS.svg", width = 2.5, height = 2.5)
 PCA_plots_all[["PEDIS_IDSA_1uninfected_2mild_3mod_4severe"]]
 dev.off()
 
-pdf("./analysis/Figures/Fig1/Fig1_PCA_Duration.pdf")
+svg("./analysis/Figures/Fig1/Fig1_PCA_Duration.svg", width = 2.5, height = 2.5)
 PCA_plots_all[["Ulcer_duration_cat"]]
 dev.off()
+
+
+#import plots as svg to ggplot 
+
+temp_scree <- ggdraw() +
+  draw_image("./analysis/Figures/Fig1/Fig1_screeplot.svg")
+
+temp_loadings <- ggdraw() +
+  draw_image("./analysis/Figures/Fig1/Fig1_loadings.svg")
+
+temp_corr <- ggdraw() + 
+  draw_image("./analysis/Figures/Fig1/Fig1_corr.svg")
+
+#Organize the final plot 
+
+pca_plotgrid <- plot_grid(PCA_plots_all[["PEDIS_IDSA_1uninfected_2mild_3mod_4severe"]], 
+                     PCA_plots_all[["Ulcer_duration_cat"]], 
+                     PCA_plots_all[["Bac_prcnt"]],
+                     ncol = 3, labels = c("a", "b", "c"))
+
+top_row <- plot_grid(pca_plotgrid, temp_loadings, nrow = 2, rel_heights = c(1,1), labels = c("", "d"))
+
+bottom <- plot_grid(temp_corr, temp_scree, ncol = 2, rel_widths = c(1,0.6), labels = c("e", "f"))
+
+Fig1_out <- plot_grid(top_row, bottom, nrow = 2)
+
+ggsave("./analysis/Figures/Fig1/Fig1_out.tiff", width = 180, height = 200, units = "mm")
 
 #=============================================
 #Figure 2: Bacterial Load

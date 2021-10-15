@@ -323,6 +323,18 @@ top_species_C2inC1<-subset(kraken_bac_abundance, !c(Sample_ID %in% top_speciesC2
 
 source("./scripts/PCA_analysis.R")
 
+#===========================================================================
+# Differential Expression of Immune Signals between C1/C2
+# 
+#===========================================================================
+
+immune_genes <- subset(DEseq_kmeans_1v2, grepl("^CXCL|^CCL[0-9]*$|^NFKB|
+                                                   ^IL[0-9]*$|^CD[0-9]*$|^TNF$|
+                                                   ^IFN", 
+                                                   row.names(DEseq_kmeans_1v2)))
+immune_genes <- data.frame(immune_genes)
+
+
 #=========================================================
 # Export Data
 #=========================================================
@@ -348,6 +360,7 @@ write.csv(DEgenes_UlcerDuration_sig,paste0(out_dir,"DESeq2/combined_DEgenes_Ulce
 write.csv(DEgenes_IDSAScore_sig,paste0(out_dir,"DESeq2/combined_DEgenes_IDSAScore.csv" ))
 write.csv(DEseq_kmeans_1v2_sig, paste0(out_dir,"DESeq2/DEseq_kmeans_1v2_sig.csv"))
 write.csv(DEgenes_high_bacteria_1High0Low_sig, paste0(out_dir, "DESeq2/DEseq_HighvsLowBac_sig.csv"))
+write.csv(immune_genes, paste0(out_dir,"DESeq2/cDEseq_kmeans_1v2_Immune_all.csv" ))
 
 # Export kmeans results
 write.csv(kmeans_groups_all, paste0(out_dir, "kmeans/kmeans_groups_all.csv"), row.names = FALSE)

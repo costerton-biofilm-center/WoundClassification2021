@@ -176,6 +176,7 @@ def plot_nFeatVsAcc(counts, metadata, cat, n_features=10, save = False):
 	fig, ax = plt.subplots()
 	ax.plot(feature_nr, model_accuracy)
 	ax.set(xlabel = 'Number of Genes in Classifier', ylabel = 'Classifier Accuracy')
+	ax.set_xlim(0,50)
 	ax.set_ylim(0.25,1.1)
 	plt.yticks(np.arange(0,1.2,0.2))
 	#plt.show()

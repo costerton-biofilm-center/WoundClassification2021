@@ -17,6 +17,9 @@ PCA_metadata$Ulcer_duration_cat[PCA_metadata$Ulcer_duration_cat==2] <- "<6 weeks
 #Metadata row names and count col names should match 
 row.names(PCA_metadata) <- metadata$Sample_ID
 
+#Fix Long metadata names 
+colnames(PCA_metadata)[grep("PEDIS", colnames(PCA_metadata))] <- "PEDIS/IDSA"
+
 #Run the PCA
 pca_data <- pca(counts_batchnorm_vst, metadata = PCA_metadata)
 
@@ -29,7 +32,15 @@ PCAtools::screeplot(pca_data, components = getComponents(pca_data, 1:20),
 
 #plot Loadings
 plt_loadings<-
-plotloadings(pca_data, rangeRetain = 0.05, components = 1:3)
+plotloadings(pca_data, rangeRetain = 0.05, components = 1:3, labSize = 12, legendPosition = "none",
+             axisLabSize = 38,
+             widthConnectors = 2,
+             labvjust = 0.5,
+             labhjust = 0,
+             lengthConnectors = unit(0.05, "npc"),
+             positionConnectors = "right",
+             typeConnectors = "open",
+             shapeSizeRange = c(20, 20))
 
 
 #Highlight K-means Clusters
@@ -48,13 +59,18 @@ biplot(pca_data,
 #EigenCor PLot 
 plt_corr<-
 eigencorplot(pca_data,
-             components = getComponents(pca_data, 1:10),
-             metavars = c("Ulcer_duration_cat", "PEDIS_IDSA_1uninfected_2mild_3mod_4severe", 
+             components = getComponents(pca_data, 1:6),
+             metavars = c("Ulcer_duration_cat", "PEDIS/IDSA", 
                           "WCC_10e9perL", "CRP_mgperL", "ESR_mLpermin","Neutrophils_10e9perL",
                           "HBA1c", "Bac_prcnt"),
              col = c('white', 'cornsilk1', 'gold', 'forestgreen', 'darkgreen'),
              #col = c('darkgreen', 'forestgreen','gold', 'cornsilk1','white'),
-             cexCorval = 1.2,
+             cexCorval = 3,
+             cexTitleX = 3,
+             cexLabX = 3,
+             cexLabY = 3,
+             cexMain = 3,
+             cexLabColKey = 3,
              fontCorval = 2,
              posLab = 'bottomleft',
              posColKey = 'top',
@@ -62,7 +78,7 @@ eigencorplot(pca_data,
              scale = TRUE,
              main = bquote(Principal ~ component ~ Pearson ~ r^2 ~ clinical ~ correlates),
              plotRsquared = TRUE,
-             corFUN = 'pearson',
+             corFUN = 'spearman',
              corUSE = 'pairwise.complete.obs',
              corMultipleTestCorrection = 'BH',
              signifSymbols = c('****', '***', '**', '*', ''),
