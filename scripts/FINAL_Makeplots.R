@@ -165,6 +165,7 @@ bottom <- plot_grid(temp_corr, temp_scree, ncol = 2, rel_widths = c(1,0.6), labe
 Fig1_out <- plot_grid(top_row, bottom, nrow = 2)
 
 ggsave("./analysis/Figures/Fig1/Fig1_out.tiff", width = 180, height = 200, units = "mm")
+ggsave("./analysis/Figures/Fig1/Fig1_out.pdf", width = 180, height = 200, units = "mm")
 
 #=============================================
 #Figure 2: Bacterial Load
