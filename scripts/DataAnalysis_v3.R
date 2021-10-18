@@ -297,15 +297,16 @@ n_species_1prcntRelAbund<-
   # filter(cum_abund < 75) %>% #Filter those 
   summarize(n_species = n())
 
-n_species_1prcntRelAbund$high_bac <- ifelse(n_species_1prcntRelAbund$Sample_ID %in%
-                                              metadata$Sample_ID[metadata$cluster_res_all=="2"], "high", "low")
+n_species_1prcntRelAbund <- 
+  n_species_1prcntRelAbund %>%
+    left_join(metadata[,c("Sample_ID", "PEDIS_IDSA_1uninfected_2mild_3mod_4severe", "cluster_res_all")], by = "Sample_ID")
 
-ggplot(n_species_1prcntRelAbund, aes(x = high_bac, y = n_species))+
-  geom_jitter(width = 0.1)
+t.test(n_species_1prcntRelAbund$n_species[n_species_1prcntRelAbund$cluster_res_all=="2"],
+       n_species_1prcntRelAbund$n_species[n_species_1prcntRelAbund$cluster_res_all=="1"])
 
+t.test(n_species_1prcntRelAbund$n_species[n_species_1prcntRelAbund$PEDIS_IDSA_1uninfected_2mild_3mod_4severe=="4"],
+       n_species_1prcntRelAbund$n_species[n_species_1prcntRelAbund$PEDIS_IDSA_1uninfected_2mild_3mod_4severe=="2"])
 
-t.test(n_species_1prcntRelAbund$n_species[n_species_1prcntRelAbund$high_bac=="high"],
-       n_species_1prcntRelAbund$n_species[n_species_1prcntRelAbund$high_bac=="low"])
 
 #Are top species present in C2 also present in other samples?
 
@@ -333,7 +334,6 @@ immune_genes <- subset(DEseq_kmeans_1v2, grepl("^CXCL|^CCL[0-9]*$|^NFKB|
                                                    ^IFN", 
                                                    row.names(DEseq_kmeans_1v2)))
 immune_genes <- data.frame(immune_genes)
-
 
 #=========================================================
 # Export Data

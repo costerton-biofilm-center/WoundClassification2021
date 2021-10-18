@@ -23,6 +23,15 @@ library(cowplot)
 library(gridExtra)
 library(ggdendro)
 library(RColorBrewer)
+library(gtable)
+library(grid)
+
+#==============================================================
+# Import data for GO analysis 
+#==============================================================
+
+GO_UP <- read.delim("./analysis/GO_analysis/PANTHER_DEseq_kmeans_1v2_sigUP.txt", skip = 11)
+GO_DOWN <- read.delim("./analysis/GO_analysis/PANTHER_DEseq_kmeans_1v2_sigDOWN.txt", skip =11)
 
 #===============================================================
 # Figure 1 
@@ -171,151 +180,137 @@ ggsave("./analysis/Figures/Fig1/Fig1_out.pdf", width = 180, height = 200, units 
 #Figure 2: Bacterial Load
 #=============================================
 
+#Define a theme for the plots 
+
+fig2_theme <- theme_bw()+
+  theme(
+    axis.text.x = element_text(size = 6),
+    axis.text.y = element_text(size = 6),
+    axis.title = element_text(size = 6),
+    legend.text = element_text(size = 6)
+)
+
+#Define colors for relativ abundance plot
 mycolors <- colorRampPalette(brewer.pal(12, "Paired"))(length(unique(high_bac_microbiome_top_species$ID)))
 
-plot_high_bac<-
+#Plot the "relative abundance" of species in samples with high amounts of bac reads
+plt_topSpeciesAbundance<- #For those species with greater than 1% rel_bundance and >10% bac:human reads
   ggplot(high_bac_microbiome_top_species, aes(x = Sample_ID, y = Rel_abund, fill = fct_reorder(ID, Rel_abund)))+
   geom_bar(stat = "identity", width = 0.9)+
   scale_fill_manual(values = mycolors)+
   labs(x = "Sample", y = "Relative Activity (%)")+
-  guides(fill = guide_legend(title = ""))+
-  theme(legend.text = element_text(size = 8))
+  guides(fill = guide_legend(title = NULL))+
+  theme(legend.position = "bottom",
+        legend.key.size = unit(3,"mm"),
+        legend.text = element_text(size = 6))
+
+#Plot Cluster vs proportion of bacterial reads 
+plt_bac_prop<- #Plots percent of bacterial reads relative to human
+ggplot(subset(metadata, Bac_prcnt>0), aes(y=Bac_prcnt, x = cluster_res_all, color = cluster_res_all))+
+  geom_jitter(width = 0.1)+
+  labs(x = "Cluster", y = "Bacterial:Human Reads (%)")+
+  theme(axis.text.x = element_text(angle = 90))+
+  scale_color_manual(values = c("#228B22","#A020F0"))+
+  fig2_theme
+
+plt_bac_prop <- 
+  addSmallLegend(plt_bac_prop,
+                 pointSize = 2,textSize = 5, spaceLegend = 0.4)+
+  theme(legend.position = c(0.2,0.8)) 
+
+# plt_nSpeciesVsIDSA<-
+# ggplot(n_species_1prcntRelAbund, aes(x = PEDIS_IDSA_1uninfected_2mild_3mod_4severe, y = as.numeric(n_species)))+
+#   geom_jitter(width = 0.1)+
+#   geom_boxplot(aes(alpha = 1))+
+#   fig2_theme
+# 
+# plt_nSpeciesVscluster<-
+# ggplot(n_species_1prcntRelAbund, aes(x = cluster_res_all, y = as.numeric(n_species)))+
+#   geom_violin(width = 0.1)+
+#   geom_boxplot(aes(alpha = 1))+
+#   fig2_theme
+
+
+# GO table
+
+# Format the GO data 
+GO_data <- lapply(list(GO_UP, GO_DOWN), function(x){
+  data <- as.data.frame(x[,c(1,6,8)]) #Select name, log fold change, padj
+  colnames(data) <- c("GO Term", "Fold Enric.", "FDR")
+  data[,2] <- as.numeric(data[,2])
+  newlines <- lapply(data[,1], function(x){
+    if(nchar(x)>32){
+      x <- gsub('(.{1,32})(\\s)', '\\1\n', x)
+    }
+    else{
+      x <- gsub(pattern = " *\\(GO", replacement = "\n(GO", x)
+    }
+  })
+  data[,1]<-unlist(newlines)
+  #data[,1]<-gsub(pattern = " *\\(GO", replacement = "\n(GO", data[,1]) #Trim GO Term IDs from the names
+  data_out <- data[order(data[,2], decreasing = T),] #sort by fold enrichment
+  data_out <- data_out[1:5,]
+  # plot_out <- tableGrob(head(data), rows = NULL, theme = mytheme)
+  # plot_out$widths <- unit(c(47,20,20), "mm")
+  return(data_out)
+})
+
+# Theme for the table 
+mytheme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0.08, fontsize = 6),
+                                               bg_params=list(fill=c(rep("#A0D7A0", length.out = 5),
+                                                                     rep("#E4D2F0", length.out = 5)))),
+                                     colhead=list(fg_params=list(hjust = 0, x = 0.08, fontsize = 6),
+                                                  bg_params=list(fill = rep("#FFFFFF",1))))
 
 
 
-plot_bac_prop<-
-ggplot(subset(metadata, Bac_prcnt>0), aes(y=Bac_prcnt, x = fct_reorder(Sample_ID, Bac_prcnt, .desc = T)))+
-  geom_bar(stat = "identity")+
-  labs(x = "Sample", y = "Bacterial:Human Reads (%)")+
-  theme(axis.text.x = element_text(angle = 90))
+GO_plot_out <- tableGrob(bind_rows(GO_data), rows = NULL, theme = mytheme)
 
 
-fig2<-
-plot_grid(NULL, plot_bac_prop, NULL, plot_high_bac, nrow = 4,
-          labels = c("","a. Percentage of Bac:Human Reads","",
-                     "b. Relative Activity: # of Reads(Species):# of Reads(Bacteria)"),
-          rel_heights = c(0.05, 0.5, 0.08, 0.5),
-          vjust = c(0, -0.7, 0, -1.8) , hjust = -0.05)
+GO_plot_out <- gtable_add_grob(GO_plot_out,
+                     grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+                     t = 2, b = nrow(GO_plot_out), l = 1, r = ncol(GO_plot_out))
+GO_plot_out <- gtable_add_grob(GO_plot_out,
+                     grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+                     t = 1, l = 1, r = ncol(GO_plot_out))
 
-#Export Individual plots
 
-pdf("./analysis/Figures/Fig2/Fig2_prop_bac.pdf", width = 10, height = 8 )
-plot_bac_prop
-dev.off()
 
-pdf("./analysis/Figures/Fig2/Fig2_composition.pdf")
-plot_high_bac
-dev.off()
+#Format kmeans plot from PCAtools
+plt_pca_kmeans<-
+plt_pca_kmeans+
+  fig2_theme  
+
+plt_pca_kmeans <- 
+  addSmallLegend(plt_pca_kmeans,
+                 pointSize = 2,textSize = 5, spaceLegend = 0.4)+
+  theme(legend.position = c(0.2,0.8))
+
+
+# ORganize the plot grid 
+
+fig2_topleft <- plot_grid(plt_pca_kmeans, plt_bac_prop, nrow = 2, rel_heights = c(0.7,0.4), labels = c("a", "c"))
+fig2_top <- plot_grid(fig2_topleft, GO_plot_out, ncol = 2, rel_widths = c(0.6, 0.5), labels = c("", "b"))
+fig2_out<-plot_grid(fig2_top, plt_topSpeciesAbundance, nrow = 2, rel_heights = c(0.8, 0.5), labels = c("", "d"))
+
 
 
 #Export Main Figure 
 
 ggsave("./analysis/Figures/Figure2.pdf",
-       fig2, units = "mm",
-       width = 180,
-       height = 180,
+       fig2_out, units = "mm",
+       width = 178,
+       height = 210,
        dpi = 300,
        bg = "white")
 
-ggsave("./analysis/Figures/Figure2.png",
-       fig2, units = "mm",
-       width = 180,
-       height = 180,
+ggsave("./analysis/Figures/Figure2.tiff",
+       fig2_out, units = "mm",
+       width = 178,
+       height = 210,
        dpi = 300,
        bg = "white")
 
-#=============================================#
-# # Figure 3 Kmeans, PCA contibs, GO            #
-# #=============================================#
-# 
-# 
-# #theme 
-# mytheme <- gridExtra::ttheme_default(core=list(fg_params=list(hjust = 0, x = 0, fontsize = 9)),
-#                                      colhead=list(fg_params=list(hjust = 0, x = 0, fontsize = 9))
-# )
-# 
-# 
-# 
-# plot_data <- lapply(list(GO_C3UP_shared, GO_C1UP_shared), function(x){
-#   data <- as.data.frame(x[,c(1,6,7)]) #Select name, log fold change, padj
-#   colnames(data) <- c("GO Term", "Fold Enric.", "adj. p-value")
-#   newlines <- lapply(data[,1], function(x){
-#     if(nchar(x)>32){
-#       x <- gsub('(.{1,32})(\\s)', '\\1\n', x)
-#     }
-#     else{
-#       x <- gsub(pattern = " *\\(GO", replacement = "\n(GO", x)
-#     }  
-#   })
-#   data[,1]<-unlist(newlines)
-#   #data[,1]<-gsub(pattern = " *\\(GO", replacement = "\n(GO", data[,1]) #Trim GO Term IDs from the names 
-#   data <- data[order(data[,2], decreasing = T),] #sort by fold enrichment
-#   plot_out <- tableGrob(head(data), rows = NULL, theme = mytheme)
-#   plot_out$widths <- unit(c(47,20,20), "mm") 
-#   return(plot_out)
-# })
-# 
-# #Get the contributions to the PCA 
-# 
-# PCA_maincontribs_plots<-plot_contribs(counts_batchnorm_vst, c(1,2), n_contrib = 20)
-# 
-# PCA_maincontribs <- gridExtra::grid.arrange(PCA_maincontribs_plots[[1]], PCA_maincontribs_plots[[2]])
-# 
-# #Fix up PCA plot 
-# PCA_plots_all[["cluster_res_all"]]<-
-# addSmallLegend(PCA_plots_all[["cluster_res_all"]], pointSize = 2, 
-#                textSize = 5, spaceLegend = 0.4)+
-#   theme(legend.position = c(0.8,0.8))+
-#   labs(color = "K-means Cluster")
-# 
-# 
-# #Make the names for the plot sections
-# 
-# titles <- lapply(c("a. Contributions of Variables to PCs",
-#                    "b. PCA of K-means Results",
-#                    "c. Enriched Pathways in Cluster 2",
-#                    "d. Enriched Pathways in Cluster 3"),
-#                  function(title){
-#                    ggdraw()+
-#                      draw_label(title, 
-#                                 x=0, hjust = 0)+
-#                      theme(
-#                        # add margin on the left of the drawing canvas,
-#                        # so title is aligned with left edge of first plot
-#                        plot.margin = margin(0, 0, 0, 7)
-#                      )
-#                  })
-# 
-# 
-# 
-# #Build the plot 
-# 
-# 
-# GO_grid <- plot_grid(NULL, plot_data[[1]], NULL, plot_data[[2]], nrow = 4, align = "hv", labels = c("","c. Enriched Pathways - C3", 
-#                                                                                         "","d. Enriched Pathways C1"),
-#                      label_x = -0.4,
-#                      vjust = c(0, -1.8 , 0, 0, -1), 
-#                      rel_heights = c(0.05,0.35,0.05,0.4))
-# 
-# PCA_grid <- plot_grid(PCA_maincontribs, PCA_plots_all[["cluster_res_all"]], nrow = 2, rel_heights = c(0.6,0.3),
-#                       labels = c("a.", "b."), label_y = c(1, 1.1))
-# 
-# FINAL_Fig3<-
-# plot_grid(PCA_grid, GO_grid,  ncol = 2)
-# 
-# 
-# ggsave("./analysis/Figures/Figure3.png",      
-#        FINAL_Fig3, units = "mm", 
-#        width = 180, 
-#        height = 200, 
-#        dpi = 300)
-# 
-# ggsave("./analysis/Figures/Figure3.pdf",      
-#        FINAL_Fig3, units = "mm", 
-#        width = 180, 
-#        height = 200, 
-#        dpi = 300)
-# 
 
 #==========================================================#
 # Figure  4 - Predictor Genes Table and Expression Plots   #
