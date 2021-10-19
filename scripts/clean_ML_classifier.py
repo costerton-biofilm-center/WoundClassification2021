@@ -8,7 +8,6 @@ from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.metrics import auc
 from sklearn.metrics import RocCurveDisplay
 from tqdm import tqdm
-import pdb
 
 def main():
 	# Output dir 
@@ -182,6 +181,7 @@ def plot_nFeatVsAcc(counts, metadata, cat, n_features=10, save = False):
 	fig, ax = plt.subplots()
 	ax.plot(feature_nr, model_accuracy)
 	ax.set(xlabel = 'Number of Genes in Classifier', ylabel = 'Classifier Accuracy')
+	ax.set_title("")
 	ax.set_xlim(0,50)
 	ax.set_ylim(0.25,1.1)
 	plt.yticks(np.arange(0,1.2,0.2))
@@ -191,7 +191,8 @@ def plot_nFeatVsAcc(counts, metadata, cat, n_features=10, save = False):
 		fig.savefig(f"./analysis/Figures/Accuracy_{cat}.png", dpi = 300, bbox_inches = 'tight')
 
 def cross_validation(counts, predictor, cat):
-	
+	#This code taken from: https://scikit-learn.org/stable/auto_examples/model_selection/plot_roc.html
+
 	#Format the data 
 	X = np.array(counts).T
 	y = np.array(predictor, dtype=int)
@@ -251,7 +252,7 @@ def cross_validation(counts, predictor, cat):
 	ax.set(
 		xlim=[-0.05, 1.05],
 		ylim=[-0.05, 1.05],
-		title="Receiver operating characteristic example",
+		title="Receiver operating characteristic",
 	)
 	ax.legend(loc="lower right")
 	
