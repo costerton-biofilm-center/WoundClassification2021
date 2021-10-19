@@ -4,9 +4,11 @@ import sys
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC, LinearSVC
 from sklearn.feature_selection import SelectFromModel
-from sklearn.model_selection import cross_val_score, StratifiedKFold, ShuffleSplit, KFold
+from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.metrics import auc
+from sklearn.metrics import RocCurveDisplay
 from tqdm import tqdm
-import pdb 
+import pdb
 
 def main():
 	# Output dir 
@@ -38,7 +40,7 @@ def main():
 
 		#Fit the model 
 		model = LinearSVC(C=1, penalty='l1', dual=False, max_iter=100000)
-		model.fit(np.array(cleaned_data[0]).T, np.array(cleaned_data[1][cat], dtype = np.int)) 
+		model.fit(np.array(cleaned_data[0]).T, np.array(cleaned_data[1][cat], dtype = int)) 
 		
 		#Get the good predictor genes
 		model_fselect = SelectFromModel(model, prefit=True, threshold=-np.inf, max_features=20)
@@ -46,6 +48,7 @@ def main():
 		
 		print(f"For {cat}, the good genes are : {good_genes}")
 
+		# Test accuracy vs. number of features
 		plot_nFeatVsAcc(cleaned_data[0], cleaned_data[1], cat, n_features = 100, save = True)
 
 		#Make a mask for good genes 
@@ -77,12 +80,16 @@ def main():
 			out_data = out_data.sort_values("Coefficient", ascending = False)
 			out_data.to_csv(out_file, index = False)
 
+		# Do a leave-one-out cross-validation
+		if len(model.classes_)==2:
+			cross_validation(cleaned_data[0][mask], cleaned_data[1][cat], cat)
+
 		# # Train and fit using only good genes
 		# valid_data_train = clean_data(validation_counts, metadata[metadata['Source'] == 'CBC'], "Sample_ID", cat)
 		# valid_data_test = clean_data(validation_counts, metadata[metadata['Source'] != 'CBC'], "Sample_ID", cat)
 
 		# model_validation = SVC(probability=True)
-		# model_validation.fit(np.array(valid_data_train[0][mask]).T, np.array(valid_data_train[1][cat], dtype = np.int)) 
+		# model_validation.fit(np.array(valid_data_train[0][mask]).T, np.array(valid_data_train[1][cat], dtype = int)) 
 
 		# # Predict on test data
 		# test_samples = metadata['Sample_ID'][metadata['Data_set'] == 'Validation']
@@ -96,7 +103,6 @@ def main():
 		# 						'prediction_proba' : prediction_prob.tolist()})
         
 		# results.to_csv(f"./analysis/validation/{cat}_predictions.csv", index = False)
-
 
 def clean_data(data, metadata, sample_id_colname, classifier_term, subset = False ):
     """ This function will take a rna-seq count data set, metadata,
@@ -153,7 +159,7 @@ def plot_nFeatVsAcc(counts, metadata, cat, n_features=10, save = False):
 	for n_feature in tqdm(range(1,n_features)):
 		# Get Good Genes
 		model = LinearSVC(C=1, penalty='l1', dual=False, max_iter=100000, random_state = 15815)
-		model.fit(np.array(counts).T, np.array(metadata[cat], dtype = np.int)) 
+		model.fit(np.array(counts).T, np.array(metadata[cat], dtype = int)) 
 		model_fselect = SelectFromModel(model, prefit=True, threshold=-np.inf, max_features=n_feature)
 		good_genes = counts.index[model_fselect.get_support()]
 
@@ -164,7 +170,7 @@ def plot_nFeatVsAcc(counts, metadata, cat, n_features=10, save = False):
 		model = SVC(C=1, random_state = 15815)    
 		
 		# Split test and train 
-		skf = StratifiedKFold(n_splits = 2)
+		skf = StratifiedKFold(n_splits = 6)
 
 		#Cross validation
 		scores = cross_val_score(model, counts[mask].T, metadata[cat], cv = skf)
@@ -183,6 +189,73 @@ def plot_nFeatVsAcc(counts, metadata, cat, n_features=10, save = False):
 	
 	if save:
 		fig.savefig(f"./analysis/Figures/Accuracy_{cat}.png", dpi = 300, bbox_inches = 'tight')
+
+def cross_validation(counts, predictor, cat):
+	
+	#Format the data 
+	X = np.array(counts).T
+	y = np.array(predictor, dtype=int)
+	# Run classifier with cross-validation and plot ROC curves
+	cv = StratifiedKFold(n_splits=6)
+	classifier = SVC(kernel="linear", probability=True, random_state=15815)
+
+	tprs = []
+	aucs = []
+	mean_fpr = np.linspace(0, 1, 100)
+
+	fig, ax = plt.subplots()
+	for i, (train, test) in enumerate(cv.split(X, y)):
+		classifier.fit(X[train], y[train])
+		viz = RocCurveDisplay.from_estimator(
+			classifier,
+			X[test],
+			y[test],
+			name="ROC fold {}".format(i),
+			alpha=0.3,
+			lw=1,
+			ax=ax,
+		)
+
+		interp_tpr = np.interp(mean_fpr, viz.fpr, viz.tpr)
+		interp_tpr[0] = 0.0
+		tprs.append(interp_tpr)
+		aucs.append(viz.roc_auc)
+
+	ax.plot([0, 1], [0, 1], linestyle="--", lw=2, color="r", label="Chance", alpha=0.8)
+
+	mean_tpr = np.mean(tprs, axis=0)
+	mean_tpr[-1] = 1.0
+	mean_auc = auc(mean_fpr, mean_tpr)
+	std_auc = np.std(aucs)
+	ax.plot(
+		mean_fpr,
+		mean_tpr,
+		color="b",
+		label=r"Mean ROC (AUC = %0.2f $\pm$ %0.2f)" % (mean_auc, std_auc),
+		lw=2,
+		alpha=0.8,
+	)
+
+	std_tpr = np.std(tprs, axis=0)
+	tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
+	tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+	ax.fill_between(
+		mean_fpr,
+		tprs_lower,
+		tprs_upper,
+		color="grey",
+		alpha=0.2,
+		label=r"$\pm$ 1 std. dev.",
+	)
+
+	ax.set(
+		xlim=[-0.05, 1.05],
+		ylim=[-0.05, 1.05],
+		title="Receiver operating characteristic example",
+	)
+	ax.legend(loc="lower right")
+	
+	fig.savefig(f"./analysis/Figures/ROC_{cat}.png", dpi = 300, bbox_inches = 'tight')
 
 if __name__ == "__main__":
 	main()
