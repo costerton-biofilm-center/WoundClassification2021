@@ -313,7 +313,7 @@ ggsave("./analysis/Figures/Figure2.tiff",
 
 
 #==========================================================#
-# Figure  4 - Predictor Genes Table and Expression Plots   #
+# Figure  3 - Predictor Genes Table and Expression Plots   #
 #==========================================================#
 
 ### Import results from SVM ################################
