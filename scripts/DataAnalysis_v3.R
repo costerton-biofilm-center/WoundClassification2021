@@ -287,6 +287,9 @@ DESeq_summary<-
 fit <- glm(Bac_prcnt/100 ~ cluster_res_all, data = metadata, family = binomial())
 anova(fit, test = "Chisq")
 
+t.test(metadata$Bac_prcnt[metadata$cluster_res_all=="2"],
+       metadata$Bac_prcnt[metadata$cluster_res_all=="1"])
+
 # Do samples in C2 show decreased alpha diversity? 
 n_species_1prcntRelAbund<-
   kraken_bac_abundance %>%
