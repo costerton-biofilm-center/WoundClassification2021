@@ -363,6 +363,19 @@ SVM_coefs_plots <-
     return(plot)
   })
 
+SVM_expression_data_ALL <- lapply(coef_data, function(x){
+  data <- x
+  pos_coef <- data$Gene
+  #Get expression data
+  expression_values <- subset(counts_batchnorm_vst, row.names(counts_batchnorm_vst) %in% pos_coef)
+  expression_values <- as.data.frame(expression_values)
+  expression_values <-
+    expression_values %>%
+    rownames_to_column("Gene_ID") %>%
+    pivot_longer(cols = -1, names_to = "Sample_ID", values_to = "Norm_expression") %>%
+    left_join(metadata, by = "Sample_ID")
+})
+
 SVM_expression_data_UP <- lapply(coef_data, function(x){
   data <- x
   pos_coef <- data$Gene[data$Coef>0]
