@@ -1,8 +1,9 @@
-# Transcriptomic-Based Alternative to Clinical Classification of Human Ulcers
+# Transcriptomic Fingerprint of Bacterial Infection in Lower Extremity Ulcers
 ---------------------------
 
 This markdown will describe the data, scripts, programs, etc. required for reproducing the 
-analysis and figures or the article: *Transcriptomic-Based Alternative to Clinical Classification of Human Ulcers*.
+analysis and figures or the article: *Transcriptomic Fingerprint of Bacterial Infection in Lower Extremity Ulcers* 
+submitted to APMIS.
 
 
 # Scripts
