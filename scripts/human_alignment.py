@@ -1,8 +1,6 @@
 """
 Analysis pipeline for performing quality control, rRNA depletion, 
-alignment, and feature counting for raw RNA-seq data for the manuscript, 
-"Novel Classification of Human Ulcers using Host Gene Expression". 
-Functionality is described in README.
+alignment, and feature counting for raw RNA-seq data
 
 Author: Blaine Gabriel Fritz 
 
