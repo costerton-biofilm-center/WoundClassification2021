@@ -122,7 +122,7 @@ To run the analysis, do the following:
 1. Download this git repository and unzip if necessary.
 2. Download and unzip the 
 [annotation file](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GRCh38_major_release_seqs_for_alignment_pipelines/)
-from NCBI (GCA_000001405.15_GRCh38_full_analysis_set.fna.gz). Place it into `./data/annotation_gff/`. 
+from NCBI (GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff). Place it into `./data/annotation_gff/`. 
 2. Open an R or R studio session and set the working directory as the repository folder. 
 3. Open and run all of FINAL_DataAnalysis.R. This should run without errors and write output to the folders defined above.
 Some warnings may appear, especially regarding conversion of characters to factors.  
