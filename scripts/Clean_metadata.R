@@ -15,17 +15,17 @@ library(tidyverse)
 
 # Import the data 
 
-keys <- read.delim("./data/Example_data/External_data_keys.csv", sep = ";")
-external_metadata <- read.delim("./data/Example_data/External_metadata_Heravi_Radzieta.txt", sep = "\t", skip = 1)
-internal_metadata <- read.delim("./data/Example_data/Internal_metadata.txt", sep = "\t", skip = 1)
-sequence_metadata <- read.delim("./data/Example_data/Sequencing_metadata.tsv", sep = "\t")
+keys <- read.delim("./data/Example_data/External_data_keys.tsv", sep = "\t")
+external_metadata <- read.delim("./data/Example_data/External_metadata_Heravi_Radzieta.tsv", sep = "\t")
+internal_metadata <- read.delim("./data/Example_data/Internal_metadata.tsv", sep = "\t")
+sequence_metadata <- read.delim("./data/Example_data/Sequencing_metadata.csv", sep = ",")
 
-# Seems like the first 22 coulums match between the two data sets
+# The first 22 columns are simiar between data sets
 
 external_metadata_matching <- external_metadata[,1:22]
 internal_metadata_matching <- internal_metadata[,1:22]
 
-#### Format Column names to match each other 
+#### Format Column names for consistency  
 
 colnames(external_metadata_matching)
 colnames(external_metadata_matching) <- c("Sample_ID",  #1
@@ -161,8 +161,7 @@ combined_metadata <-
 # Add Sequence Metadata to combined metadata 
 
 combined_metadata<-sequence_metadata %>%
-                      select(!Source) %>%
-                      left_join(combined_metadata, by = c("Specific_ID" = "Sample_ID"))
+                      left_join(combined_metadata, by = "Sample_ID")
 
 # Write out metadata as csv
 
