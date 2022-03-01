@@ -15,7 +15,7 @@ def main():
 
 	# Data Paths
 	counts_path = "./analysis/counts/Batchnorm_mRNA_vst.csv"
-	metadata_path = "./analysis/metadata/metadata_with_results.csv"
+	metadata_path = "./analysis/other/metadata_with_results.csv"
 
 	# Get the data 
 	count_data = pd.read_csv(counts_path, index_col=0, sep = ",")
