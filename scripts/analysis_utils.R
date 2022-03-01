@@ -74,15 +74,7 @@ plot_PCA <- function(counts, metadata, PCs, color_variable=NULL, normalize=T){
   var_explained <- PCA$sdev^2/sum(PCA$sdev^2)
   metadata_id_column_name <- colnames(metadata)[1]
   
-  # Flipthe axes of the selected PCs if the abs(min) < max
-  # to hopefully make the plot directions more consistent between data sets
-  
-  if(abs(min(data[,PCs[1]])) > max(data[,PCs[1]])){
-    data[,PCs[1]] <- data[,PCs[1]] * -1
-  } else if (abs(min(data[,PCs[2]])) > max(data[,PCs[2]])){
-    data[,PCs[2]] <- data[,PCs[2]] * -1
-  }
-  
+
   #tidy the data and add the metadata
   plot_data <- 
     data %>%

@@ -1,0 +1,40 @@
+Participant number	DOB	Age	Gender (M=0 F=1)	Type of Diabetes      ( 1 or 2)	Duration of diabetes (Years)	Peripheral neuropathy	PAD 	CKD stage 5 	IHD	CCF	Duration of Ulcer (weeks) < 2 (0), 2-6 (1), > 6 (2)	PEDIS                                          1 = Uninfected        2= Mild                   3= Mod                   4= Severe	WCC (x10-9/L)	CRP                                mg/L	ESR               mL/min	Neutrophils  (x10-9/L)	HBA1c           %	HBA1c           (IFCC)	Culture results	WiFi Score 	Sample collection		
+1	12-04-1954	64	0	2	22	1	1	0	1	0	1	2	7	15.1	43	4.1	8.2	66	0	101	out-patient clinic		
+2	03-07-1963	53	0	2	17	1	0	1	0	0	1	2	7.3	4.2	49	5.3	6.4	47	streptococcus dysgalactiae, mixed skin flora	101	out-patient clinic		
+3	14-11-1964	54	0	2	17	1	0	0	0	0	2	2	10.4	3.7	46	6.3	9.4	79	s.aureus, coliforms, mixed skin flora	111	out-patient clinic		
+4	03-01-1968	51	0	2	14	1	0	0	0	0	0	4	7.2	43.8	39	3.9	7.2	55	s.aureus	102	out-patient clinic		
+5	30-10-1930	88	1	2	3	1	1	0	1	0	2	4	10.5	28.7	103	9.4	7.1	54	mixed anaerobes, MRSA	233	out-patient clinic		
+6	01-10-1961	57	0	1	41	1	0	1	0	0	1	3	9.9	82.2	42	8.8	9	75	s.epidermidis, mixed skin flora	112	out-patient clinic		
+7	18-09-1953	65	0	2	12	1	1	0	0	0	2	4	16.2	123.3	101	11.6	8.6	71	e.coli, MRSA, e.faecalis, pseudomonas, mixed skin flora, mixed anaerobic flora	103	out-patient clinic		
+8	16-04-1967	51	1	1	30	1	0	0	0	0	2	2	9.8	48	54	7.1	8.1	65	s.aureus, group b strep, pseudomonas, pasteurella multocida 	201	out-patient clinic		
+9	16-04-1967	51	1	1	30	1	0	0	0	0	2	3	11.1	28.9	40	8.1	8.2	66	s.aureus, group b strep	202	out-patient clinic		
+10	11-11-1948	68	0	2	12	1	0	0	0	0	2	2	7.1	13	25	5	7.5	58	s.aureus, mixed skin flora 	101	out-patient clinic		
+11	13-04-1964	54	0	1	23	1	0	0	1	0	2	3	9.7	17.8	34	6.2	12.6	114	0	202	out-patient clinic		
+12	07-06-1945	72	0	2	20	1	0	0	1	0	1	2	9	17.4	62	11.9	10.7	93	coliforms, mixed anaerobic flora, mixed skin flora	202	out-patient clinic		
+13	27-09-1982	36	1	1	17	1	0	0	0	0	1	3	14.5	111	60.7	10.6	10.7	94	s.aureus, group G strep, mixed skin flora	102	out-patient clinic		
+14	14-07-1970	48	0	1	37	1	1	0	0	0	0	3	6.4	75.6	92	4.2	9.4	80	s.aureus	212	out-patient clinic		
+15	19-01-1984	34	0	2	14	1	0	0	0	0	2	3	8.8	26.9	128	6.3	13.6	125	coliforms, GNR, MSF	202	out-patient clinic		
+16	03-08-1957	61	0	2	13	1	0	0	0	0	1	2	6.3	0.6	22	3.1	6.2	44	MRSA, e.cloacae, e.faecalis, coagulase negative staph	101	out-patient clinic		
+17	18-04-1952	66	0	2	9	1	0	0	0	0	1	3	8.2	56.3	54	5.7	8.6	71	s.aureus, stenotrophomonas	122	out-patient clinic		
+18	22-07-1957	61	1	2	12	1	0	0	0	0	2	4	14.7	83.8	80	12	7.3	56	step dysgalactiae, e.coli	303	out-patient clinic		
+19	26-07-1951	67	1	2	15	1	1	0	0	0	2	4	16.3	81.7	88	13.4	10.2	88	group B strep, mixed coliforms, mixed skin flora	103	out-patient clinic		
+20	18-09-1937	81	1	2	28	1	1	0	0	0	1	3	10.1	37	71	7	8.7	71	s.aureus, mixed skin flora 	112	out-patient clinic		
+21	24-05-1968	50	1	2	6	1	0	0	0	0	1	2	7	12	37	4.2	9.9	85	0	101	out-patient clinic		
+22	12-04-1954	63	0	2	13	1	0	0	0	0	2	2	7.7	53.7	52	5.4	8.7	72	candida, coliform, mixed skin flora, strep milleri	102	out-patient clinic		
+23	21-05-1963	54	0	2	11	1	1	1	0	0	2	4	18.5	187.4	119	16.2	17.3	166	candida glabrata. Group b strep, mixed anaerobes, coliforms 	323	out-patient clinic		
+24	06-11-1964	54	0	2	8	1	0	0	0	0	2	3	8.5	60.1	8	5.8	7.1	54	e.coli, anaerobic gram positive cocci	202	out-patient clinic		
+25	02-05-1947	71	0	2	18	1	1	0	0	0	2	4	16.6	236	41	13.9	7.7	61	GNR, coag neg staph	103	Intraoperative		
+26	18-12-1957	61	1	2	15	1	0	0	0	0	1	4	8	80.8	69	4.4	8.6	70	e.clocae, coag neg staph, e.coli	203	Intraoperative		
+27	13-09-1956	62	0	2	21	1	1	0	0	0	1	4	15	386.2	25	13.1	9.8	83	mixed skin flora, VRE faecium (van A)	313	Intraoperative		
+28	25-04-1936	82	1	2	16	1	1	0	0	0	1	4	20.4	187.2		17.4	7.9	63		333	Intraoperative		
+29	30-08-1968	50	0	2	2	1	0	0	0	0	1	4	22.9	326.8	101	19.5	13.4	123	group b strep, coag neg staph	203	Intraoperative		
+30	29-11-1959	59	0	2	2	1	0	0	0	0	1	3	12.4	46.4	66	8.8	9.8	84	coagulase neg staph	202	Intraoperative		
+31	06-04-1949	68	0	2	19	1	0	0	0	0	0	3	12.5	55.8	33	9.2	11.4	101		102	Intraoperative		
+32	21-06-1949	69	0	2	22	1	1	0	0	0	2	3	10.4	4.3	46	5.7			mixed skin flora	212	Intraoperative		
+33	20-11-1949	67	0	2	17	1	0	0	0	0	2	3	8.5	32.4	21	4.9			mixed skin flora	202	Intraoperative		
+34	01-02-1964	54	0	2	16	1	1	1	0	0	2	3	14.4	46	13	10	9.6	81			Intraoperative		
+35	02-02-1947	71	0	2	22	1	1	0	1	0	2	3	10.8	38.4	52	8.8	8.2	66	e.faecalis, s.aureus 	122	Intraoperative		
+36	30-10-1941	77	0	2	35	1	0	0	0	1	2	4	12.5	35.6	82	9.4	8.7	72	strep dysgalactaie, GNR, skin flora	113	Intraoperative		
+37	01-11-1959	59	0	1	20	1	1	0	1	1	1	2	11.3	44.2	68	8.8	9.9	85	corynebacterium	102	Intraoperative		
+38	30-06-1951	67	0	2	21	1	1	0	0	1	2	3	12.1	116.9	55	11.1	7.5	59	coliforms, gram negative rods, mixed skin flora 	332	Intraoperative		
+39	08-08-1954	64	0	2	17	1	1	0	0	0	1	3	11.4	32	38	7.8	11.6	103	coryneform 		out-patient clinic		

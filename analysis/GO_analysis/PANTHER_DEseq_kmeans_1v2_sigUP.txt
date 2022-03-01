@@ -1,0 +1,28 @@
+							
+							
+							
+							
+							
+Analysis Type:	PANTHER Overrepresentation Test (Released 20210224)						
+Annotation Version and Release Date:	GO Ontology database DOI:  10.5281/zenodo.5228828 Released 2021-08-18						
+Analyzed List:	DEseq_kmeans_1v2_sigUP.txt (Homo sapiens)						
+Reference List:	counts_batchnorm_genelist.txt (Homo sapiens)						
+Test Type:	FISHER						
+Correction:	FDR						
+GO biological process complete	counts_batchnorm_genelist.txt - REFLIST (11894)	DEseq_kmeans_1v2_sigUP.txt (244)	DEseq_kmeans_1v2_sigUP.txt (expected)	DEseq_kmeans_1v2_sigUP.txt (over/under)	DEseq_kmeans_1v2_sigUP.txt (fold Enrichment)	DEseq_kmeans_1v2_sigUP.txt (raw P-value)	DEseq_kmeans_1v2_sigUP.txt (FDR)
+collagen fibril organization (GO:0030199)	35	11	0.72	+	15.32	1.24E-09	4.41E-06
+collagen metabolic process (GO:0032963)	39	8	0.8	+	10	3.80E-06	4.91E-03
+complement activation (GO:0006956)	38	7	0.78	+	8.98	2.88E-05	2.93E-02
+extracellular matrix organization (GO:0030198)	185	29	3.8	+	7.64	2.69E-16	3.83E-12
+extracellular structure organization (GO:0043062)	186	29	3.82	+	7.6	3.06E-16	2.17E-12
+external encapsulating structure organization (GO:0045229)	187	29	3.84	+	7.56	3.47E-16	1.65E-12
+cell-matrix adhesion (GO:0007160)	81	10	1.66	+	6.02	1.38E-05	1.51E-02
+cell-substrate adhesion (GO:0031589)	122	14	2.5	+	5.59	5.84E-07	1.04E-03
+cell adhesion (GO:0007155)	661	40	13.56	+	2.95	1.73E-09	4.94E-06
+biological adhesion (GO:0022610)	664	40	13.62	+	2.94	1.96E-09	4.66E-06
+anatomical structure morphogenesis (GO:0009653)	1341	53	27.51	+	1.93	3.65E-06	5.19E-03
+cellular nitrogen compound metabolic process (GO:0034641)	1758	15	36.06	-	0.42	4.79E-05	4.54E-02
+nucleic acid metabolic process (GO:0090304)	1042	4	21.38	-	0.19	7.77E-06	9.21E-03
+gene expression (GO:0010467)	992	3	20.35	-	0.15	2.66E-06	4.20E-03
+RNA metabolic process (GO:0016070)	731	0	15	-	 < 0.01	3.96E-07	8.05E-04
+
