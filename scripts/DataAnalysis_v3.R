@@ -353,7 +353,7 @@ write.csv(counts_batchnorm_mRNA, paste0(out_dir, "counts/Batchnorm_mRNA_counts.c
 write.csv(counts_batchnorm_vst, paste0(out_dir,"counts/Batchnorm_mRNA_vst.csv"))
 
 #Export Metadata with results
-write.csv(metadata, paste0(out_dir, "metadata/metadata_with_results.csv"))
+write.csv(metadata, paste0(out_dir, "other/metadata_with_results.csv"))
 
 #Export DESeq summary
 write.csv(DESeq_summary, paste0(out_dir,"DESeq2/n_sig_DEgenes.csv"))
