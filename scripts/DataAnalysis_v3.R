@@ -248,6 +248,9 @@ set.seed(seed)
 kmeans_groups_all <- data.frame(Sample_ID = names(kmeans_all$cluster), cluster_res_all = as.character(kmeans_all$cluster))
 kmeans_groups_all$cluster_res_all <- unlist(kmeans_groups_all$cluster_res_all)
 
+# Switch the cluster names for consistency with previous analysis
+kmeans_groups_all$cluster_res_all <- ifelse(kmeans_groups_all$cluster_res_all=="1","2","1")
+
 #=======================================================
 # DESEQ2 of k-means Results 
 #=======================================================

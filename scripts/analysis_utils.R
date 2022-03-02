@@ -90,7 +90,8 @@ plot_PCA <- function(counts, metadata, PCs, color_variable=NULL, normalize=T){
       labs(x=paste0("PC", PCs[1], ": ", round(var_explained[PCs[1]]*100,1),"%"),
            y=paste0("PC", PCs[2], ": ", round(var_explained[PCs[2]]*100,1),"%"))+
       geom_point(aes_string(color=color_variable), na.rm = F)+
-      scale_color_gradient(na.value = "grey")
+      scale_color_gradient(na.value = "grey")+
+      scale_x_reverse()
       
       return(plot)
   }
@@ -108,7 +109,8 @@ plot_PCA <- function(counts, metadata, PCs, color_variable=NULL, normalize=T){
          y=paste0("PC", PCs[2], ": ", round(var_explained[PCs[2]]*100,1),"%"))+
     geom_point(aes_string(color=color_variable), na.rm = F)+
     scale_color+
-    theme_classic()
+    theme_classic()+
+    scale_x_reverse()
   
   return(plot) 
   }

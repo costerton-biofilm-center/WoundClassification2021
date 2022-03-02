@@ -40,7 +40,8 @@ plotloadings(pca_data, rangeRetain = 0.05, components = 1:3, labSize = 12, legen
              lengthConnectors = unit(0.05, "npc"),
              positionConnectors = "right",
              typeConnectors = "open",
-             shapeSizeRange = c(20, 20))
+             shapeSizeRange = c(20, 20))+
+  scale_y_reverse()
 
 
 #Highlight K-means Clusters
@@ -50,7 +51,7 @@ biplot(pca_data,
        colLegendTitle = 'K-means cluster',
        # encircle config
        encircle = TRUE, encircleFill = FALSE,
-       encircleAlpha = 1, encircleLineSize = 3,
+       encircleAlpha = 0.5, encircleLineSize = 3,
        hline = 0, vline = c(-25, 0, 25),
        #legendPosition = 'top', 
        legendLabSize = 16, legendIconSize = 8.0)

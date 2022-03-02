@@ -61,7 +61,8 @@ PCA_plots_all[["Bac_prcnt"]]<-
   addSmallLegend(PCA_plots_all[["Bac_prcnt"]], 
                  pointSize = 2, textSize = 5, 
                  spaceLegend = 0.4, scale = "continuous")+
-  theme(legend.position = c(0.2,0.8))+
+  theme(legend.position = c(0.25,0.8),
+        legend.background=element_blank())+
   labs(color = "% Bacterial Reads")
 
 
@@ -208,7 +209,7 @@ plt_topSpeciesAbundance<- #For those species with greater than 1% rel_bundance a
 plt_bac_prop<- #Plots percent of bacterial reads relative to human
 ggplot(subset(metadata, Bac_prcnt>0), aes(y=Bac_prcnt, x = cluster_res_all, color = cluster_res_all))+
   geom_jitter(width = 0.1)+
-  labs(x = "Cluster", y = "Bacterial:Human Reads (%)")+
+  labs(x = "Cluster", y = "Bacterial:Human Reads (%)", col = "K-means cluster")+
   theme(axis.text.x = element_text(angle = 90))+
   scale_color_manual(values = c("#228B22","#A020F0"))+
   fig2_theme
@@ -284,7 +285,8 @@ plt_pca_kmeans+
 plt_pca_kmeans <- 
   addSmallLegend(plt_pca_kmeans,
                  pointSize = 2,textSize = 5, spaceLegend = 0.4)+
-  theme(legend.position = c(0.2,0.8))
+  theme(legend.position = c(0.2,0.8))+
+  scale_x_reverse()
 
 
 # ORganize the plot grid 
@@ -439,7 +441,7 @@ plots_UP <- lapply(seq_along(SVM_expression_data_UP), function(x){
             strip.text.x = element_blank())+
       geom_text(data = facet_annotations,
                 mapping = aes(x = x,
-                              y = y,
+                              y = y+3,
                               label = Gene_ID,),
                 size = 2)
   }
@@ -467,7 +469,7 @@ plots_UP <- lapply(seq_along(SVM_expression_data_UP), function(x){
             strip.text.x = element_blank())+
       geom_text(data = facet_annotations,
                 mapping = aes(x = x,
-                              y = y,
+                              y = y+3,
                               label = Gene_ID,),
                 size = 2)
   }
@@ -569,7 +571,7 @@ annotation_tables <- lapply(seq_along(gene_products), function(x){
   table <- tableGrob(data, rows = NULL,
                      theme = ttheme_default(core=list(fg_params=list(cex = 0.8, hjust=0, x=0.1,
                                                                      fontsize = 10)),
-                                            padding = unit(c(0.8,1.3), "mm")))
+                                            padding = unit(c(4,1.2), "mm")))
 })
 
 
