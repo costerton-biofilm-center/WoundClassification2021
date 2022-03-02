@@ -32,7 +32,7 @@ PCAtools::screeplot(pca_data, components = getComponents(pca_data, 1:20),
 
 #plot Loadings
 plt_loadings<-
-plotloadings(pca_data, rangeRetain = 0.05, components = 1:3, labSize = 12, legendPosition = "none",
+plotloadings(pca_data, rangeRetain = 0.05, components = 1:3, labSize = 10, legendPosition = "none",
              axisLabSize = 38,
              widthConnectors = 2,
              labvjust = 0.5,
@@ -41,7 +41,8 @@ plotloadings(pca_data, rangeRetain = 0.05, components = 1:3, labSize = 12, legen
              positionConnectors = "right",
              typeConnectors = "open",
              shapeSizeRange = c(20, 20))+
-  scale_y_reverse()
+  scale_y_reverse()+
+  scale_x_discrete(expand = expansion(add=c(0.4,1)))
 
 
 #Highlight K-means Clusters
