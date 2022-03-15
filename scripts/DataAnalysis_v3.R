@@ -65,6 +65,10 @@ metadata <-
 counts <- counts[,colSums(counts) > 1000000]
 metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 
+#Save counts and metdata for plotting to justify removing HH5
+counts_HH5 <- counts
+metadata_HH5 <- metadata
+
 # Remove HH5 because it's an extreme outlier - Abnormally high counts for e.g. PADI3.
 counts<-counts[,!(colnames(counts) %in% c("HH5"))]
 metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))

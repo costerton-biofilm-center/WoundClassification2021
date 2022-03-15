@@ -59,11 +59,12 @@ get_counts <- function(counts_path, min_gene_length=0){#Could also be a vector o
   return(df_out)
 }
 
-plot_PCA <- function(counts, metadata, PCs, color_variable=NULL, normalize=T){
+plot_PCA <- function(counts, metadata, PCs, color_variable=NULL, normalize=T, label_points=F){
   require(dplyr)
   require(tibble)
   require(factoextra)
   require(ggplot2)
+  require(ggrepel)
   
   if(normalize){
     counts<-DESeq2::vst(as.matrix(counts), blind = T, nsub = 1000)
@@ -92,8 +93,7 @@ plot_PCA <- function(counts, metadata, PCs, color_variable=NULL, normalize=T){
       geom_point(aes_string(color=color_variable), na.rm = F)+
       scale_color_gradient(na.value = "grey")+
       scale_x_reverse()
-      
-      return(plot)
+    
   }
   else{
     #scale_color<- scale_color_gradient()
@@ -111,9 +111,13 @@ plot_PCA <- function(counts, metadata, PCs, color_variable=NULL, normalize=T){
     scale_color+
     theme_classic()+
     scale_x_reverse()
-  
-  return(plot) 
   }
+  if(isTRUE(label_points)){
+    plot<-
+      plot + 
+      geom_label_repel(aes(label=Sample_ID), max.overlaps = 100)
+  }
+  return(plot)
 }
 
 #Clustering needs normalzed counts as input
