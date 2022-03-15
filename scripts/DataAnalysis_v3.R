@@ -61,7 +61,7 @@ metadata <-
 
 # Filtering ===================================================================
 
-# Filter out samples with less than 1M reads and remove from metata
+# Filter out samples with less than 1M reads and remove from metadata
 counts <- counts[,colSums(counts) > 1000000]
 metadata<-subset(metadata, metadata$Sample_ID %in% colnames(counts))
 

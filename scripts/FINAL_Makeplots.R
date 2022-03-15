@@ -600,3 +600,27 @@ ggsave("./analysis/Figures/Figure3.pdf",
        height = 220,
        dpi = 300,
        bg = "white")
+
+
+#=======================
+# Supplementary Plots
+#=======================
+
+# HH5 removal
+PCA_preHH5 <- plot_PCA(counts_HH5, metadata_HH5, c(1,2), label_points=T)
+PCA_postHH5 <- plot_PCA(counts, metadata, c(1,2), label_points=T)
+plot_HH5_out<-plot_grid(PCA_preHH5, PCA_postHH5, labels = c("HH5 included", "HH5 excluded"))
+
+ggsave("./analysis/Figures/supp_HH5_PCA.tiff",
+       plot_HH5_out, units = "mm",
+       width = 220,
+       height = 180,
+       dpi = 300,
+       bg = "white")
+
+ggsave("./analysis/Figures/supp_HH5_PCA.pdf",
+       plot_HH5_out, units = "mm",
+       width = 220,
+       height = 180,
+       dpi = 300,
+       bg = "white")
