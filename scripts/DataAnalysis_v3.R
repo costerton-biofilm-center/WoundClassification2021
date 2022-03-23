@@ -326,7 +326,20 @@ top_species_C2inC1<-subset(kraken_bac_abundance, !c(Sample_ID %in% top_speciesC2
                              ID %in% top_speciesC2$ID & 
                              Rel_abund > 5) %>%
   group_by(ID) %>%
-  summarize("mean_abund" = median(Rel_abund), "sd" = median(Rel_abund), n = n())
+  summarize("mean_abund" = median(Rel_abund), "sd" = sd(Rel_abund), n = n())
+
+#S. aureus between clusters?
+
+abund_saureus <-   
+  kraken_bac_abundance %>%
+    group_by(Sample_ID) %>% 
+    filter(Rel_abund >= 10 & ID == "Staphylococcus aureus") %>%
+    left_join(metadata[,c("Sample_ID", "PEDIS_IDSA_1uninfected_2mild_3mod_4severe", "cluster_res_all")], by = "Sample_ID")
+
+ggplot(abund_saureus, aes(x=cluster_res_all, y = Rel_abund))+
+  geom_point()
+
+mean(abund_saureus$Rel_abund[abund_saureus$cluster_res_all=="1"])
 
 #=========================================================
 # Run PCA analysis

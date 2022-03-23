@@ -426,14 +426,14 @@ plots_UP <- lapply(seq_along(SVM_expression_data_UP), function(x){
       geom_jitter(position = position_jitter(width=0.05, height = 0), size = 1)+
       scale_y_continuous(limits = c(0,30), breaks = c(seq(5,25,5)))+
       scale_fill_manual(values = c("#A0D7A0", "#E4D2F0"))+
+      scale_x_discrete(labels = c("C1", "C2"))+
       theme_half_open()+
       theme(legend.position = "none",
             panel.spacing = unit(0, "lines"),
             panel.border = element_rect(colour = "black", fill=NA, size=0.5),
             axis.title.x = element_blank(),
             axis.title.y = element_text(size = 8),
-            axis.ticks.x = element_blank(),
-            axis.text.x = element_blank(),
+            axis.text.x = element_text(size = 6),
             axis.text.y = element_text(size = 8))+
       ylab("Normalized\nExpression")+
       facet_grid(~ Gene_ID, scales = "free")+
@@ -453,6 +453,7 @@ plots_UP <- lapply(seq_along(SVM_expression_data_UP), function(x){
       geom_jitter(position = position_jitter(width=0.05, height = 0), size = 1)+
       scale_y_continuous(limits = c(0,30), breaks = c(seq(5,25,5)))+
       scale_fill_manual(values = c("#A0D7A0", "#E4D2F0"))+
+      scale_x_discrete(labels = c("C1", "C2"))+
       xlab(metadata_vars[[x]])+
       theme_half_open()+
       theme(legend.position = "none",
@@ -460,8 +461,7 @@ plots_UP <- lapply(seq_along(SVM_expression_data_UP), function(x){
             panel.border = element_rect(colour = "black", fill=NA, size=0.5),
             axis.title.x = element_blank(),
             axis.title.y = element_text(size = 8),
-            axis.ticks.x = element_blank(),
-            axis.text.x = element_blank(),
+            axis.text.x = element_text(size = 6),
             axis.text.y = element_text(size = 8))+
       ylab("Normalized\nExpression")+
       facet_wrap(~ Gene_ID, ncol = 7)+
@@ -487,14 +487,14 @@ plots_DOWN <- lapply(seq_along(SVM_expression_data_DOWN), function(x){
       geom_jitter(position = position_jitter(width=0.05, height = 0), size = 1)+
       scale_y_continuous(limits = c(0,30), breaks = c(seq(5,25,5)))+
       scale_fill_manual(values = c("#A0D7A0", "#E4D2F0"))+
+      scale_x_discrete(labels = c("C1", "C2"))+
       theme_half_open()+
       theme(legend.position = "none",
             panel.spacing = unit(0, "lines"),
             panel.border = element_rect(colour = "black", fill=NA, size=0.5),
             axis.title.x = element_blank(),
             axis.title.y = element_text(size = 8),
-            axis.ticks.x = element_blank(),
-            axis.text.x = element_blank(),
+            axis.text.x = element_text(size = 6),
             axis.text.y = element_text(size = 8))+
       ylab("Normalized\nExpression")+
       facet_grid(~ Gene_ID, scales = "free")+
@@ -514,6 +514,7 @@ plots_DOWN <- lapply(seq_along(SVM_expression_data_DOWN), function(x){
       geom_jitter(position = position_jitter(width=0.05, height = 0), size = 1)+
       scale_y_continuous(limits = c(0,30), breaks = c(seq(5,25,5)))+
       scale_fill_manual(values = c("#A0D7A0", "#E4D2F0"))+
+      scale_x_discrete(labels = c("C1", "C2"))+
       xlab(metadata_vars[[x]])+
       theme_half_open()+
       theme(legend.position = "none",
@@ -521,8 +522,7 @@ plots_DOWN <- lapply(seq_along(SVM_expression_data_DOWN), function(x){
             panel.border = element_rect(colour = "black", fill=NA, size=0.5),
             axis.title.x = element_blank(),
             axis.title.y = element_text(size = 8),
-            axis.ticks.x = element_blank(),
-            axis.text.x = element_blank(),
+            axis.text.x = element_text(size = 6),
             axis.text.y = element_text(size = 8))+
       ylab("Normalized\nExpression")+
       facet_wrap(~ Gene_ID, ncol = 7)+
