@@ -18,12 +18,12 @@ Scripts for running tha analysis are located in the `./scripts` directory.
 counting on the raw, demultiplexed read files.   
 `analysis_utils.R` - Contains functions for running the analysis in R.
 Needs to be sourced before running any of the other R analysis scripts.                      
-`FINAL_DataAnalysis.R` - This script takes the featureCounts output files and metadata. 
+`DataAnalysis_v3.R` - This script takes the featureCounts output files and metadata. 
 It then performs all of the analysis, including normalization, PCA, k-means clustering, etc.  
 `FINAL_Makeplots.R` - This script generates all of the figures included in the manuscript. 
 This excludes Figure 1a, which was created manually in Biorender.      
-`ML_linearclassifier_mainCLEAN.py` - This script takes the metadata and count file output from 
-the *FINAL_DataAnalysis.R* script and uses them as input to train a linear classifier. This 
+`clean_ML_classifier` - This script takes the metadata and count file output from 
+the *DataAnalysis_v3.R* script and uses them as input to train a linear classifier. This 
 classifier is then used to identify gene features which are good for classifying each level
 of the metadata variable of interest. 
 
@@ -73,7 +73,7 @@ for the manuscript is given in: `./data/Example_data/sessionInfo.txt`
 
 The input is based on a tsv file, where the first row is a header containing 
 the following metadata variables (see 
-`./data/Example_data/Example_metadata_allsamples.tsv` for an example): 
+`./data/Example_data/Example_metadata.tsv` for an example): 
   
 `Sample_name`- The name of the sample       
 `R1_name`- The name of the R1 file (forward read)  
@@ -114,9 +114,7 @@ that the WoundClassification2021 repository is set as the R source directory:
     ./analysis/normalized_counts/   
 
 
-The count data used for the analysis is provided in `./data/Example_data/Example_counts.csv`. 
-The corresponding metadata file used for the analysis is 
-`./data/Example_data/Example_metadata_Ranalysis.csv`.
+The count data used for the analysis is provided in `./data/Example_data/Raw_counts.csv`. 
 
 **Note** All analysis should be run from the main repo folder `./WoundClassification2021` as the working directory. 
 
@@ -126,13 +124,13 @@ To run the analysis, do the following:
 [annotation file](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GRCh38_major_release_seqs_for_alignment_pipelines/)
 from NCBI (GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.gff). Place it into `./data/annotation_gff/`. 
 2. Open an R or R studio session and set the working directory as the repository folder. 
-3. Open and run all of FINAL_DataAnalysis.R. This should run without errors and write output to the folders defined above.
+3. Open and run all of DataAnalysis_v3.R. This should run without errors and write output to the folders defined above.
 Some warnings may appear, especially regarding conversion of characters to factors.  
     
     **Warning**: The analysis will overwrite files without asking, if there are already files with the same name
     as the output files in the output directories.
 
-4. Rerun the linear classifier script by running the command `python3 ./scripts/ML_linearclassifier_mainCLEAN.py`
+4. Rerun the linear classifier script by running the command `python3 ./scripts/clean_ML_classifier.py`
    from the command line while in the main directory (`WoundClassification2021`). This will generate the coefficient figures
    required for Figure 3.  
    
