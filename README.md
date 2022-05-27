@@ -2,8 +2,10 @@
 ---------------------------
 
 This markdown will describe the data, scripts, programs, etc. required for reproducing the 
-analysis and figures or the article: *Transcriptomic Fingerprint of Bacterial Infection in Lower Extremity Ulcers* 
-submitted to APMIS.
+analysis and figures for the article: 
+
+Fritz, BG et al (2022). 
+*Transcriptomic Fingerprint of Bacterial Infection in Lower Extremity Ulcers*. APMIS. DOI:10.1111/apm.13234
 
 
 # Scripts
